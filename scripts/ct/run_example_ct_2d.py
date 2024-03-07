@@ -3,7 +3,7 @@ from torch import nn
 import numpy as np
 import matplotlib.pyplot as plt
 import skimage.io as io
-from torch.utils.data import DataLoader 
+from torch.utils.data import DataLoader
 import odl
 from odl.contrib.torch import OperatorModule
 import dival
@@ -17,8 +17,25 @@ sys.path.append('.')
 
 from encoding_objects.ct_enc_object_lodopab import CTEncObj2D
 from networks.CT_primal_dual_nn_pd3o import CT_PD3O_NN
-    
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+device = torch.device('cuda' if torch.backends.cuda.is_available() else 'cpu')
+device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
+
+# if torch.backends.mps.is_available():
+# 	device = torch.device("mps")
+#     print ("Using MPS.")
+# 	x = torch.ones(1, device=device)
+# 	print(x)
+# elif torch.backends.cuda.is_built():
+# 	device = torch.device("cuda")
+#     print ("Using CUDA.")
+# 	x = torch.ones(1, device=device)
+# 	print (x)
+# else:
+#     device = torch.device("cpu")
+# 	print ("Neither MPS nor CUDA was found. Using CPU instead.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -27,7 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--iterations', type = int, default = 512,
                         help='Choose the number of iterations for PD3O (default: 512)')
     parser.add_argument('--train', type = bool, default = False,
-                        help='Choose whether the CNN should be trained, otherwise load pretrained weights (default: False)')                    
+                        help='Choose whether the CNN should be trained, otherwise load pretrained weights (default: False)')
     args = parser.parse_args()
 
     #load dataset
@@ -36,7 +53,7 @@ if __name__ == '__main__':
 
     #init the unet
     lambda_cnn = dival.reconstructors.networks.unet.get_unet_model(in_ch =1, out_ch = 1, use_sigmoid=False).to(device)
-    #load operators for CT  
+    #load operators for CT
     EncObj = CTEncObj2D()
 
     #configurations
@@ -51,9 +68,9 @@ if __name__ == '__main__':
         train_size = 300
         learning_rate = 1e-4 if mode == 'lambda_cnn' else 1e-2
         print(f'Start training of {mode} for {epochs} epochs, learning rate {learning_rate}, {train_size} training imgs and a batch size of {batch_size}.')
-        net.train(epochs,batch_size,train_size,learning_rate)    
-        
-    else:            
+        net.train(epochs,batch_size,train_size,learning_rate)
+
+    else:
         if net.mode == 'lambda_xy':
             net.load_state_dict(torch.load('results/pd3o_weights_scalar.pth')['net_state_dict'])
         else:
@@ -63,7 +80,7 @@ if __name__ == '__main__':
         test = dataset.create_torch_dataset(part='test',
                                     reshape=((1,1,) + dataset.space[0].shape,
                                     (1,1,) + dataset.space[1].shape))
-        
+
         net.nu = 1024
         test_img = 19
         with torch.no_grad():

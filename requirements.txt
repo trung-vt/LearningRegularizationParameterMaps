@@ -2,4 +2,4 @@ numpy==1.23.4
 matplotlib
 torch
 scikit-image
-odl==0.5.3.post2
+odl==0.7.0

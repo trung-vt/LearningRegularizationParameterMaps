@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import skimage.io as io
 from torch.utils.data import DataLoader
 import odl
-from odl.contrib.torch import OperatorModule
+# from odl.contrib.torch import OperatorModule
 import dival
 import dival.reconstructors.networks.unet
 from dival import get_standard_dataset

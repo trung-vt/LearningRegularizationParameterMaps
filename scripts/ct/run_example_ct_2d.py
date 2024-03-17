@@ -18,24 +18,8 @@ sys.path.append('.')
 from encoding_objects.ct_enc_object_lodopab import CTEncObj2D
 from networks.CT_primal_dual_nn_pd3o import CT_PD3O_NN
 
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-device = torch.device('cuda' if torch.backends.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
-
-# if torch.backends.mps.is_available():
-# 	device = torch.device("mps")
-#     print ("Using MPS.")
-# 	x = torch.ones(1, device=device)
-# 	print(x)
-# elif torch.backends.cuda.is_built():
-# 	device = torch.device("cuda")
-#     print ("Using CUDA.")
-# 	x = torch.ones(1, device=device)
-# 	print (x)
-# else:
-#     device = torch.device("cpu")
-# 	print ("Neither MPS nor CUDA was found. Using CPU instead.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -129,3 +129,14 @@ dmypy.json
 .pyre/
 
 tmp/
+
+# Downloaded dataset
+*.zip
+*.hdf5
+*.csv
+*.json
+*.html
+*.txt
+
+# MacOS
+._*

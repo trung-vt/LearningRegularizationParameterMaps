@@ -157,6 +157,8 @@ class DynamicImagePrimalDualNN(nn.Module):
             else:
                 lambda_reg = lambda_map
 
+        # Algorithm 2 - Unrolled PDHG algorithm (page 18)
+        # TODO: In the paper, L is one of the inputs but not used anywhere in the pseudo code???
         for kT in range(self.T):
             # update p
             p =  (p + sigma * (xbar - xnoisy) ) / (1. + sigma)

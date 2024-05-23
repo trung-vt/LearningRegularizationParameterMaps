@@ -22,23 +22,31 @@ class DynamicImageDenoisingDataset(Dataset):
 		extract_data=True,
 		device: str = "cuda"
 	):
+		min_num_frames = patches_size[2]
+
+		assert len(patches_size) == 3, \
+"patches_size must be a list of 3 integers. The third number corresponds to the number of frames in each patch?"
+
 		self.device = device
 		self.scale_factor = scale_factor
 
 		ids = [str(x).zfill(2) for x in ids]
 
 		xf_list = []
-  
+
+		# NOTE: Need at least 32 frames ???
 		for k, img_id in enumerate(ids):
 			print(f'loading image id {img_id}, {k}/{len(ids)}')
 			sample_path = os.path.join(data_path, f"MOT17-{img_id}")
 			if extract_data:
-				xf = self.create_dyn_img(sample_path).unsqueeze(0) / 255
+				xf = self.create_dyn_img(sample_path, min_num_frames)
+				xf = xf.unsqueeze(0) / 255
 			else:
 				scale_factor_str = str(self.scale_factor).replace('.','_')
 				xf = np.load(os.path.join(sample_path, f"xf_scale_factor{scale_factor_str}.npy"))
 				xf = torch.tensor(xf, dtype=torch.float)
-				xf = xf.unsqueeze(0).unsqueeze(0) / 255
+				xf = xf.unsqueeze(0)	# Is it necessary???
+				xf = xf.unsqueeze(0) / 255
 				
 			print(f"xf shape: {xf.shape}")
 			
@@ -78,10 +86,11 @@ class DynamicImageDenoisingDataset(Dataset):
 		else:
 			raise ValueError("Invalid sigma value provided, must be float, tuple or list.")
 
-	def create_dyn_img(self, sample_path: str):
+	def create_dyn_img(self, sample_path: str, min_frames):
 		
 		files_path = os.path.join(sample_path, "img1")
 		files_list = os.listdir(files_path)
+		assert len(files_list) >= min_frames, f"Need at least {min_frames} frames, but only found {len(files_list)} frames."
 		xf = []
 
 		for file in files_list:

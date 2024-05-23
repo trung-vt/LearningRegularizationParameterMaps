@@ -6,7 +6,7 @@ from .grad_ops import GradOperators
 from .prox_ops import ClipAct
 
 
-class DynamicImagePrimalDualNN(nn.Module):
+class DynamicImageStaticPrimalDualNN(nn.Module):
     def __init__(
         self,
         T=128,
@@ -15,7 +15,7 @@ class DynamicImagePrimalDualNN(nn.Module):
         up_bound=0,
         phase="training",
     ):
-        super(DynamicImagePrimalDualNN, self).__init__()
+        super(DynamicImageStaticPrimalDualNN, self).__init__()
 
         # gradient operators and clipping function
         dim = 3

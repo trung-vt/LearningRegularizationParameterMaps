@@ -35,8 +35,8 @@ dataset_train = DynamicImageDenoisingDataset(
     strides=[192, 192, 16],
     patches_size=[192, 192, 32],
     # (!) Make sure to set the following flag to True when loading the dataset for the first time.
-    # extract_data=True,
-    extract_data=False,
+    extract_data=True,
+    # extract_data=False,
     device=DEVICE
 )
 

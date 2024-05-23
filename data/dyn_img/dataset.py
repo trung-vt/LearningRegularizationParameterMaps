@@ -39,6 +39,8 @@ class DynamicImageDenoisingDataset(Dataset):
 				xf = np.load(os.path.join(sample_path, f"xf_scale_factor{scale_factor_str}.npy"))
 				xf = torch.tensor(xf, dtype=torch.float)
 				xf = xf.unsqueeze(0).unsqueeze(0) / 255
+				
+			print(f"xf shape: {xf.shape}")
 			
 			if patches_size is not None:
 				print(f"extracting patches of shape {patches_size}; strides {strides}")
@@ -96,6 +98,7 @@ class DynamicImageDenoisingDataset(Dataset):
 			xf.append(image_data)
 			
 		xf = np.stack(xf, axis=-1)
+		print(f"xf shape: {xf.shape}")
 		
 		scale_factor_str = str(self.scale_factor).replace('.','_')
 		np.save(os.path.join(sample_path, f"xf_scale_factor{scale_factor_str}.npy"), xf)

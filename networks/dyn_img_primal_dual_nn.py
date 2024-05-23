@@ -46,7 +46,7 @@ class DynamicImagePrimalDualNN(nn.Module):
             # the CNN-block to estimate the lambda regularization map
             # must be a CNN yielding a two-channeld output, i.e.
             # one map for lambda_cnn_xy and one map for lambda_cnn_t
-            self.cnn = cnn_block
+            self.cnn = cnn_block    # NOTE: This is actually the UNET!!! (At least in this project)
             self.up_bound = torch.tensor(up_bound)
 
         # number of terations
@@ -94,7 +94,7 @@ class DynamicImagePrimalDualNN(nn.Module):
             x = F.pad(x, pad_circ, mode="circular")
 
         # estimate parameter map
-        lambda_cnn = self.cnn(x)
+        lambda_cnn = self.cnn(x) # NOTE: The cnn is actually the UNET block!!! (At least in this project)
 
         # crop
         neg_pad = tuple([-pad[k] for k in range(len(pad))])

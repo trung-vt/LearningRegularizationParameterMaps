@@ -42,7 +42,8 @@ class ConvBlock(nn.Module):
                     bias=bias,
                     padding_mode=padding_mode,
                 ),
-                nn.LeakyReLU(),
+                nn.LeakyReLU(), # NOTE: We use LeakyReLU instead of ReLU!!!
+                # Can we try using ReLU instead of LeakyReLU?
             ]
         )
 
@@ -57,7 +58,8 @@ class ConvBlock(nn.Module):
                         bias=bias,
                         padding_mode=padding_mode,
                     ),
-                    nn.LeakyReLU(),
+                    nn.LeakyReLU(), # NOTE: We use LeakyReLU instead of ReLU!!!
+                    # Can we try using ReLU instead of LeakyReLU?
                 ]
             )
 

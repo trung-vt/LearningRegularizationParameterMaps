@@ -137,6 +137,7 @@ tmp/
 *.json
 *.html
 *.txt
+*.mat
 
 # MacOS
 ._*

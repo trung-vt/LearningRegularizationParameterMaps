@@ -5,3 +5,4 @@ scikit-image
 odl==0.7.0
 dival
 wget # for downloading the test data
+pillow

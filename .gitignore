@@ -147,3 +147,4 @@ tmp_test/
 tmp_TEST_test/
 tmp_train/
 train_dyn_img copy.py
+wandb/

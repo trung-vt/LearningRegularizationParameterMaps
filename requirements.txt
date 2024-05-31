@@ -1,9 +1,13 @@
 numpy==1.23.4
 matplotlib
-torch
-scikit-image
-odl==0.7.0
-dival
-wget # for downloading the test data
-pillow
-wandb
+torch       
+pillow      # for image loading
+tqdm        # for progress bars
+# torchvision
+# odl==0.7.0
+# dival
+# wget # for downloading the test data
+wandb       # for training process logging
+ipykernel   # for jupyter notebook
+scikit-learn
+scikit-image    # for SSIM metric

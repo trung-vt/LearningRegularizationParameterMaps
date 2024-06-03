@@ -10,7 +10,7 @@ class StaticImagePrimalDualNN(nn.Module):
     def __init__(
         self,
         T=128,
-        cnn_block=None,
+        unet_cnn_block=None,
         mode="lambda_cnn",
         up_bound=0,
         phase="training",
@@ -33,22 +33,11 @@ class StaticImagePrimalDualNN(nn.Module):
         # function for projecting
         self.ClipAct = ClipAct()
 
-        # if mode == "lambda_xyt":
-        #     # one single lambda for x,y and t
-        #     self.lambda_reg = nn.Parameter(torch.tensor([-1.5]), requires_grad=True)
-
-        # elif mode == "lambda_xy_t":
-        #     # one (shared) lambda for x,y and one lambda for t
-        #     self.lambda_reg = nn.Parameter(
-        #         torch.tensor([-4.5, -1.5]), requires_grad=True
-        #     )
-
         if mode == "lambda_cnn":
-        # elif mode == "lambda_cnn":
             # the CNN-block to estimate the lambda regularization map
             # must be a CNN yielding a two-channeld output, i.e.
             # one map for lambda_cnn_xy and one map for lambda_cnn_t
-            self.cnn = cnn_block
+            self.unet_cnn = unet_cnn_block
             self.up_bound = torch.tensor(up_bound)
         else:
             raise ValueError(f"Unknown mode: {mode}")
@@ -98,7 +87,7 @@ class StaticImagePrimalDualNN(nn.Module):
             x = F.pad(x, pad_circ, mode="circular")
 
         # estimate parameter map
-        lambda_cnn = self.cnn(x)
+        lambda_cnn = self.unet_cnn(x) # NOTE: The cnn is actually the UNET block!!! (At least in this project)
 
         # crop
         neg_pad = tuple([-pad[k] for k in range(len(pad))])
@@ -142,31 +131,7 @@ class StaticImagePrimalDualNN(nn.Module):
         tau = (1 / self.L) * torch.sigmoid(self.tau)  # \in (0,1/L)
         theta = torch.sigmoid(self.theta)  # \in (0,1)
 
-        # distinguish between the different cases
-        # TODO: No more time dimension for static image denoising!!!
-        # if self.mode == "lambda_xyt":
-            # lambda_reg = F.softplus(self.lambda_reg)  # \in (0,\infty)
-
-        # TODO: No more time dimension for static image denoising!!!
-        # elif self.mode == "lambda_xy_t":
-            # # get xy- and t-lambda
-            # lambda_reg_xy = torch.stack(2 * [self.lambda_reg[0]])
-            # # TODO: No more time dimension for static image denoising!!!
-            # # lambda_reg_t = self.lambda_reg[1].unsqueeze(0)
-
-            # # conatentate xy -and t-lambda
-            # lambda_reg = (
-            #     # torch.cat([lambda_reg_xy, lambda_reg_t])
-            #     torch.cat([lambda_reg_xy])
-            #     .unsqueeze(0)
-            #     .unsqueeze(-1)
-            #     .unsqueeze(-1)
-            #     .unsqueeze(-1)
-            # )
-            # lambda_reg = F.softplus(lambda_reg)
-
         if self.mode == "lambda_cnn":
-        # elif self.mode == "lambda_cnn":
             if lambda_map is None:
                 # estimate lambda reg from the image
                 lambda_reg = self.get_lambda_cnn(x)

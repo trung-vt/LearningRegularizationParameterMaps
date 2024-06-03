@@ -15,6 +15,7 @@ class DynamicImageStaticPrimalDualNN(nn.Module):
         up_bound=0,
         phase="training",
     ):
+        print(f"Running: {DynamicImageStaticPrimalDualNN.__name__}")
         super(DynamicImageStaticPrimalDualNN, self).__init__()
 
         # gradient operators and clipping function
@@ -80,7 +81,10 @@ class DynamicImageStaticPrimalDualNN(nn.Module):
         # seems to be important in order not to create "holes" in the
         # lambda_maps in t-direction
         npad_xy = 4
-        npad_t = 8
+        # npad_t = 8
+        npad_t = 0 # TODO: Time dimension should not be necessary for single image input.
+        # I changed the npad_t to 0 so that I can run on single image input without change the 3D type config. It seems that the number of frames must be greater than npad_t?
+
         pad = (npad_t, npad_t, npad_xy, npad_xy, npad_xy, npad_xy)
 
         if self.phase == "training":

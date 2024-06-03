@@ -106,6 +106,7 @@ celerybeat.pid
 .venv
 env/
 venv/
+venv-2/
 ENV/
 env.bak/
 venv.bak/
@@ -149,3 +150,11 @@ tmp_train/
 train_dyn_img copy.py
 wandb/
 tmp_2/
+
+CT/
+
+*.npy
+
+scripts/dyn_img_static/tmp/
+scripts/dyn_img_static/tmp_2/
+SIDD_Small_sRGB_Only/

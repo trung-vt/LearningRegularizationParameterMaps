@@ -107,7 +107,13 @@ class Encoder(nn.Module):
         elif dim == 2:
             pool_op = nn.MaxPool2d(2)
         elif dim == 3:
-            pool_op = nn.MaxPool3d(2)
+            # pool_op = nn.MaxPool3d(2)
+            # Change back after making the code working with 2D MaxPool
+            # TODO: Can I make it so that if there is only a single image then it reduces the pool size to 1?
+            # pool_op = nn.MaxPool3d(2)
+            pool_op = nn.MaxPool3d(1) # TODO: Change back after making the code working with 2D MaxPool
+        else:
+            raise ValueError(f"Unsupported dim value: {dim}")
 
         self.pool = pool_op
 

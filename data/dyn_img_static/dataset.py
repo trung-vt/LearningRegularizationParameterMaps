@@ -9,7 +9,7 @@ from PIL import Image
 from .data_utils import extract_patches_3d
 
 
-class DynamicImageDenoisingDataset(Dataset):
+class DynamicImageStaticDenoisingDataset(Dataset):
 	
 	def __init__(
 		self, 
@@ -29,16 +29,25 @@ class DynamicImageDenoisingDataset(Dataset):
 
 		xf_list = []
   
-		for k, img_id in enumerate(ids):
+		k = 0
+		# for k, img_id in enumerate(ids):
+		for folder in os.listdir(data_path):
+			img_id = folder[:4]	# The first 4 characters of folder name is the image id (0001, 0002, ..., 0200)
+			if img_id not in ids:
+				continue
+			k += 1
 			print(f'loading image id {img_id}, {k}/{len(ids)}')
-			sample_path = os.path.join(data_path, f"MOT17-{img_id}")
+			# sample_path = os.path.join(data_path, f"MOT17-{img_id}")
+			sample_path = os.path.join(data_path, folder)
 			if extract_data:
-				xf = self.create_dyn_img(sample_path).unsqueeze(0) / 255
+				xf = self.create_dyn_img(sample_path)
+				xf = xf.unsqueeze(0) / 255
 			else:
 				scale_factor_str = str(self.scale_factor).replace('.','_')
 				xf = np.load(os.path.join(sample_path, f"xf_scale_factor{scale_factor_str}.npy"))
 				xf = torch.tensor(xf, dtype=torch.float)
-				xf = xf.unsqueeze(0).unsqueeze(0) / 255
+				xf = xf.unsqueeze(0)	# Is it necessary???
+				xf = xf.unsqueeze(0) / 255
 				
 			print(f"xf shape: {xf.shape}")
 			
@@ -62,6 +71,12 @@ class DynamicImageDenoisingDataset(Dataset):
 		
 		#sort TV in descending order --> xfp_tv_ids[0] is the index of the patch with the most motion
 		self.samples_weights = xfp_tv
+
+		# TODO: Disable before real deployment! 
+		# For testing with still images only: Change the values in samples_weights to be a range of integers from 0 to len(samples_weights)
+		# Unless I do this, when I run on a set of identical images, it will give me an error:
+		# RuntimeError: invalid multinomial distribution (encountering probability entry < 0)
+		self.samples_weights = torch.arange(len(self.samples_weights))
 		
 		self.xf = xf
 		self.len = xf.shape[0]
@@ -80,12 +95,13 @@ class DynamicImageDenoisingDataset(Dataset):
 
 	def create_dyn_img(self, sample_path: str):
 		
-		files_path = os.path.join(sample_path, "img1")
+		files_path = sample_path
 		files_list = os.listdir(files_path)
 		xf = []
 
 		for file in files_list:
-			
+			if not file.startswith('GT'):
+				continue
 			image = Image.open(os.path.join(files_path, file))
 			
 			#resize

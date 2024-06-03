@@ -2,7 +2,10 @@
 import sys
 import os
 
+print("Importing PyTorch... (This may take a while)")
 import torch
+print("PyTorch version: ", torch.__version__)
+
 from torch.utils.data import WeightedRandomSampler
 
 from helper_functions import train_epoch, validate_epoch
@@ -16,7 +19,10 @@ from networks.unet import UNet
 TRAINING = [2, 4, 5, 9, 10]
 VALIDATION = [11, 13]
 
-DEVICE = torch.device("cuda:0")
+# TODO: Try add alternatives like MPS and CPU
+DEVICE_NAME = "cuda:0"
+DEVICE = torch.device(DEVICE_NAME)
+# DEVICE = device(DEVICE_NAME)
 
 # %%
 # Static Image Denoising Dataset [TODO: Choose a dataset]
@@ -27,16 +33,16 @@ DEVICE = torch.device("cuda:0")
 # [TODO: Do we have to extract data?] Make sure to set extract_data to True when loading the dataset for the first time to create the static images???.
 # Once the data for a specific scaling factor has been created the flag can be set to False.
 dataset_train = StaticImageDenoisingDataset(
-    data_path="../../data/static_img/tmp",
+    data_path="../../data/static_img/tmp/SIDD_Small_sRGB_Only/Data",
     # ids=TRAINING,     # paper
-    ids=[2],            # testing
-    scale_factor=0.5,
+    ids=["0064"],            # testing
+    scale_factor=0.25,
     sigma=[0.1, 0.3],
     strides=[192, 192, 16],
     patches_size=[192, 192, 32],
     # (!) Make sure to set the following flag to True when loading the dataset for the first time.
-    # extract_data=True,
-    extract_data=False,
+    force_recreate_data=True,
+    # force_recreate_data=False,
     device=DEVICE
 )
 
@@ -46,16 +52,16 @@ dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size=1, samp
 
 # Validation dataset (see note above)
 dataset_valid = StaticImageDenoisingDataset(
-    data_path="../../data/static_img/tmp",
+    data_path="../../data/static_img/tmp/SIDD_Small_sRGB_Only/Data",
     # ids=VALIDATION,   # paper
-    ids=[11],           # testing
-    scale_factor=0.5,   # Make the width and height of the images half of the original size???
+    ids=["0065"],           # testing
+    scale_factor=0.25,   # Make the width and height of the images half of the original size???
     sigma=[0.1, 0.3],   # Variance range in Gaussian noise added to the data???
     strides=[192, 192, 16],     # Non-overlapping patches?
     patches_size=[192, 192, 32],
     # (!) Make sure to set the following flag to True when loading the dataset for the first time.
-    # extract_data=True,      # Download data from internet???
-    extract_data=False,
+    force_recreate_data=True,
+    # force_recreate_data=False,
     device=DEVICE
 )
 
@@ -71,7 +77,7 @@ unet = UNet(dim=2, n_ch_in=1).to(DEVICE) # TODO: Will this limit to 2 spatial di
 
 # Constrct primal-dual operator with nn
 pdhg = StaticImagePrimalDualNN(
-    cnn_block=unet, 
+    unet_cnn_block=unet, 
     T=128,
     phase="training",
     up_bound=0.5,
@@ -107,7 +113,7 @@ for epoch in range(num_epochs):
             print("VALIDATION LOSS: ", validation_loss)
             torch.save(pdhg.state_dict(), f"{model_states_dir}/epoch_{str(epoch).zfill(3)}.pt")
 
-    torch.cuda.empty_cache()
+    torch.cuda.empty_cache() # TODO: For performance purposes?
 
 # Save the entire model
 torch.save(pdhg, f"./tmp/model.pt")

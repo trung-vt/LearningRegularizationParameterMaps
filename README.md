@@ -26,6 +26,14 @@ Record data
 
 - Multiple $T_{\text{train}}$ values (8, 16, ..., 256) against multiple $T_{\text{test}}$ values (8, 16, ..., 4096)
 
+
+# Things to mention
+
+## Data
+
+- Does the choice of images affect the results?
+
+
 # Related works
 
 - Denoising Diffusion Model

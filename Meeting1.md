@@ -2,6 +2,9 @@
 
 ![meeting-1.jpg](meeting-1.jpg)
 
+- TODO: Use variable noise [0.1, 0.5] for training!
+    - Why not just generate for all levels of noise 
+
 
 - Draw line plots of single lambda values
 

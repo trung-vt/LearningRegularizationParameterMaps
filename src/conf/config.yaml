@@ -8,10 +8,23 @@ paths:
   data_path: src/data/
   result_path: src/results/
 
+dataloader_params:
+  scale_factor: 0.5
+  gaussian_noise_level_sigma: [0.1, 0.5]
+  stride: [192, 192, 1]
+  patch_size: [192, 192, 1]
+  extract_data: True
+
+device: 'cuda'
+
 params:
   epoch_count: 2
+
+  optimizer: 'Adam'
   learning_rate: 1e-4
+
   batch_size: 1
   T_train: 8
   T_test: 8
   up_bound: 0.8
+  loss_function: 'MSE'

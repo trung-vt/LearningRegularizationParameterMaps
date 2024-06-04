@@ -1,0 +1,39 @@
+data:
+  gaussian_noise_sigma: NA
+  kernel_size: 256
+  scale_factor: 1
+  dataset: baby_turtle
+  train_path:
+    noisy: turtle noisy.png
+    clean: turtle clean.png
+  val_path:
+    noisy: turtle noisy.png
+    clean: turtle clean.png
+
+outputs:
+  model_path: model_turtle_epoch_50000.pt
+  log_path: model_turtle_log
+
+unet_construction:
+  num_encoding_blocks: 3
+  num_decoding_blocks: 2
+  bottle_neck: none
+  first_encoding_block: 64
+  conv_kernel_size: 3
+  max_pool_kernel_size: none
+  activation: LeakyReLU
+  leaky_relu_slope: 0.1
+
+pdhg:
+  up_bound: 0
+  T_train: 128
+
+training:
+  learning_rate: 1e-4
+  batch_size: 1
+  num_epochs: 1_000_000
+  optimizer: Adam
+  loss_function: MSELoss
+
+log:
+  save_epoch: 20

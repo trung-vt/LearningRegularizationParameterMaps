@@ -1,0 +1,17 @@
+files:
+  test_data:
+  train_data:
+
+paths:
+  model_path: src/models/
+  log_path: src/logs/
+  data_path: src/data/
+  result_path: src/results/
+
+params:
+  epoch_count: 2
+  learning_rate: 1e-4
+  batch_size: 1
+  T_train: 8
+  T_test: 8
+  up_bound: 0.8

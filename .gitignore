@@ -158,3 +158,5 @@ CT/
 scripts/dyn_img_static/tmp/
 scripts/dyn_img_static/tmp_2/
 SIDD_Small_sRGB_Only/
+
+.hydra/

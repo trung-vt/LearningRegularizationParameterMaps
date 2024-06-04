@@ -3,10 +3,7 @@ matplotlib
 torch       
 pillow      # for image loading
 tqdm        # for progress bars
-# torchvision
-# odl==0.7.0
-# dival
-# wget # for downloading the test data
+wget # for downloading the test data
 wandb       # for training process logging
 ipykernel   # for jupyter notebook
 scikit-learn

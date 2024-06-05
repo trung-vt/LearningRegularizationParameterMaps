@@ -1,10 +1,29 @@
-device: cpu
+project_name: image-denoising-chest_xray
+
+architecture:
+  model: PDHG-UNet
+  unet_size: 64_128_256-3_encode-2_decode-no_bottleneck
+  num_classes: 3
+  in_channels: 3
+  pretrained: True
+
+device: cuda
 
 data:
+  dataset: ChestXrayDataset
   base_dir: ../data/chest_xray
+  max_pixel_value: 255.0
 
 data_loader:
   batch_size: 1
+  noise_sigma:
+    min: 0.1
+    max: 0.5
+  scale_factor: 1
+  patch_size: 120
+  num_images: 10 # Test small first
+  # num_images: 100
+  is_multichannel: False
   transform:
     train:
       - name: Resize
@@ -43,16 +62,26 @@ data_loader:
           mean: [0.485, 0.456, 0.406]
           std: [0.229, 0.224, 0.225]
   shuffle: True
-  num_workers: 4
+  num_workers: 1
   manual_seed: 42
 
 train_params:
-  epochs: 10
+  epochs: 2 # Test small first
+  # epochs: 100
   learning_rate: 0.001
+  optimizer:
+    name: Adam
+    params:
+      betas: [0.9, 0.999]
+      eps: 1e-08
+  criterion: MSE
   momentum: 0.9
   weight_decay: 0.0001
+  up_bound: 0
+  T: 128
+  activation: LeakyReLU
 
 save_model:
   epochs: 2
-  model_dir: ../models
-  model_name: chest_xray_model.pth
+  dir: models
+  name: chest_xray

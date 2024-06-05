@@ -162,4 +162,5 @@ SIDD_Small_sRGB_Only/
 .hydra/
 
 chest_x_rays/
+chest_xray/
 bone_fracture/

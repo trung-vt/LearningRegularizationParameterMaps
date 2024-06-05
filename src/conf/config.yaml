@@ -1,30 +1,58 @@
-files:
-  test_data:
-  train_data:
+device: cpu
 
-paths:
-  model_path: src/models/
-  log_path: src/logs/
-  data_path: src/data/
-  result_path: src/results/
+data:
+  base_dir: ../data/chest_xray
 
-dataloader_params:
-  scale_factor: 0.5
-  gaussian_noise_level_sigma: [0.1, 0.5]
-  stride: [192, 192, 1]
-  patch_size: [192, 192, 1]
-  extract_data: True
-
-device: 'cuda'
-
-params:
-  epoch_count: 2
-
-  optimizer: 'Adam'
-  learning_rate: 1e-4
-
+data_loader:
   batch_size: 1
-  T_train: 8
-  T_test: 8
-  up_bound: 0.8
-  loss_function: 'MSE'
+  transform:
+    train:
+      - name: Resize
+        params:
+          size: [256, 256]
+      - name: RandomHorizontalFlip
+        params:
+          p: 0.5
+      - name: RandomVerticalFlip
+        params:
+          p: 0.5
+      - name: RandomRotation
+        params:
+          degrees: 45
+      - name: ToTensor
+      - name: Normalize
+        params:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+    val:
+      - name: Resize
+        params:
+          size: [256, 256]
+      - name: ToTensor
+      - name: Normalize
+        params:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+    test:
+      - name: Resize
+        params:
+          size: [256, 256]
+      - name: ToTensor
+      - name: Normalize
+        params:
+          mean: [0.485, 0.456, 0.406]
+          std: [0.229, 0.224, 0.225]
+  shuffle: True
+  num_workers: 4
+  manual_seed: 42
+
+train_params:
+  epochs: 10
+  learning_rate: 0.001
+  momentum: 0.9
+  weight_decay: 0.0001
+
+save_model:
+  epochs: 2
+  model_dir: ../models
+  model_name: chest_xray_model.pth

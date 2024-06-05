@@ -32,7 +32,7 @@ Record data
 ## Data
 
 - Does the choice of images affect the results?
-
+  - For example, if we train on images of texts, the model might train kernels to recognise the letters. When using this on natural images, the model might try to find letter-like patterns even if they are not there.
 
 # Related works
 

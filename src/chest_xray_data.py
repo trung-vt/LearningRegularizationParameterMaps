@@ -28,16 +28,13 @@ class ChestXRayDataset(Dataset):
     def __getitem__(self, idx):
         img_name = os.path.join(self.images_folder, self.images[idx])
         image = Image.open(img_name)
+        
         if self.transform:
             image = self.transform(image)
         else:
             image = self.default_transform(image)
+        
         noisy_image = self.add_noise(image, self.get_variable_noise())
-
-        # Add time dimension. TODO: This is for legacy code. Fix this later
-        noisy_image = noisy_image.unsqueeze(-1)
-        image = image.unsqueeze(-1)
-
         return noisy_image.to(self.device), image.to(self.device)
     
     def default_transform(self, image):
@@ -46,9 +43,16 @@ class ChestXRayDataset(Dataset):
         image = self.extract_square(image, 120)
         if len(image.shape) == 2:
             image = image.unsqueeze(0) # Add channel dimension to the front. From (64, 64) to (1, 64, 64)
-        # # If single channel, convert to 3 channels by repeating the same channel 3 times
-        # if image.shape[0] == 1:
-        #     image = image.repeat(3, 1, 1)
+
+        # TODO: Add channels for testing with known working autoencoder code only. Remove this later
+        # If single channel, convert to 3 channels by repeating the same channel 3 times
+        if image.shape[0] == 1:
+            image = image.repeat(3, 1, 1)
+        assert len(image.shape) == 3, f"Expected 3D image tensor, got {image.shape}"
+
+        # # TODO: Add time dimension for working with legacy dynamic image code only. Remove this later
+        # image = image.unsqueeze(-1)
+
         return image
     
     def extract_square(self, image, size):

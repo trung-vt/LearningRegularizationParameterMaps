@@ -6,7 +6,7 @@ import torch.multiprocessing as mp
 # Set the start method as soon as the script starts
 mp.set_start_method('spawn', force=True)
 
-import wandb # Optional, for logging
+import wandb # for logging
 
 import os
 from hydra import initialize, compose
@@ -20,20 +20,7 @@ import time
 import warnings
 warnings.filterwarnings("ignore")
 
-# import importlib # reload custom modules when necessary
-
-import eda, chest_xray_data, net_theta, pdhg_solver, full_pdhg_net
-# import train_net
-
-# def reload_custom_modules():
-#     custom_modules = [
-#         eda, chest_xray_data, net_theta, pdhg_solver, full_pdhg_net
-#         # train_net, 
-#     ]
-#     for module in custom_modules:
-#         importlib.reload(module)
-
-# reload_custom_modules()
+import chest_xray_data, net_theta, full_pdhg_net
 
 def load_config():
     # https://gist.github.com/bdsaglam/586704a98336a0cf0a65a6e7c247d248?permalink_comment_id=4478589#gistcomment-4478589
@@ -101,6 +88,7 @@ def evaluate(model, val_loader, criterion, device="cuda", is_multichannel=False)
     running_loss = 0.0
     val_ssim = 0.0
     val_psnr = 0.0
+    num_batches = len(val_loader)
     with torch.no_grad():
         for i, data in enumerate(val_loader):
             noisy_image, clean_image = data
@@ -117,9 +105,9 @@ def evaluate(model, val_loader, criterion, device="cuda", is_multichannel=False)
             val_ssim += ssim
             val_psnr += psnr
 
-        val_loss = running_loss / len(val_loader)
-        val_ssim = val_ssim / len(val_loader)
-        val_psnr = val_psnr / len(val_loader)
+        val_loss = running_loss / num_batches
+        val_ssim = val_ssim / num_batches
+        val_psnr = val_psnr / num_batches
         return val_loss, val_ssim, val_psnr
 
 
@@ -135,6 +123,7 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, is_multic
     running_loss = 0.0
     train_ssim = 0.0
     train_psnr = 0.0
+    num_batches = len(train_loader)
     for i, data in enumerate(tqdm(train_loader)):
         noisy_image, clean_image = data
         optimizer.zero_grad()
@@ -153,9 +142,9 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, is_multic
         train_ssim += ssim
         train_psnr += psnr
 
-    train_loss = running_loss / len(train_loader)
-    train_ssim = train_ssim / len(train_loader.dataset)
-    train_psnr = train_psnr / len(train_loader.dataset)
+    train_loss = running_loss / num_batches
+    train_ssim = train_ssim / num_batches
+    train_psnr = train_psnr / num_batches
     return train_loss, train_ssim, train_psnr
     
 
@@ -165,6 +154,7 @@ def test(model, test_loader, criterion, device="cuda", is_multichannel=False):
     running_loss = 0.0
     test_ssim = 0.0
     test_psnr = 0.0
+    num_batches = len(test_loader)
     with torch.no_grad():
         for i, data in enumerate(test_loader):
             noisy_image, clean_image = data
@@ -181,20 +171,39 @@ def test(model, test_loader, criterion, device="cuda", is_multichannel=False):
             test_ssim += ssim
             test_psnr += psnr
 
-        test_loss = running_loss / len(test_loader)
-        test_ssim = test_ssim / len(test_loader.dataset)
-        test_psnr = test_psnr / len(test_loader.dataset)
+        test_loss = running_loss / num_batches
+        test_ssim = test_ssim / num_batches
+        test_psnr = test_psnr / num_batches
         return test_loss, test_ssim, test_psnr
 
 
 
 def get_metrics(denoised_image, clean_image, is_multichannel=False):
-    # 5D to 2D. For example, (1, 1, 256, 256, 1) -> (256, 256)
-    denoised_image = denoised_image.squeeze(0).squeeze(0).squeeze(-1)
-    clean_image = clean_image.squeeze(0).squeeze(0).squeeze(-1)
+    print(f"denoised_image.shape: {denoised_image.shape}")
+    print(f"clean_image.shape: {clean_image.shape}")
+
+    # Expect 4 or 5 dimensions
+    assert len(denoised_image.shape) in [4, 5], f"Expected 4D or 5D tensor, got {len(denoised_image.shape)}D denoised image tensor"
+    assert len(clean_image.shape) in [4, 5], f"Expected 4D or 5D tensor, got {len(clean_image.shape)}D clean image tensor"
+
+    # The dimensions are batch_size, channels, height, width (and maybe time)
+    # We need to remove the batch_size and channel dimensions
+    denoised_image = denoised_image.squeeze(0).squeeze(0)
+    clean_image = clean_image.squeeze(0).squeeze(0)
+    print(f"denoised_image.shape: {denoised_image.shape}")
+    print(f"clean_image.shape: {clean_image.shape}")
+
+    # If we have time dimension, remove it too
+    if len(denoised_image.shape) == 3:
+        denoised_image = denoised_image.squeeze(-1)
+        clean_image = clean_image.squeeze(-1)
+    print(f"denoised_image.shape: {denoised_image.shape}")
+    print(f"clean_image.shape: {clean_image.shape}")
 
     assert denoised_image.shape == clean_image.shape, f"Shape mismatch: denoised_image_shape={denoised_image.shape} does not match clean_image_shape={clean_image.shape}"
 
+    print(f"denoised_image.shape: {denoised_image.shape}")
+    print(f"clean_image.shape: {clean_image.shape}")
     assert len(denoised_image.shape) == 2, f"Expected 2D image, got {len(denoised_image.shape)}D denoised image"
     assert len(clean_image.shape) == 2, f"Expected 2D image, got {len(clean_image.shape)}D clean image"
     
@@ -211,11 +220,11 @@ def get_metrics(denoised_image, clean_image, is_multichannel=False):
     return ssim, psnr
 
 
-def log(loss, ssim, psnr, stage, wandb=None):
-    if wandb:
-        wandb.log({f"{stage}_loss": loss})
-        wandb.log({f"{stage}_ssim": ssim})
-        wandb.log({f"{stage}_psnr": psnr})
+def log(loss, ssim, psnr, stage, wandb_logger=None):
+    if wandb_logger:
+        wandb_logger.log({f"{stage}_loss": loss})
+        wandb_logger.log({f"{stage}_ssim": ssim})
+        wandb_logger.log({f"{stage}_psnr": psnr})
 
 
 
@@ -231,11 +240,14 @@ def main():
     with torch.no_grad():
         torch.cuda.empty_cache()
 
-    # model = net_theta.get_example_autoencoder(device=config.device)
-    model = full_pdhg_net.DynamicImageStaticPrimalDualNN(
-        T=config.train_params.T,
-        cnn_block=net_theta.UNet(),
-    )
+    model = net_theta.get_example_autoencoder(device=config.device)
+    # model = full_pdhg_net.DynamicImageStaticPrimalDualNN(
+    #     T=config.train_params.T,
+    #     cnn_block=net_theta.UNet(),
+    #     up_bound=config.train_params.up_bound,
+    #     phase="training",
+    #     device=config.device,
+    # )
 
     loss_function = config.train_params.criterion
     optimizer_name = config.train_params.optimizer.name
@@ -256,7 +268,7 @@ def main():
 
         train_loss, train_ssim, train_psnr = train_one_epoch(model, train_loader, criterion, optimizer, device, is_multichannel)
         log(train_loss, train_ssim, train_psnr, "train", wandb_logger)
-        print(f"Epoch {epoch+1}, Loss: {train_loss}, SSIM: {train_ssim}, PSNR: {train_psnr}")
+        print(f"Epoch {epoch+1}, Train Loss: {train_loss}, SSIM: {train_ssim}, PSNR: {train_psnr}")
 
         if (epoch + 1) % save_model_every == 0:
             time_str = time.strftime("%Y_%m_%d-%H_%M_%S")

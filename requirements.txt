@@ -9,3 +9,4 @@ ipykernel   # for jupyter notebook
 scikit-learn
 scikit-image    # for SSIM metric
 hydra-core  # for configuration management
+pyyaml      # for configuration management

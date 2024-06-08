@@ -161,10 +161,9 @@ SIDD_Small_sRGB_Only/
 
 .hydra/
 
-chest_x_rays/
-chest_xray/
-bone_fracture/
+data/chest_xray/
+data/chest_ct/
+data/bone_fracture_xray/
 data/turtle/
-
 data/sidd/
 data/box_turtle/

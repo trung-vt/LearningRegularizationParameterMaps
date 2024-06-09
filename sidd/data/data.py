@@ -1,7 +1,15 @@
+import time
+# NOTE: Importing torch the first time will always take a long time!
+print(f"Importing torch in {__file__} ...")
+import_torch_start_time = time.time() 
+import torch
+print(f"Importing torch took {time.time() - import_torch_start_time} seconds")
+
 import os
 import random
 from PIL import Image
 from tqdm import tqdm # progress bar
+import numpy as np
 
 def get_a_random_location(im_shape: tuple, patch_shape: tuple) -> tuple:
     im_h, im_w = im_shape
@@ -36,14 +44,60 @@ def get_random_patches(input_image: Image, n_patches: int, patch_size=(256, 256)
         x, y = get_a_random_location(input_image.size, patch_size)
         patch = get_a_patch(input_image, (x, y), patch_size)
         patches.append(patch)
-
+    
     return patches
 
 
-def save_patches(patches: list, output_folder: str, output_file: str) -> None:
-    os.makedirs(output_folder, exist_ok=True)
+def add_gaussian_noise(image: Image, sigma_min: int, sigma_max: int) -> Image:
+    image_np = np.array(image)
+
+    xf = torch.tensor(image_np, dtype=torch.float)
+
+    xf /= 255.0
+
+    std = torch.std(xf)
+    mu = torch.mean(xf)
+
+    x_centred = (xf  - mu) / std
+
+    sigma = sigma_min + torch.rand(1) * (sigma_max - sigma_min)
+
+    x_centred += sigma * torch.randn(xf.shape, dtype = xf.dtype)
+
+    xnoise = std * x_centred + mu
+
+    xnoise *= 255.0
+
+    xnoise_np = xnoise.to("cpu").detach().numpy().astype('uint8')
+
+    del std, mu, x_centred, xnoise, xf
+
+    # clip the values to [0, 255]
+    xnoise_np = np.clip(xnoise_np, 0, 255)
+
+    noisy_image = Image.fromarray(xnoise_np)
+
+    return noisy_image
+
+
+def save_patches(patches: list, output_folder: str, output_file: str, min_sigma=0.1, max_sigma=0.5) -> None:
     for i, patch in enumerate(patches):
-        patch.save(f"{output_folder}/{output_file}_{i}.PNG")
+        folder = f"{output_folder}/{output_file}_{i}"
+        os.makedirs(folder, exist_ok=True)
+
+        # patch_channels = patch.split()
+        # noisy_patch_channels = []
+        # for j, color in enumerate(["R", "G", "B"]):
+        #     patch_single_channel = patch_channels[j]
+        #     noisy_patch_single_channel = add_gaussian_noise(patch_single_channel, min_sigma, max_sigma)
+        #     noisy_patch_channels.append(noisy_patch_single_channel)
+
+        # noisy_patch = Image.merge("RGB", noisy_patch_channels)
+        
+        noisy_patch = add_gaussian_noise(patch, min_sigma, max_sigma)
+        
+        patch.save(f"{folder}/clean.png")
+        noisy_patch.save(f"{folder}/noisy.png")
 
 
 def get_files_with_condition(outer_path: str, condition) -> list:
@@ -65,7 +119,7 @@ def get_sidd_files(outer_path: str, type: str, end: str = "PNG") -> list:
 
 def get_and_save_patches(
         input_path: str, output_path: str, type="GT",  # type="GT" or "NOISY
-        n_patches=32, patch_size=(256, 256),
+        n_patches=32, patch_size=(256, 256), min_sigma=0.1, max_sigma=0.5,
         rand_seed=97) -> None:
     
     os.makedirs(output_path, exist_ok=True) # Create output folder if it doesn't exist
@@ -76,6 +130,7 @@ def get_and_save_patches(
     sidd_files = get_sidd_files(input_path, type)
     for file in tqdm(sidd_files):
         image = Image.open(file)
+        image = image.convert("L") # Convert to grayscale
         patches = get_random_patches(image, n_patches, patch_size)
         output_file = file.split("/")[-1].split(".")[0]
-        save_patches(patches, output_path, output_file)
+        save_patches(patches, output_path, output_file, min_sigma, max_sigma)

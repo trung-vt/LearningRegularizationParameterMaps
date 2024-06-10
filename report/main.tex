@@ -250,17 +250,19 @@ The TV method works by finding the image that has the smallest total variation a
 The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
 By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image.
 
+For a image $I \in \mathbb{R}^{w \times h}$,  $w, h \in \mathbb{N}$, we can represent the matrix $I$ with a vector $\mathbf{x} \in \mathbb{R}^n$ where $n = w \times h$.
+
 Denoising problems can be described as 
 
 \begin{equation}
   \mathbf{z} = \mathbf{x}_{\text{true}} + \mathbf{e}
 \end{equation}
   
-where $\mathbf{x}_{\text{true}} \in V^n$ with $V \in \mathbb{R}$ is 
+where $\mathbf{x}_{\text{true}} \in \mathbb{R}^n$ is 
 the object to be imaged, 
 % the "true"/"clean" image,
 % denoised image
-$\mathbf{e} \in V^n$ denotes sopme random noise component, and $\mathbf{z} \in V^n$ represents 
+$\mathbf{e} \in \mathbb{R}^n$ denotes sopme random noise component, and $\mathbf{z} \in \mathbb{R}^n$ represents 
 the measured data.
 % the noisy image.
 The goal is to recover $\mathbf{x}_{\text{true}}$ or at least a good enough reconstruction given $\mathbf{z}$.
@@ -289,12 +291,12 @@ The total variation of an image can be calculated using the following formula:
   \mathit{R}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
 \end{equation}
 
-where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda > 0$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
+where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
 
 
 This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and Sobel. 
-We can treat $\mathbf{x}$ as a matrix and calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image.
-Let $I$ represent $\mathbf{x}$, then:
+It is more convenient to use the notation $I$ to represent the image as a matrix so we can define the gradient.
+We calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. The following is the formula for the forward gradient:
 
 \begin{equation}
   \| \nabla \mathbf{x} \|_1 = \text{TV}(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
@@ -315,7 +317,7 @@ Note that, we can move $\lambda$ inside the norm, so the regularisation term can
   \end{aligned}
 \end{equation}
 
-We can see that the regularisation parameter needs not to be a scalar $\lambda$, but can be a matrix $\Lambda$.
+We can see that the regularisation parameter needs not to be a scalar $\lambda$, but can be a diagonal matrix $\Lambda \in \mathbb{R}^{n}$.
 
 \begin{equation}
   \mathit{R}(\mathbf{x}) = \| \Lambda \nabla \mathbf{x} \|_1

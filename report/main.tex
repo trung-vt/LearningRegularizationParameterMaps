@@ -181,11 +181,14 @@
     \label{fig:enter-label}
 \end{figure}
 
-\section{Abstract}
+\begin{abstract}
+
 
 In this thesis we will describe the theory and application of the total variational (TV) method to image denoising. 
 We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
 We will then present the results of the method on a few different datasets.
+\end{abstract}
+
 
 % \section{Overview}
 
@@ -242,8 +245,13 @@ After training with many examples, the U-Net can learn to predict the regularisa
 
 Denoising problems can be described as 
 
-\[
-  \mathbf{z} = \mathbf{x}
+\begin{equation}
+  \mathbf{z} = \mathbf{x}_{\text{true}} + \mathbf{e}
+\end{equation}
+  
+where $\mathbf{x}_{\text{true}} \in V^n$ with $V \in \mathbb{R}$ is the object to be imaged, $\mathbf{e} \in V^n$ denotes sopme random noise component, and $\mathbf{z} \in V^n$ represents the measured data.
+The goal is to recover $\mathbf{x}_{\text{true}}$ or at least a good enough reconstruction given $\mathbf{z}$.
+
 
 Denoising problems can be described as
 

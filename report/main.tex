@@ -252,6 +252,18 @@ Denoising problems can be described as
 where $\mathbf{x}_{\text{true}} \in V^n$ with $V \in \mathbb{R}$ is the object to be imaged, $\mathbf{e} \in V^n$ denotes sopme random noise component, and $\mathbf{z} \in V^n$ represents the measured data.
 The goal is to recover $\mathbf{x}_{\text{true}}$ or at least a good enough reconstruction given $\mathbf{z}$.
 
+A prominent approach is to formulate the reconstruction as a minimisation problem:
+
+\begin{equation}
+  \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathit{R}(\mathbf{x})
+\end{equation}
+
+where $d(\cdot, \cdot)$ is a data fidelity term and $\mathit{R}(\cdot)$ is a regularisation term.
+
+\begin{equation}
+  \mathbf{z} = \arg\min_{\mathbf{z}} \frac{1}{2} \|\mathbf{z} - \mathbf{y}\|^2 + \lambda R(\mathbf{z})
+\end{equation}
+
 
 Denoising problems can be described as
 

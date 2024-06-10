@@ -272,10 +272,10 @@ A prominent approach is to formulate the reconstruction as a minimisation proble
 % The total variational denoising method works by finding the image that minimises the following objective function:
 
 \begin{equation}
-  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathit{R}(\mathbf{x})
+  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}(\mathbf{x})
 \end{equation}
 
-where $d(\cdot, \cdot)$ is a data fidelity term and $\mathit{R}(\cdot)$ is a regularisation term.
+where $d(\cdot, \cdot)$ is a data fidelity term and $\mathcal{R}(\cdot)$ is a regularisation term.
 
 
 Here we will look at Gaussian noise. The data fidelity term appropriate for Gaussian noise is the square of the $\ell_2$ norm:
@@ -284,7 +284,7 @@ Here we will look at Gaussian noise. The data fidelity term appropriate for Gaus
   d(\mathbf{x}, \mathbf{z}) = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2
 \end{equation}
 
-The regularisation term $\mathit{R}(\cdot)$ is the total variation of the image, which is a measure of the amount of variation in the intensity of the image.
+The regularisation term $\mathcal{R}(\cdot)$ is the total variation of the image, which is a measure of the amount of variation in the intensity of the image.
 
 Let
 
@@ -298,7 +298,7 @@ $\nabla \mathbf{x}$ is a vector of partial derivatives of $\mathbf{x}$ with resp
 The total variation of an image can be calculated using the following formula:
 
 \begin{equation}
-  \mathit{R}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
+  \mathcal{R}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
 \end{equation}
 
 where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
@@ -320,7 +320,7 @@ Note that, we can move $\lambda$ inside the norm, so the regularisation term can
 % Write a aligned equation
 \begin{equation}
   \begin{aligned}
-    \mathit{R}(\mathbf{x}) 
+    \mathcal{R}(\mathbf{x}) 
     &= \lambda \| \nabla \mathbf{x} \|_1 \\
     &= \| \lambda \nabla \mathbf{x} \|_1 \\
     &= \text{TV}(\lambda I) \\
@@ -331,7 +331,7 @@ Note that, we can move $\lambda$ inside the norm, so the regularisation term can
 We can see that the regularisation parameter needs not to be a scalar $\lambda$, but can be a diagonal matrix $\Lambda \in \mathbb{R}^{n}$.
 
 \begin{equation}
-  \mathit{R}(\mathbf{x}) = \| \Lambda \nabla \mathbf{x} \|_1
+  \mathcal{R}(\mathbf{x}) = \| \Lambda \nabla \mathbf{x} \|_1
 \end{equation}
 
 

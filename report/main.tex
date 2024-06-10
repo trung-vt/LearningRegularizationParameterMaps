@@ -255,10 +255,39 @@ The goal is to recover $\mathbf{x}_{\text{true}}$ or at least a good enough reco
 A prominent approach is to formulate the reconstruction as a minimisation problem:
 
 \begin{equation}
-  \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathit{R}(\mathbf{x})
+  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathit{R}(\mathbf{x})
 \end{equation}
 
 where $d(\cdot, \cdot)$ is a data fidelity term and $\mathit{R}(\cdot)$ is a regularisation term.
+
+
+Here we will look at Gaussian noise. The data fidelity term appropriate for Gaussian noise is the square of the $\ell_2$ norm:
+
+\begin{equation}
+  d(\mathbf{x}, \mathbf{z}) = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2
+\end{equation}
+
+The regularisation term $\mathit{R}(\cdot)$ is the total variation of the image, which is a measure of the amount of variation in the intensity of the image.
+The total variation of an image can be calculated using the following formula:
+
+\begin{equation}
+  \mathit{R}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
+\end{equation}
+
+where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
+
+
+\begin{equation}
+  TV(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
+\end{equation}
+
+
+
+
+
+
+
+
 
 \begin{equation}
   \mathbf{z} = \arg\min_{\mathbf{z}} \frac{1}{2} \|\mathbf{z} - \mathbf{y}\|^2 + \lambda R(\mathbf{z})

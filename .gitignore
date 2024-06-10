@@ -173,3 +173,12 @@ sidd/models/
 sidd/results/
 model-chest_xray-2024_06_07_10_27_08/
 chest_xray/results/
+
+
+# latex artifacts
+*.bbl
+*.blg
+*fdb_latexmk
+*.pyg
+*.xml
+*.synctex.gz

@@ -182,3 +182,7 @@ chest_xray/results/
 *.pyg
 *.xml
 *.synctex.gz
+*.aux
+*.fls
+*.out
+*.bcf

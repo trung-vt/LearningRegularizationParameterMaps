@@ -1,6 +1,7 @@
 numpy==1.23.4
 matplotlib
 torch       
+torchvision # for transforming image to tensor
 pillow      # for image loading
 tqdm        # for progress bars
 wget # for downloading the test data
@@ -10,7 +11,8 @@ scikit-learn
 scikit-image    # for SSIM metric
 hydra-core  # for configuration management
 pyyaml      # for configuration management
-
+pandas
+seaborn
 
 pytorch-ignite # for faster PSNR and SSIM? 
 # https://pytorch.org/ignite/generated/ignite.metrics.PSNR.html

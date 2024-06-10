@@ -207,6 +207,35 @@ where $I$ is the denoised image, $I_{\text{noisy}}$ is the noisy image, and $||\
 The Wiener filter is a linear filter that works well for images that are corrupted by Gaussian noise.
 However, the Wiener filter does not work well for images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise.
 
+Before the advance of Neural networks, the total variational (TV) method was one of the most popular methods for image denoising.
+The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
+
+The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
+By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image \cite{rudin1992nonlinear}.
+
+The TV method is able to denoise images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise, and is able to produce high-quality denoised images \cite{rudin1992nonlinear}.
+
+Before the advance of neural networks, image denoising was done by hand-crafted methods such as the total variational (TV) method \cite{rudin1992nonlinear}.
+
+Since the arrival of neural networks, the U-Net has been the most popular method for image denoising.
+
+The U-Net is a type of neural network that is commonly used for image segmentation.
+The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
+The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
+
+The U-Net is able to learn to denoise images by training on a large dataset of noisy images and their corresponding clean images \cite{ronneberger2015u}.
+
+The U-Net is able to produce high-quality denoised images that are close to the ground truth images \cite{ronneberger2015u}.
+
+Here we combine the traditional TV method with the U-Net to produce a more efficient method for image denoising.
+
+The problem with TV method is that it is not clear how to choose the regularisation parameter $\lambda$.
+The U-Net can be used to find the regularisation parameter $\lambda$ more efficiently.
+After training with many examples, the U-Net can learn to predict the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
+
+
+
+
 
 
 \subsection{Total Variational Denoising}

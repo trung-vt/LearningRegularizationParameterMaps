@@ -1,0 +1,1418 @@
+\documentclass[12pt]{article}
+\usepackage{xeCJK}
+\usepackage{amssymb,tikz,pdftexcmds,xparse}
+\usepackage{url}
+\usepackage{titlesec}
+
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{graphicx}   % for trimming images
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning}
+
+% Adjust spacing for section
+\titlespacing*{\section}
+{0pt} % Left spacing
+{10pt} % Spacing before the section
+{4pt}  % Spacing after the section
+
+% Adjust spacing for subsection
+\titlespacing*{\subsection}
+{0pt} % Left spacing
+{8pt} % Spacing before the subsection
+{3pt}  % Spacing after the subsection
+
+% Adjust spacing for subsubsection
+\titlespacing*{\subsubsection}
+{0pt} % Left spacing
+{12pt} % Spacing before the subsubsection
+{1pt}  % Spacing after the subsubsection
+
+
+\tikzset{box/.style={
+    minimum size=0.225cm,
+    inner sep=0pt,
+    draw,
+  },  
+  insert mark/.style={
+    append after command={%
+         node[inner sep=0pt,#1]
+           at (\tikzlastnode.center){$\checkmark$}
+     }     
+  },
+  insert bad mark/.style={
+    append after command={%
+         [shorten <=\pgflinewidth,shorten >=\pgflinewidth]
+         (\tikzlastnode.north west)edge[#1](\tikzlastnode.south east)
+         (\tikzlastnode.south west)edge[#1](\tikzlastnode.north east)
+     }     
+  },
+}
+
+\makeatletter
+\NewDocumentCommand{\tikzcheckmark}{O{} m}{%
+  \ifnum\pdf@strcmp{#2}{mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,insert mark={#1},#1]{};%
+  \fi%
+  \ifnum\pdf@strcmp{#2}{bad mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,insert bad mark={#1},#1]{};%
+  \fi%
+  \ifnum\pdf@strcmp{#2}{no mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,#1]{};%
+  \fi%
+}
+\makeatother
+
+
+% Redefining maketitle
+\makeatletter
+\renewcommand{\maketitle}{
+  % \begin{center}
+    {\LARGE \@title \par}      % Title in large font
+    % \vspace{2mm}               % Space between title and author
+    % {\large \@subtitle \par}      % Subtitle in large (but smaller than title) font
+    % \vspace{2mm}               % Space between title and author
+    {\large \@author \par}     % Author in large (but smaller than title) font
+    % Date is removed, so no command for date here
+  % \end{center}
+  % \vspace{5mm}                 % Space after the title block
+}
+\makeatother
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{minted}
+
+% https://www.overleaf.com/learn/latex/Positioning_images_and_tables#Basic_positioning
+% To position the image to the centre
+\usepackage[export]{adjustbox}  
+
+\usepackage{xcolor}
+\usepackage{xparse}
+\usepackage{blindtext}
+\usepackage{hyperref}   % For hyperlinks
+
+\usemintedstyle{manni}
+
+\NewDocumentCommand{\codeword}{v}{%
+% \texttt{\textcolor{blue}{#1}}%
+\texttt{\textcolor{black}{#1}}%
+% \mint{html}|v|%
+}
+
+% \lstset{language=C,keywordstyle={\bfseries \color{blue}}}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  % language=Java,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2
+}
+
+\title{MTH786P Project - Diabetes Prediction}
+\author{Thanh Trung Vu - 230849442}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{biblatex}
+\addbibresource{references.bib}
+
+\begin{document}
+
+\setlength\parskip{0.5em plus 0.1em minus 0.2em}
+
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.3\linewidth]{images/QMUL logo.png}
+%     % \caption{Enter Caption}
+%     % \label{fig:enter-label}
+% \end{figure}
+
+% \vspace{-30pt}
+
+% \maketitle
+\begin{center}
+{\large \textbf{Graduation Project - Total Variational Image Denoising with U-Net}}
+
+{\large \textbf{Thanh Trung Vu - 230849442}}
+\end{center}
+
+% \vspace{-12pt}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.34\linewidth]{100-clean.png}
+    \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
+    \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
+    \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
+    \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\Lambda_\theta$ with PSNR = 34.29}
+    \label{fig:enter-label}
+\end{figure}
+
+% \begin{figure}[h]
+%         \centering
+%         \includegraphics[width=1\linewidth]{100-denoised_compare.png}
+%         \caption{SIDD example}
+%         \label{fig:enter-label}
+%     \end{figure}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{100-line_plots.png}
+    \caption{SIDD example: grid search}
+    \label{fig:enter-label}
+\end{figure}
+
+
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.34\linewidth]{images//chest_xray/100-clean.png}
+    \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
+    \includegraphics[width=0.34\linewidth]{images//chest_xray/100-psnr_35.99-lambda_0.02.png}
+    \includegraphics[width=0.34\linewidth]{images//chest_xray/100-lambda_map-psnr_37.26-ssim_0.95.png}
+    \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\Lambda_\theta$ with PSNR = 37.62}
+    \label{fig:enter-label}
+\end{figure}
+
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=1\linewidth]{images//chest_xray/chest_xray-denoised_compare.png}
+%     \caption{Chest X-ray example}
+%     \label{fig:enter-label}
+% \end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
+        \caption{Chest X-ray example - grid search}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+%     \includegraphics[width=0.6\linewidth]{images//chest_xray/output.png}
+% \begin{figure}
+%         \centering
+        \includegraphics[width=1\linewidth]{images//chest_xray/outputa.png}
+    %     \caption{Enter Caption}
+    %     \label{fig:enter-label}
+    % \end{figure}
+        \caption{Chest X-ray box plots}
+    \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{images//chest_xray/output3.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+
+\section{Test cases}
+
+\subsection{Tutle}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{images/tests/turtle clean.png}
+    \includegraphics[width=0.25\linewidth]{images/tests/turtle noisy.png}
+    \includegraphics[width=0.25\linewidth]{images/tests/turtle single lambda.png}
+    \includegraphics[width=0.25\linewidth]{images//tests/turtle_denoised_overfit.png}
+    \includegraphics[width=0.25\linewidth]{images/tests/turtle lambda map.png}
+    \includegraphics[width=0.25\linewidth]{images/tests/turtle lambda map graph.png}
+    \caption{turtle: clean; noisy; single $\lambda = 0.07$; lambda map $\mathbf{\Lambda}$}
+    \label{fig:enter-label}
+\end{figure}
+
+
+\subsection{Square}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.19\linewidth]{images/tests/square clean.png}
+    \includegraphics[width=0.19\linewidth]{images/tests/square noisy.png}
+    \includegraphics[width=0.19\linewidth]{images/tests/square tikhonov.png}
+    \includegraphics[width=0.19\linewidth]{images/tests/square TV single lambda.png}
+    \includegraphics[width=0.19\linewidth]{images/tests/square TGV single lambdas.png}
+    \caption{square: clean; noisy; Tikhonov; TV single $\lambda$; TGV single $\lambda_1$ and $\lambda_2$}
+    \label{fig:square_clean}
+\end{figure}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.5\linewidth]{images//chest_xray/box.png}
+%     \caption{Chest X-ray box plots}
+%     \label{fig:enter-label}
+% \end{figure}
+
+
+
+
+
+\section{Data}
+
+
+
+\url{https://openaccess.thecvf.com/content_CVPRW_2019/papers/NTIRE/Abdelhamed_NTIRE_2019_Challenge_on_Real_Image_Denoising_Methods_and_Results_CVPRW_2019_paper.pdf}
+
+Gaussian $\sigma$, the estimated range is [0.242, 11.507]
+in the space of [0, 255].
+
+The validation data consisted of 1280 noisy image blocks
+(i.e., croppings) form both raw-RGB and sRGB images,
+each block is 256×256 pixels. The blocks are taken from 40
+images, 32 blocks from each image (40 × 32 = 1280). All
+image blocks are combined in a single 4D array of shape
+[40, 32, 256, 256] where the four dimensions represent the
+image index, the index of the block within the image, the
+block height, and the block width, respectively. The blocks
+have the same number format as the training data. 
+
+The testing data consisted of 1280 noisy image blocks different from the validation block but following the same format
+as the validation data. Image metadata files were also provided for the 40 images from which the validation/testing
+data was extracted.
+
+
+
+
+\section{Experimental setups}
+
+I carried out a few experiments on a few different datasets:
+
+\subsection{Chest Xray data set}
+
+I used 3-block UNet 32-64-128-256. 
+
+Common settings:
+
+\begin{minted}[frame=single,
+               framesep=3mm,
+               linenos=true,
+               xleftmargin=21pt,
+               fontsize=\small,
+               tabsize=4]{Json}
+{
+    "resize_square": 256,
+    "min_sigma": 0.1,
+    "max_sigma": 0.5,
+    "batch_size": 1,
+    "random_seed": 42,
+
+    "in_channels": 1,
+    "out_channels": 2,
+    "init_filters": 32,
+    "n_blocks": 3,
+    "activation": "LeakyReLU",
+    "downsampling_kernel": (2, 2, 1),
+    "downsampling_mode": "max",
+    "upsampling_kernel": (2, 2, 1),
+    "upsampling_mode": "linear_interpolation",
+
+    "optimizer": "Adam",
+    "learning_rate": 1e-4,
+    "loss_function": "MSELoss",
+
+    "up_bound": 0,
+    
+    "device": "cuda:0",
+
+    "wandb_mode": "online",
+    "save_epoch_wandb": 10_000,
+    "save_epoch_local": 10,
+    "save_dir": "tmp_2",
+}
+\end{minted}
+
+
+\subsubsection{Experiment 1 (ethereal-tree-30)}
+
+    \url{https://wandb.ai/wof/chest_xray/runs/ad1vzkck}
+
+    \begin{minted}[frame=single,
+                   framesep=3mm,
+                   linenos=true,
+                   xleftmargin=21pt,
+                   fontsize=\small,
+                   tabsize=4]{Json}
+    
+    {
+        "train_num_samples": 200,
+        "val_num_samples": 8,
+    
+        "T": 16,
+    }
+    
+    {
+      "_step": 3311,
+      "training SSIM": 0.920365142135862,
+      "validation SSIM": 0.9260838512155668,
+      "validation_loss": 0.0004371008544694632,
+      "_runtime": 5877.103338479996,
+      "_timestamp": 1717753962.2061036,
+      "training PSNR": 33.426429748535156,
+      "training_loss": 0.0004778142458235379,
+      "validation PSNR": 33.67319107055664
+    }
+    
+    \end{minted}
+
+\subsubsection{Experiment 2 (true-voice-32)}
+
+    \url{https://wandb.ai/wof/chest_xray/runs/wedf9ud9}
+
+    \begin{minted}[frame=single,
+                   framesep=3mm,
+                   linenos=true,
+                   xleftmargin=21pt,
+                   fontsize=\small,
+                   tabsize=4]{Json}
+    
+    {
+        "train_num_samples": 200,
+        "val_num_samples": 8,
+    
+        "T": 256,
+    }
+    
+    {
+      "_step": 4661,
+      "_runtime": 104441.02872157095,
+      "training_loss": 0.0003217149386182427,
+      "validation_loss": 0.0003489509272185387,
+      "_timestamp": 1717860475.3171396,
+      "training PSNR": 35.358917236328125,
+      "training SSIM": 0.9235859364974548,
+      "validation PSNR": 34.98021697998047,
+      "validation SSIM": 0.9137686309701653
+    }
+        
+    \end{minted}
+
+
+\subsubsection{Other experiment A ()}:
+
+\url{https://wandb.ai/wof/chest_xray/runs/xnjgywx7/overview}
+
+This is an experiment where I removed PDHG completely and used only the UNet to learn how to denoise an image.
+
+    \begin{minted}[frame=single,
+                   framesep=3mm,
+                   linenos=true,
+                   xleftmargin=21pt,
+                   fontsize=\small,
+                   tabsize=4]{Json}
+
+    {
+        # TODO: 
+        "val_data_path": f"{CHEST_XRAY_BASE_DATA_PATH}/test/NORMAL", 
+        # More images in test folder. Val folder has only 8 images.
+        "train_num_samples": 200,
+        "val_num_samples": 20,
+
+        "out_channels": 1,
+        "init_filters": 64,
+        "n_blocks": 3,
+        "activation": "ReLU",
+        
+        "T": 0,
+    }
+
+    {
+      "validation_loss": 0.0004885616785031743,
+      "_step": 2879,
+      "_timestamp": 1717862098.4003837,
+      "training_loss": 0.0001654919820066425,
+      "validation SSIM": 0.8739885872308468,
+      "_runtime": 2097.286071538925,
+      "training PSNR": 38.07373046875,
+      "training SSIM": 0.956982729046044,
+      "validation PSNR": 33.51918411254883
+    }
+    \end{minted}
+
+
+\subsubsection{Other experiment B (ruby-dust-28)}:
+
+\url{https://wandb.ai/wof/chest_xray/runs/0ntx5gs4}
+
+\begin{minted}[frame=single,
+               framesep=3mm,
+               linenos=true,
+               xleftmargin=21pt,
+               fontsize=\small,
+               tabsize=4]{Json}
+
+{
+  "T": {
+    "value": 32
+  },
+  "epochs": {
+    "value": 10000
+  },
+  "dataset": {
+    "value": "../data/chest_xray"
+  },
+  "project": {
+    "value": "chest_xray"
+  },
+  "n_blocks": {
+    "value": 3
+  },
+  "up_bound": {
+    "value": 0
+  },
+  "max_sigma": {
+    "value": 0.5
+  },
+  "min_sigma": {
+    "desc": null,
+    "value": 0.5
+  },
+  "optimizer": {
+    "desc": null,
+    "value": "Adam"
+  },
+  "activation": {
+    "desc": null,
+    "value": "LeakyReLU"
+  },
+  "batch_size": {
+    "desc": null,
+    "value": 1
+  },
+  "wandb_mode": {
+    "desc": null,
+    "value": "online"
+  },
+  "in_channels": {
+    "desc": null,
+    "value": 1
+  },
+  "random_seed": {
+    "desc": null,
+    "value": 42
+  },
+  "architecture": {
+    "desc": null,
+    "value": "UNET-PDHG"
+  },
+  "init_filters": {
+    "desc": null,
+    "value": 32
+  },
+  "out_channels": {
+    "desc": null,
+    "value": 2
+  },
+  "learning_rate": {
+    "desc": null,
+    "value": 0.0001
+  },
+  "loss_function": {
+    "desc": null,
+    "value": "MSELoss"
+  },
+  "resize_square": {
+    "desc": null,
+    "value": 256
+  },
+  "val_data_path": {
+    "desc": null,
+    "value": "../data/chest_xray/val/NORMAL"
+  },
+  "test_data_path": {
+    "desc": null,
+    "value": "../data/chest_xray/test/NORMAL"
+  },
+  "train_data_path": {
+    "desc": null,
+    "value": "../data/chest_xray/train/NORMAL"
+  },
+  "upsampling_mode": {
+    "desc": null,
+    "value": "linear_interpolation"
+  },
+  "val_num_samples": {
+    "desc": null,
+    "value": 8
+  },
+  "save_epoch_local": {
+    "desc": null,
+    "value": 10
+  },
+  "save_epoch_wandb": {
+    "desc": null,
+    "value": 10000
+  },
+  "test_num_samples": {
+    "desc": null,
+    "value": 1
+  },
+  "downsampling_mode": {
+    "desc": null,
+    "value": "max"
+  },
+  "train_num_samples": {
+    "desc": null,
+    "value": 100
+  },
+  "upsampling_kernel": {
+    "desc": null,
+    "value": [
+      2,
+      2,
+      1
+    ]
+  },
+  "downsampling_kernel": {
+    "desc": null,
+    "value": [
+      2,
+      2,
+      1
+    ]
+  }
+}
+
+\end{minted}
+
+
+
+
+
+
+% \subsection{MRI}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.25\linewidth]{images//tests/MRI.png}
+%     \caption{Enter Caption}
+%     \label{fig:enter-label}
+% \end{figure}
+
+\subsection{Chest X-ray}
+
+\begin{figure}[h]
+    \centering
+    
+    \includegraphics[width=0.25\linewidth]{images//chest_xray/clean.png}
+    \includegraphics[width=0.25\linewidth]{images//chest_xray/noisy.png}
+    \includegraphics[width=0.25\linewidth]{images//chest_xray/single_lambda_best_0_08.png}
+    \includegraphics[width=0.25\linewidth]{images/chest_xray/lambda_map_best_using_function.png}
+    \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_1.png}
+    \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_3.png}
+        
+    \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
+    \label{fig:chest_xray}
+\end{figure}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{images//chest_xray/results.png}
+        
+    \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
+    \label{fig:chest_xray}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth]{images//chest_xray/Lambda vs PSNR.png}
+        
+    \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
+    \label{fig:chest_xray}
+\end{figure}
+
+
+\begin{minted}[frame=single,
+               framesep=3mm,
+               linenos=true,
+               xleftmargin=21pt,
+               fontsize=\small,
+               tabsize=4]{Python}
+-  report
+    
+    - experiment with different datasets
+    
+    - always started with training on a single image
+    
+    - precaution taken
+    
+    - performance: time, memory, 
+    
+    - data preparation
+        
+        - some images are cropped too much
+        
+        - variable noise levels
+        
+        - 
+  
+    - performance as image size, T, params change
+
+- debug
+
+    - extract eval out of train, put them all into main
+
+    - check to see if data loader  should puit tensors into gpu or  not
+
+- record training times: log into a file for each checkpoint, or just read off wandb somehow? 
+
+- Implementation:
+    - up-convolution (either linear interpolation combined with normal 1x1 convolution or transposed convolution)
+        - If linear interpolation, either align corners or not
+    - double-convolution block
+        - Batch normalisation or not?
+        - Mid-channels = in-channels // 2 if using linear interpolation?
+            - But in-channels = 2 \times out-channels
+    - Clearly mention all conventions
+        - Each subsequent layer double/halve the number of channels and halve/double the image side
+
+- Experiments
+    - different datasets
+    - different number of blocks
+    - different initial filters number
+    - different activation (ReLU)
+
+
+GPU memory consumption is stable at around 1 GB. (It kept increasing during training before I fixed it by deleting as much temporary variables as possible.)
+
+
+
+I need to make sure that the U-Net does exactly what I think it does.
+
+
+
+I also need to understand the PDHG part.
+
+
+
+To be honest, I want to double-check if the training and validation iteration codes are actually correct as well.
+
+
+
+U-Net implementation was originally for 3D dynamic image denoising. Now I'm trying to understand and change it to work specifically for 2D static images. There are a couple things I still need to understand... But at least I got the max-pooling to work, use linear interpolation (trilinear for now, want to make it bilinear after changing everything to 2D), and most importantly, keep GPU memory consumption from rising during training!
+
+
+
+Next time, I want to:
+
+
+
+Understand and edit PDHG-Net code to work specifically for 2D static images. Currently there are a few thing I am concerned with.
+
+
+
+
+The original code treated the 5 dimensions as (mb, channels, Nx, Ny, Nt) which is like (N, C, W, H, D) in pytorch documentation notation. However, pytorch documentation actually uses the convention (N, C, D, H, W). This might have implication on the meaning of the code, especially concerning the time dimension. The width and height might be ok being swapped since we use only square input, but still need to check.
+
+
+
+Also, originally in dynamic image denoising code, the output of U-Net are 2 matrices, 1 for spatial dimensions (x, y) and the third for time dimension t. This is probably because that's what they are used in the PDHG algorithm. However, I don't need the time dimension in this problem. Does that mean I only need one?
+
+
+
+If I only need one, should I set the number of out-channels to 1 instead of 2? It seems strange to set it to 1, considering U-Net is for image segmentation?
+
+
+
+If I can use more than one, can I try increasing the number of out-channels to 3 or 4?
+
+
+
+
+In the end, I can only make the right decision after I understand how PDHG algorithm works.
+
+
+
+
+U-Net implementation was originally for 3D dynamic image denoising. Now I'm trying to understand and change it to work specifically for 2D static images. There are a couple things I still need to understand... But at least I got the max-pooling to work, use linear interpolation (trilinear for now, want to make it bilinear after changing everything to 2D), and most importantly, keep GPU memory consumption from rising during training!
+
+
+- sanity check:
+  - gen very little noise sigma=0.001 and see what a very good psnr and ssim and nrmse looks like
+
+- implement function for nrmse
+- use pytorch ignite for psnr and ssim faster
+
+- IMPORTANT: Ask Kostas about the search space, most importantly how large is the training dataset size and image resolution!
+
+I tried
+- Setting 1: T=32, 100 train, sigma=0.5
+    - After ? epochs, validation loss starts to increase
+    - Each epoch took about 10 seconds. I ran for 620 epochs. The total time recorded by wandb is 1h 40 minutes = 100 minutes = 6000 seconds.
+    - validation PSNR peaked at 32.8 and SSIM only at 0.88 
+- Setting 2: T=16, 200 train, sigma=[0.1, 0.5]
+    - All loss, psnr, ssim are better then Setting 1, at least in the beginning.
+        - Could this be due to a mistake somewhere in the implementation where the sum is not much different but since the number of samples, hence the batches, is higher, the average is lower?
+        - More likely, though, because there the average noise level is lower than before, so ...
+        - Lower T should make the metrics a bit worse. On the other hand, lower T means that the results depend less on the PDHG algorithm and more on the UNet, so the UNet tries harder to fit to the data. In the general the UNet is probably better than PDHG in fitting to the data since it has many times more parameters (honestly PDHG has only one parameter: the number of iterations T).
+    - Validation metrics fluctuate much more wildly compared to Setting 1. Generally training metrics fluctuate as well.
+        - Most likely because we have more training data now so ...
+    - Each epoch took about 10 seconds as well, similar to Setting 1. Makes sense since T is halved but training size is doubled.
+    - After ? minutes, training loss seems to stop decreasing, and even starts increasing
+    - At 1h 10 minutes, average validation PSNR seems around 33.5 and SSIM around 0.92
+- Setting 3: T=256, 1000 train, sigma=[0.1, 0.5]
+    - 7 minutes and the first epoch is still not done.
+        - Since T increases by 16 times and train size increases by 5 times compared to setting 2, I estimate one epoch to take about 80 times longer, meaning 800 seconds = 12 minutes. 1000 epochs take 12,000 minutes = 200 hours = 10 days!!!
+        - In the paper the max epoch time seems to be 5 seconds according to Table 4, and total of 24 hours. If this is correct then the number of epochs is 24 * 60 / 5 = 300 epochs.
+    - 25 minutes and epoch 2 is still not done. Tqdm estimates each epoch to take 11 minutes though.
+    - On the bright side, "only" takes 3 GB of VRAM, which I can afford.
+    - Uses "only" 50% Cuda load on 4090.
+- Setting 4:  T=256, 200 train, sigma=[0.1, 0.5]
+    - Estimate 10 \times 16 = 160 seconds = 3 minutes each epoch.
+    1000 epochs take 3000 minutes = 50 hours = 2 days!!!
+    - Tqdm estimates each epoch takes 140 seconds = 2.2 minutes.
+- Setting 5: T=32, 200 train, sigma=[0.1, 0.5]
+    - Estimate 10 \times 2 = 20 seconds each epoch. 1000 epochs = 20,000 seconds = 300 minutes = 5 hours
+- Later:
+    - Setting 3: T=256, 200 train, sigma=[0.1, 0.5]
+    - Setting 4: T=64, 200 train, sigma=[0.1, 0.5]
+    - Setting 5: T=128, 200 train, sigma=[0.1, 0.5]
+    - Setting 6: T=32, 200 train, sigma=[0.1, 0.5]
+    - Setting 7: T=8, 200 train, sigma=[0.1, 0.5]
+
+- Note (to rearrange to appropriate section later)
+    - In the paper, part 5.6.1 Choosing T at Training Time:
+        - We want to set T as high as possible.
+            - Maybe I can just use T = 256?
+        - It said that NN is not flexible enough to compensate for low T and showed experimental results.
+            - However, maybe because I used a slightly different architecture with a larger UNet, in Setting 2 with T=16 the validation results seem to be better than Setting 1 with T=32. Moreover the train size in Setting 2 is twice that of Setting 1. I expect larger train data to have even higher regularisation effect, meaning it is harder to overfit.
+                - My conjecture is that, as the UNet gets larger enough, it will be able to compensate for low T.
+        - The section did end, however, with the sentence:
+            - However, from Figure 15 one cannot infer whether the limited reconstruction accuracy is attributable to the too low number of iterations, a resulting sub-optimal ΘT or combinations thereof.
+        - I don't know if I should point this out though. If I want to check this, I will need to experiment with different UNet architecture as well. Say 4 different configs times 4 different T values. Maybe cut down to 3 different UNet's times 3 differnt T values. T values probably should be minimum of 3, but maybe I can test only 2 UNet's? Or maybe test for a short time, just enough to see that it is clearly better?
+            - In Figure 15, it shows 70,000 backpropagations. If each epoch has 100 batches of size 1, then it is about 700 epochs.
+
+- Maybe increase batch size can help speed up a bit if we can run for fewer epochs, and PDHG can runs fewer times? I don't think it is the case though, since we probably want to run for the same number of epochs...
+
+- I think there is a sweet spot for the value of T and the size of the UNet (and also the size of training data, which properly closely relates to the size of the UNet). I'm just wondering if the sweet spot is a very large UNet and T=0 ...
+
+- In some (most) cases, validation metrics actually seem better than training metrics, especially in the beginning.
+    - This probably just be due to my choice of validation data. Currently I use only 8 images for validation. It is likely that those 8 images are already very close to some images in the training data, and so the average metrics are better.
+
+- If I want to see whether the choise of data matters, which I think it does matter a lot, I can try to train the same model of 2 different datasets (say one chest xray and the other static objects), and use one to test on the other dataset, and compare the performace to testing on its own dataset.
+    - My guess is that it will be mostly worse.
+        - UNet learns features. Since it has a finite number of filters, it can learn only that many features, and one type of images may have more of some features than the other.
+        - If we train a very very large UNet, it can learn many more features, and we can use many different types of images.
+
+- Is it normal that the metrics start off really good at the beginning?
+    - I think that this means the PDHG algorithm is too good and stable at reconstructing that even different lambda maps still produce similar reconstructions
+    - If I set T = 0, does that mean the UNet will basically recreate the image itself?
+
+\textbf{IMPORTANT!} Strategies
+- \textbf{IMPORTANT!} Do I want to fix the code now?
+    - Time is running out, and I'm feeling more confident about the UNet since I can properly to max pooling and upsample with linear interpolation. It just seems clumsy and unnecessary still using 3D instead of 2D library functions.
+    - The more important thing to consider is how the PDHG works. Will it be very different if I make it 2D? Will I output only 1 channel and uses only 1 lambda map?
+    - \textbf{IMPORTANT!} Since I have to write a report, I properly need to explain it well, which means I need to actually understand, which means I should be able to implement myself, which means I should be able to reduce the dimension to 2D in the code?
+- Fix seed = 42
+    - Should I not specify a fixed seed, and accept that it will be hard to replicate exactly?
+- Limiting the search space: I think we should 
+    - fix min T to 4, max T to 512
+        - Figures 15 and 16 show min T of 8 and max T of 256
+    - fix max sigma to 0.5, min sigma can be a bit lower than 0.1?
+        - Figure 10 in the paper only shows sigma values of 0.1, 0.2 and 0.3
+        - Part 5.2 Dynamic MRI uses 3 sigmas 0.15, 0.3, 0.45
+    - fix max training data size to 300. It just takes too long.
+        - I tried 1000, with T=32. One epoch took 1 minute.
+    - try to keep one epoch below 20 seconds.
+    - try to keep total training time below 30 hours
+        - Table 4 in the paper shows training time of 24 hours.
+        It also shows runtime of 5 seconds, not sure if this means time for 1 epoch? It shows 3 models and 4 metrics for a total of 12 combinations, and each model has 2 time values. 
+    - try to keep the number of epochs at least 500?
+        - For setting 1, I stopped the training at around epoch 600, since I saw that validation already started increasing at around epoch 200?
+    - try to keep the total number of combinations, hence experiments, under 100!!! Honestly I want to do only about 10 to 20 experiments. If each experiment runs for 1000 epochs and each epoch takes 1 minute, then one experiment takes ~ 1 day, and 20 experiments take ~ one month. And that's just for the dissertation. Doubling that to account for other tasks like coding and writing the paper, I easily run out of time... 
+        - Figure 17 shows combinations of 6 T values, 3 sigma values and 3 metrics for a total of 6 \times 3 \
+        times 3 = 54 combinations.
+        - Table 1 and 3 each reports 3 different models, 3 sigma values, and 4 metrics for a total of 36 combinations
+        - Table 2 shows 4 models, 3 sigma values and 4 metrics for a total of 48 combinations
+    - 3 metrics: NRMSE, SSIM, PSNR
+        - skimage.metrics
+            - has 10 metrics, including the above 3
+    - 1 measure: and blur metric
+        - Blur metric:
+            - skimage.measure
+                - has ~30 measures
+            - https://scikit-image.org/docs/stable/auto_examples/filters/plot_blur_effect.html
+- In conclusion, maybe experiment with
+    - 1 sigma range [0.1 to 0.5], but test with 5 sigma values 0.1, 0.2, ..., 0.5 or imitate paper and test with only 3
+    - 6 T values: 8, 16, ..., 256
+    - 1 resolution: 256
+        - I thought about 3 resolutions: 128, 256, 512. I tried 1024 once, it was too large even for 24 GB GPU. That was before I fixed to code to free up memory though.
+        However, I think that 1 is enough for now.
+    - 1 training data size: 200? 300? At most 500, but I want to avoid this
+    - 2 models: single lambda and UNet
+        - For UNet, I could try with 4 blocks instead of 3, and initial number of filters to 16 and 64. However I don't think I have enough time.
+    - 1 Batch size of 1
+        - Maybe batch sizes 2 and 4. But I don't want to try it now either. For other problems I saw batch sizes of 64 and even 128. I don't think the batch size makes much difference to the amount of time until validation loss starts to increase. 
+    - Number of metrics are not too important. This only concerns
+        - Test data
+        - Choice of graphs
+- So in total: 6 \times 3 = 18 experiments for UNet, and 18 corresponding brute-force for PDHG. Very worried about large T and resolution
+    - Estimation: I tried T=16 and resolution=256, for 200 samples dataset. Each epoch took 10 seconds. If increase T by 16 times, resoltion by 2 times, even without increasing training data, each epoch will take 10 * 16 * 2 = 320 seconds = 5 minutes. 1000 epochs take 5000 minutes = 100 hours = 4 days! And I have in total 18 experiments!
+        - Maybe fix the resolution as well to 256 or 512. Then I have only 6 experiments.
+
+Goals
+- Not necessary need to be very good, but maybe psnr of 32 to 40, ssim from 0.8 to 0.95?
+    - For reference, in the paper, 
+        - Table 4: max PSNR 33.9, SSIM 0.81, NRMSE 0.071, blur effect 0.407
+        - Figure 15 line plots: best MSE 0.053
+        - Figure 17: PSNR 34 and ...
+        - Table 1: SSIM 0.927 and ...
+        - Table 2: PSNR 34.23 and ...
+        - Table 3: PSNR 39.3 for sigma = 0.1
+    - In the figures and tables, also look at the differences, aka. improvements, from the single lambda and other methods
+    
+Visualisation
+- Box plots
+    - Use a test dataset of around 100 samples?
+    - For each sample, generate noises of 3 to 5 different sigmas. 
+    - Calculate the metrics and plot them
+    - Do this for each experiment (combination of hyperparameters), and the simple single lambda methods as well. 
+- Bruteforce lambda values: 200 steps within 0 to 1
+- Pick a few examples: at most 10?
+    - Pattern: Square within square, Colorwheel
+    - Animal: Baby turtle
+    - Medical: Chest xray
+    - Real-life scenes and objects: Chessboard
+    - People: Astronaut
+    - ...
+
+
+Writing report
+- The paper lists 95 references, so maybe I should also aim for 100?
+
+    
+\end{minted}
+
+\subsubsection{Part 5.5 CT experiment}
+
+Original dataset: 35820 images training, 3522 validation, 3553 testing
+
+Actually uses: 300 images training, 10 validation, no test
+
+362 x 362, 300 images --> 39,313,200 pixels per epoch
+
+UNet 32, 64, 128 --> 610,673 trainable parameters
+
+39,313,200  \times  610,673  =  2.400751e+13
+
+Adam optimizer with a learning rate of 10−4
+
+a batch size of 1
+
+train for 50 epochs
+
+Then we used the model configuration for which the MSE on the validation set was lowest. ???
+
+T = 512
+
+39,313,200  \times  610,673  \times  512  =  1.2291845e+16 
+
+24 hours
+
+single NVIDIA GeForce RTX 2080 super GPU with 8 GB GPU
+
+1 epoch = 300 iterations, took 5 hours = 300 minutes
+
+
+--------
+
+Mine: 
+
+
+32, 64, 128, 256 --> 1,796,034 trainable parameters, check using code
+
+1000 training images, 256 * 256 --> total 65,536,000 pixels per epoch
+
+
+65,536,000  \times  1,796,034  =  1.1770488e+14
+
+T = 256
+
+65,536,000  \times  1,796,034  \times  256  =  3.013245e+16
+
+
+Adam optimizer with a learning rate of 10−4, a batch size of 1
+
+1 epoch took 20 minutes
+
+
+2.5 times more work  but  2/30  amount of time
+
+
+\section{Introduction}
+
+
+\subsubsection{What is image denoising?}
+
+\subsubsection{Why is image denoising important?}
+
+
+This project is largely based on the research paper "Learning regularisation Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling" \cite{kofler2023learning} and utilises part of the Smartphone Image Denoising Dataset (SIDD) \cite{SIDD_2018_CVPR}.
+
+ 
+% I find image processing in general and image denoising in particular very interesting.
+
+The primary goal of this mini-project is to learn about a specific type of neural network called the U-Net, a convolutional network architecture
+designed for segmentation of images \cite{ronneberger2015unet}, and apply it to the problem of image denoising. 
+
+In the rest of this report, I will explain the task of learning a regularisation parameter map using U-Net, describe the U-Net architecture in this problem, discuss the modelling and training process, and finally present some preliminary results. 
+
+
+
+\subsection{Background}
+
+Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
+% The paper \cite{kofler2023learning} that this project is based on discusses
+In particular, it combines U-Net with a traditional image-denoising algorithm called the Primal Dual Hybrid Gradient (PDHG) algorithm \cite{kofler2023learning}.
+% to solve the image denoising task. 
+% While the specifics of the algorithm are outside the scope of this project, 
+% the main idea is to use U-Net to learn the required input, so-called the regularisation parameters, of a specific image for the PDHG algorithm. 
+Specifically, a PDHG solver is appended to the end of the U-Net, treating the solver as the final layer of the entire network to create an end-to-end unsupervised model.
+% To denoise images, the PDHG algorithm requires defining some regularisation parameters as part of the cost function. 
+
+% By treating PDHG as the final layer, this approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network.
+
+One notable aspect of using U-Net in this problem is that, instead of acting as a black box and outputting a denoised version of each input image, it outputs a parameter map used in another algorithm, demonstrating the flexibility of neural networks.
+% This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
+% This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
+
+Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
+
+
+
+\subsection{Contribution}
+
+In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
+
+Although much of the logic described in this project is implemented in an open-source project \cite{kofler2023learning}, getting started can be challenging. Therefore, a self-contained notebook with code and instructions to obtain the data was prepared to help fellow students experiment more easily. This notebook can run on Google Colab \cite{colab} and Kaggle \cite{kaggle}, providing an accessible platform for experimentation. Additionally, part of this report could serve as documentation for the open-source project, enhancing it with additional visualisations and explanations not provided in the original project. These additions aim to help readers of the paper gain a better understanding of the approach.
+
+\section{Task Description}
+
+
+
+\subsection{Primal Dual Hybrid Gradient (PDHG)}
+
+An iterative method to generate the output which in this case is the denoised image. 
+
+The algorithm is
+
+\begin{algorithm}
+\caption{PDHG algorithm with fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $\mathbf{x}_0$
+\STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{TV}}$
+% \STATE $\mathbf{y} = \mathbf{x}_0$
+\STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
+\STATE $\mathbf{p}_0 = 0$
+\STATE $\mathbf{q}_0 = 0$
+\FOR{$k < T$}
+    % \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+    \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{x}_0)\right) / (1 + \sigma)$
+    \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
+    \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
+    \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
+\ENDFOR
+\STATE $\mathbf{x}_{\text{TV}} = \mathbf{x}_T$
+\end{algorithmic}
+\end{algorithm}
+
+% NOTE: $\mathbf{y}$ is the noisy image $\mathbf{x}_0$ ???
+
+% HOWEVER, note that in the code, $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma  \times (\bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+
+\subsection{Objective}
+
+
+% Traditionally, the Total Variation (TV) method has been used to improve image reconstruction \cite{kofler2023learning}. 
+% For this method to work effectively, we need to learn the optimal regularisation parameters.
+One of the most widely applied image denoising methods is the so-called Total Variation (TV) regularisation \cite{kofler2023learning}.
+
+Formally, given the loss function
+\vspace{-3pt}
+$$ L(\mathbf{z}, \mathbf{x}) = \frac{1}{2} \| \mathbf{x} - \mathbf{z} \|_2^2 + \text{TV}(\mathbf{x}), $$
+
+our objective is to find $\hat{\mathbf{x}}$ such that
+$$ \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} L(\mathbf{z}, \mathbf{x}) $$
+where $\mathbf{z}$ is the input, presumably noisy, image and $\mathbf{x}$ represent the "clean" image we are looking for. We treat images as vectors, $\mathbf{x}, \mathbf{z} \in \mathbb{R}^{n^2}$, where $n$ is the height of the image, assuming the image is square. In this project, we use $n = 512$.
+
+ The $\text{TV}$ term can be expressed as either a scalar $\lambda$:
+$$
+\text{TV}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1, \quad \lambda \in \mathbb{R}
+$$
+or as a matrix $\mathbf{\Lambda}$:
+$$
+\text{TV}(\mathbf{x}) = \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1, \quad \mathbf{\Lambda} \in \mathbb{R}^{n^2}
+$$
+
+Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
+
+The challenge lies in finding or learning the regularisation parameter map $\mathbf{\Lambda}$. Using a single $\lambda$ value penalises all regions of the image equally, which is suboptimal. Instead, it would be better to assign higher penalties to smooth regions and lower penalties to detailed regions to preserve image details. However, this approach is not perfect, as it might leave noise in detailed areas.
+
+Since regularisation is multiplied by the gradient, higher $\lambda$ values will penalize areas with many changes (typically areas with more details), while lower $\lambda$ values prioritize detail preservation over noise reduction.
+
+The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, narrowing down the search space is challenging, as we potentially have $d^{(n^2)}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible.
+
+To address this, we can apply image segmentation. Effective image segmentation helps determine appropriate $\lambda$ values for different regions. A good network for learning image segmentation is U-Net \cite{ronneberger2015unet}.
+
+% U-Net assists in learning these regularisation parameters due to its proficiency in image segmentation. 
+
+
+\section{Architecture}
+
+\begin{figure}[h]
+    \centering
+\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
+
+    % Define styles for the different layers
+    \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
+    \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
+    \tikzstyle{inference} = [->, ultra thick, red]
+    \tikzstyle{normal} = [->, ultra thick, black]
+
+    \node (input) [output] {$\mathbf{x}_0$};
+    \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
+    \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
+    \node (pdhg) [function, below=of lambda] {PDHG Solver};
+    \node (final_output) [output, right=of pdhg] {$\mathbf{x}$};   
+    \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
+    \node (ground_truth) [output, above=of noise_generator] {$\mathbf{z}$};
+    \node (loss_function) [function, right=of final_output] {$L(\mathbf{z}, \mathbf{x})$};
+
+    \draw[inference] (input) -- (unet);
+    \draw[inference] (unet) -- (lambda);
+    \draw[inference] (lambda) -- (pdhg);
+    \draw[inference] (pdhg) -- (final_output);
+    \draw[inference] (input) -- ++(0, -0.5) -- (pdhg);
+    
+    \draw[->] (final_output) -- (loss_function);
+    \draw[->] (ground_truth) -| (loss_function);
+    \draw[->] (ground_truth) -- (noise_generator);
+    \draw[->] (noise_generator) -- (input);
+    \draw[->] (loss_function) -- ++(0, -1) -| (unet);
+
+\end{tikzpicture}
+
+\caption{The general architecture 
+% \caption{Training 
+% of PDHG Net 
+% \cite{kofler2023learning}
+}
+
+\label{fig:training}
+\end{figure}
+
+
+
+For this project, our model comprises two primary components:
+\begin{enumerate}
+    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image $\mathbf{x}_0$.
+    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver (refer to Appendix), which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}$. This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. The symbol $\Theta$ represents the set of trainable parameters within the network.
+\end{enumerate}
+
+We interpret the PDHG solver as the ultimate hidden layer within our network. The outcome of the loss function $L(\mathbf{z}, \mathbf{x})$ is subsequently employed for backpropagation, essential for training the parameters $\Theta$.
+
+For our implementation, we consider $n \times n$ images, specifically with $n = 512$.
+
+In terms of variables:
+\begin{itemize}
+    \item $\mathbf{z} \in \mathbb{R}^{n^2}$ represents the clean image, serving as the ground truth.
+    \item $\mathbf{x}_0 \in \mathbb{R}^{n^2}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
+    \item $\mathbf{\Lambda}_{\Theta}$, the regularisation parameters map, emerges as the final output from the U-Net and is instrumental for the PDHG algorithm solver. Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
+\end{itemize}
+
+The architecture of $\text{NET}_{\Theta}$ is inspired by the U-Net, a specialised type of convolutional neural network architecture.
+
+Let us first delve into the foundational concept of a convolutional neural network, which underpins the U-Net architecture.
+
+
+
+\subsection{
+Convolutional Neural Network (CNN) 
+}
+
+\begin{figure}[h]
+    \includegraphics[width=1\linewidth]{Le-Net 5.png}
+    
+    \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks \cite{726791}} 
+    \label{fig:enter-label}
+\end{figure}
+
+Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analyzing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
+
+\subsubsection*{Inspiration and Function}
+
+The design of CNNs draws inspiration from the human visual cortex, which processes visual stimuli by sequentially extracting features, ranging from simple edges and shapes to complex objects. CNNs replicate this hierarchical feature extraction using convolutional layers and pooling layers. 
+
+\subsubsection*{Convolutional Layers}
+
+In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilization of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
+A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasizes specific characteristics of the input. 
+When multiple filters are employed in a layer, they produce multiple feature maps, with each map corresponding to a different channel. 
+This design significantly reduces the proportion of trainable parameters relative to the number of output values, enhancing efficiency for image-related tasks.
+
+\subsubsection*{Pooling Layers}
+
+An essential component of CNNs is the pooling layer, typically implemented as a max-pooling layer. This layer simplifies the output by retaining only the maximum values from the defined regions in the feature map. The objective is to preserve the most significant features while reducing data dimensionality. In this project, max-pooling is a crucial technique used to enhance model performance.
+
+The convolutional and pooling layers constitute the foundational blocks of the U-Net architecture.
+
+\subsection{U-Net}
+
+A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
+
+\subsubsection*{Encoder}
+
+The U-Net architecture is bifurcated into two principal components: an Encoder and a Decoder. The Encoder functions similarly to a standard CNN, utilizing a combination of convolutional layers and max-pooling layers organized into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while concurrently reducing the feature map size due to the pooling.
+
+\subsubsection*{Decoder}
+
+Conversely, the Decoder is structured around a series of blocks that progressively halve the number of channels while enlarging the feature map size, effectively "unrolling" the data. Unlike the Encoder blocks, each Decoder block concludes with an up-convolutional layer followed by a skip connection. This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
+
+
+
+\begin{figure}[h]
+\hspace*{-0.5cm} % Adjust the value as needed
+\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick, transform shape, shift={(-10cm,0)}]
+    % Define styles
+    \tikzstyle{rec16_1} = [draw, rectangle, minimum width=0.1cm, minimum height=2cm, fill=blue!30]
+    \tikzstyle{rec16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=blue!30]
+    \tikzstyle{rec32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=blue!30]
+    \tikzstyle{rec64} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
+    \tikzstyle{rec64_2} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
+    \tikzstyle{rec2} = [draw, rectangle, minimum width=0.4cm, minimum height=2cm, fill=blue!30]
+    \tikzstyle{rec_white32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=white]
+    \tikzstyle{rec_white16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=white]
+    \tikzstyle{normalconv} = [->, ultra thick, blue]
+    \tikzstyle{maxpool} = [->, ultra thick, red]
+    \tikzstyle{upconv} = [->, ultra thick, green]
+    \tikzstyle{finalconv} = [->, ultra thick, black]
+
+    % ENCODER
+    \node (en1_input) [rec16_1] {};
+    \node (en1con1_output) [rec16, right=of en1_input] {};
+    \node (en1con2_output) [rec16, right=of en1con1_output] {};
+
+    \node (en2_input) [rec32, below=of en1con2_output] {};
+    \node (en2con1_output) [rec32, right=of en2_input] {};
+    \node (en2con2_output) [rec32, right=of en2con1_output] {};
+
+    \node (en3_input) [rec64, below=of en2con2_output] {};
+    \node (en3con1_output) [rec64, right=of en3_input] {};
+    \node (en3con2_output) [rec64, right=of en3con1_output] {};
+    \node (upcon1_input) [rec64_2, right=of en3con2_output] {};
+
+    % DECODER
+    \node (de1_input) [rec32, above=of upcon1_input] {};
+    \node (skip1_output) [rec_white32, left=0cm of de1_input] {};
+    \node (de1con1_output) [rec32, right=of de1_input] {};
+    \node (de1con2_output) [rec32, right=of de1con1_output] {};
+
+    \node (de2_input) [rec16, above=of de1con2_output] {};
+    \node (skip2_output) [rec_white16, left=0cm of de2_input] {};
+    \node (de2con1_output) [rec16, right=of de2_input] {};
+    \node (de2con2_output) [rec16, right=of de2con1_output] {};
+
+    % Final output layer
+    \node (final_output) [rec2, right=of de2con2_output] {};
+
+    % CONNECTIONS
+    \draw[normalconv] (en1_input) -- (en1con1_output);
+    \draw[normalconv] (en1con1_output) -- (en1con2_output);
+    % \draw[maxpool] (en1con2_output) -- ++(0,-0.5) -| (en2_input);
+    \draw[maxpool] (en1con2_output) -- (en2_input);
+    
+    \draw[normalconv] (en2_input) -- (en2con1_output);
+    \draw[normalconv] (en2con1_output) -- (en2con2_output);
+    % \draw[maxpool] (en2con2_output) -- ++(0,-0.5) -| (en3_input);
+    \draw[maxpool] (en2con2_output) -- (en3_input);
+    
+    \draw[normalconv] (en3_input) -- (en3con1_output);
+    \draw[normalconv] (en3con1_output) -- (en3con2_output);
+    \draw[maxpool] (en3con2_output) -- (upcon1_input);
+    
+    % \draw[upconv] (en3con2_output) -- ++(0,0.5) -| (de1_input);
+    \draw[upconv] (upcon1_input) -- (de1_input);
+    \draw[normalconv] (de1_input) -- (de1con1_output);
+    \draw[normalconv] (de1con1_output) -- (de1con2_output);
+    
+    % \draw[upconv] (de1con2_output) -- ++(0,0.5) -| (de2_input);
+    \draw[upconv] (de1con2_output) -- (de2_input);
+    \draw[normalconv] (de2_input) -- (de2con1_output);
+    \draw[normalconv] (de2con1_output) -- (de2con2_output);
+    
+    \draw[finalconv] (de2con2_output) -- (final_output);
+
+    % Skip connections
+    \draw[->, dashed, ultra thick] (en2con2_output.east) -- ++(0.5,0) |- (skip1_output.west);
+    \draw[->, dashed, ultra thick] (en1con2_output.east) -- ++(0.5,0) |- (skip2_output.west);
+
+\end{tikzpicture}
+\caption{Our $\text{NET}_{\Theta}$ Architecture}
+\label{fig:my_unet}
+\end{figure}
+
+In our model, the Encoder consists of three encoding blocks. The first block takes a single-channel input—a grayscale image—and expands it to 16 feature maps. The second and third blocks increase the number of channels further to 32 and 64, respectively.
+
+Conversely, the Decoder incorporates two decoding blocks, one fewer than the Encoder. This configuration deviates from some common implementations where the number of encoding and decoding blocks are equal, and a "bottle-neck" comprising two additional convolutional layers is placed between them. In our model, we treat the final block of the Encoder as this bottle-neck. The first decoding block in the Decoder reduces the number of channels back to 32, and the second further reduces them to 16.
+
+Each decoding block in our model concludes with an up-convolutional layer, which serves the same function as a typical convolutional layer, followed by a skip connection. The first skip connection takes the 32-channel output from the second encoding block and merges it with the 32-channel output from the first up-convolutional layer. This combination produces a 64-channel output, which is then processed by the first decoding block. The second skip connection similarly merges the 16-channel output from the first encoding block with the 16-channel output from the second up-convolutional layer, resulting in a 32-channel input for the second decoding block.
+
+The final stage in our architecture employs a convolutional layer to convert the 16-channel output from the last decoding block into a 2-channel output, thus producing two matrices as the ultimate output of our model.
+
+
+
+\section{Training and Results}
+
+% \subsection{Objective and Setup}
+
+The primary aim of this project is to explore the potential of achieving the optimal regularisation parameter map, $\mathbf{\Lambda}$, for a particular image. To this end, the training was conducted on a single image, using a grid search to determine the best single regularisation parameter, $\lambda$. The chosen $\lambda = 0.05$ yielded a PSNR (Peak Signal-to-Noise Ratio) of 35.64 dB, considered to be within the good range (30-40 dB). Our model, utilizing the regularisation map $\mathbf{\Lambda}$, improved the PSNR to 37.84 dB compared to the 24.13 dB of the noisy original, demonstrating the efficacy of the model-specific parameter map.
+
+\subsection{Data Preparation and Model Configuration}
+
+Training was performed on image ID 0065, which was rescaled by a factor of 0.5 and split into six 512$\times$512 patches. Gaussian noise (mean 0, standard deviation 0.3) was added to simulate conditions for robust model training. The model was trained with a batch size of 1, resulting in six iterations per epoch, over 10,000 epochs.
+
+\subsection{Training Details}
+
+The Mean Squared Error (MSE) loss function was chosen due to its effectiveness in Gaussian noise contexts. The Adam optimiser was utilized for its adaptive learning rate capabilities, set at 0.0001. LeakyReLU activation function with $\alpha = 0.01$ was used across all hidden layers to ensure non-linearity without significant information loss at zero activations. 
+
+The PDHG (Primal Dual Hybrid Gradient) solver, an integral part of the model, was run for 128 iterations per epoch. While increasing the number of iterations might improve results, time constraints limited our exploration.
+
+\subsection{Performance Metrics and Results}
+
+Performance was evaluated using the PSNR metric, calculated as:
+$$
+\text{PSNR} = 10 \cdot \log_{10} \left( \frac{{\text{MAX}^2}}{{\text{MSE}}} \right)
+$$
+where $\text{MAX}$ is the maximum possible pixel value, and $\text{MSE}$ is the mean squared error between the original and reconstructed images. 
+
+Each epoch of training took approximately 6 seconds, translating to about 1 second per patch. The total training duration was around 17 hours, dominated by the computational demands of the PDHG algorithm.
+
+\subsection{Inference and Efficiency}
+
+The inference time for our model was about 1 second per 512$\times$512 patch. For a full HD (1920$\times$1080) image, denoising required processing 12 patches, taking less than half a minute in total. This demonstrates that while our method is slower than traditional single-parameter denoising methods, it offers a systematic approach to optimizing regularisation without prior knowledge of the best $\lambda$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth, trim={0 0 0 10cm}, clip]{images/W&B Chart 5_27_2024, 5 09 06 PM.png}
+    \caption{Validation loss. Logged using wandb} 
+    \label{fig:training_progress}
+\end{figure}
+
+\begin{figure}[h]
+% \begin{center}
+\centering
+\begin{tabular}{ c c c c c c c c c }
+ \includegraphics[width=0.4\linewidth]{images/cur/image_clean.png}  & \includegraphics[width=0.4\linewidth]{images/cur/image_noisy.png} \\
+ Clean image & Noisy image. PSNR 24.13 dB \\
+   &  \\
+ \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_single_lambda.png} & \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_lambda_map.png}   \\
+ Denoised with $\lambda = 0.05$. PSNR 35.64 dB & Denoised with $\Lambda$ map. PSNR 
+ \textcolor{blue}{37.84 dB}  \\
+
+ 
+\end{tabular}
+
+    \caption{Comparison of output using single $\lambda$ and $\mathbf{\Lambda}$ map}
+
+
+% \end{center}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{images/cur/patch_2.png}
+    \vspace{-8pt}
+    
+    \caption{Comparison of patches. From left to right: (1) Original image. (2) Noisy image with synthetic Gaussian noise added with $\sigma = 0.3$. (3) Reconstruction with single $\lambda = 0.03$. (4) Reconstruction with $\mathbf{\Lambda}$ map. (5) Output of the U-Net: $\mathbf{\Lambda}$ map.}
+    \label{fig:compare_patches}
+\end{figure}
+
+\subsection{Analysis of the $\mathbf{\Lambda}$ Map}
+
+The $\mathbf{\Lambda}$ map generated by our model provides a visual representation of how the PDHG solver is directed to handle different regions of the image. In areas where the original image was predominantly white, such as on a box, the $\mathbf{\Lambda}$ map exhibits higher regularisation values, indicated by whiter pixels. This implies that the PDHG solver is instructed to penalize high gradients in these regions, effectively smoothing them out.
+
+Conversely, areas with intricate details, such as text on the box, display lower regularisation values, represented by darker pixels on the $\mathbf{\Lambda}$ map. This indicates that the solver is tuned to preserve finer details in these areas, maintaining clarity and sharpness.
+
+% \subsubsection*{Challenges in regularisation}
+
+Despite the intended function of the regularisation map, there are instances where the model does not perform as expected. For example, the squares on the color palettes in the background, which originally had smooth surfaces, should ideally exhibit high regularisation values. However, this is not always the case, suggesting areas for further refinement in the model's ability to accurately assess and respond to different textural features within an image.
+\section{Conclusion}
+
+This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.
+
+\subsection{Experimentation and Findings}
+
+We experimented with the capabilities of the U-Net architecture to learn and apply regularisation parameters dynamically across different image segments using the PDHG algorithm. Traditional denoising techniques typically rely on a single lambda value for regularisation, which often does not cater to the varying needs across an image. Our approach attempts to transcend this limitation by approximating an optimal lambda map through the U-Net, enhancing the PDHG's performance. This methodology, while computationally intensive, illustrates the potential benefits of segment-specific regularisation in image denoising.
+
+% \subsection{Real-World Implications and Limitations}
+
+% Because of the considerable computation time, this limited our ability to extend the experiment across different sets of images. 
+% Moving forward, optimizing the computational efficiency of this model will be crucial for broader application and scalability.
+
+% \subsection{Conclusion}
+In conclusion, while the experiment demonstrated potential improvements over traditional single-lambda denoising methods, the current computational demands make it impractical for real-world applications. Future research will focus on refining the efficiency of these neural network-enhanced denoising techniques to make them more viable for practical use.
+
+
+\newpage
+
+
+
+
+\printbibliography
+
+
+The following list contain the primary Python libraries used in the implementation of this project.
+
+\vspace{-6pt}
+
+\begin{itemize}
+\setlength\itemsep{-0.3em}
+  \item \codeword{NumPy}: Utilised for numerical representations and operations, including vector and matrix multiplication.
+  \item \codeword{PyTorch}: Employed for constructing and training neural network models due to its robust, flexible, and efficient computational dynamics.
+  \item \codeword{matplotlib} and \codeword{seaborn}: Employed for data visualisation tasks, including the creation of histograms, box plots, and other graphical representations.
+  % \item \codeword{pandas}: Used for data analysis and manipulation tasks, such as managing data frames and handling value replacement operations.
+  \item \codeword{scikit-learn}: Used for benchmarking our model against traditional machine learning algorithms, providing tools for data preprocessing, cross-validation, and more.
+  \item \codeword{random}: Critical for generating random numbers, used extensively in stochastic processes like K-fold cross-validation and bootstrap sampling.
+  \item \codeword{wandb}: Integrated for experiment tracking and logging, facilitating the monitoring of model training metrics and performance in real-time.
+\end{itemize}
+
+
+\end{document}

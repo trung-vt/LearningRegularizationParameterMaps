@@ -1,0 +1,284 @@
+% % % \documentclass{article}
+% % % \usepackage{tikz}
+% % % \usetikzlibrary{shapes, arrows.meta, positioning}
+
+% % % \begin{document}
+
+% % % \begin{tikzpicture}[node distance=2cm, auto, thick]
+% % %     % Encoder
+% % %     \node (input) [draw, rectangle, minimum width=2cm, minimum height=1cm] {Input};
+% % %     \node (enc1) [draw, rectangle, right=of input, minimum width=2cm, minimum height=1cm] {Conv3D, 16};
+% % %     \node (enc2) [draw, rectangle, right=of enc1, minimum width=2cm, minimum height=1cm] {Conv3D, 32};
+% % %     \node (enc3) [draw, rectangle, right=of enc2, minimum width=2cm, minimum height=1cm] {Conv3D, 64};
+% % %     \node (pool) [draw, rectangle, below=of enc3, minimum width=2cm, minimum height=1cm] {MaxPool3D};
+
+% % %     % Decoder
+% % %     \node (dec1) [draw, rectangle, below=of enc2, minimum width=2cm, minimum height=1cm] {UpConv3D, 32};
+% % %     \node (dec2) [draw, rectangle, below=of enc1, minimum width=2cm, minimum height=1cm] {UpConv3D, 16};
+% % %     \node (output) [draw, rectangle, below=of input, minimum width=2cm, minimum height=1cm] {Output, Conv3D, 2};
+
+% % %     % Connections
+% % %     \draw[->] (input) -- (enc1);
+% % %     \draw[->] (enc1) -- (enc2);
+% % %     \draw[->] (enc2) -- (enc3);
+% % %     \draw[->] (enc3) -- (pool);
+% % %     \draw[->] (pool) -- (dec1);
+% % %     \draw[->] (dec1) -- (dec2);
+% % %     \draw[->] (dec2) -- (output);
+
+% % %     % Skip connections
+% % %     \draw[->, dashed] (enc1) -- ++(0,-3) -| (dec1);
+% % %     \draw[->, dashed] (enc2) -- ++(0,-3) -| (dec2);
+
+% % % \end{tikzpicture}
+
+% % % \end{document}
+
+% % \documentclass{article}
+% % \usepackage{tikz}
+% % \usetikzlibrary{shapes, arrows.meta, positioning}
+
+% % \begin{document}
+
+% % \begin{tikzpicture}[node distance=2cm, auto, thick]
+% %     % Encoder
+% %     \node (input) [draw, rectangle, minimum width=2cm, minimum height=1cm] {Input};
+% %     \node (enc1) [draw, rectangle, below=of input, minimum width=2cm, minimum height=1cm] {Conv3D, 16};
+% %     \node (enc2) [draw, rectangle, below=of enc1, minimum width=2cm, minimum height=1cm] {Conv3D, 32};
+% %     \node (enc3) [draw, rectangle, below=of enc2, minimum width=2cm, minimum height=1cm] {Conv3D, 64};
+% %     \node (pool) [draw, rectangle, below=of enc3, minimum width=2cm, minimum height=1cm] {MaxPool3D};
+
+% %     % Decoder
+% %     \node (dec1) [draw, rectangle, right=of enc2, minimum width=2cm, minimum height=1cm] {UpConv3D, 32};
+% %     \node (dec2) [draw, rectangle, right=of enc1, minimum width=2cm, minimum height=1cm] {UpConv3D, 16};
+% %     \node (output) [draw, rectangle, right=of input, minimum width=2cm, minimum height=1cm] {Output, Conv3D, 2};
+
+% %     % Connections
+% %     \draw[->] (input) -- (enc1);
+% %     \draw[->] (enc1) -- (enc2);
+% %     \draw[->] (enc2) -- (enc3);
+% %     \draw[->] (enc3) -- (pool);
+% %     \draw[->] (pool) -| (dec1);
+% %     \draw[->] (dec1) -- (dec2);
+% %     \draw[->] (dec2) -- (output);
+
+% %     % Skip connections
+% %     \draw[->, dashed] (enc1.east) -- ++(1,0) |- (dec2);
+% %     \draw[->, dashed] (enc2.east) -- ++(1,0) |- (dec1);
+
+% % \end{tikzpicture}
+
+% % \end{document}
+
+
+
+% \documentclass{article}
+% \usepackage{tikz}
+% \usetikzlibrary{shapes, arrows.meta, positioning}
+
+% \begin{document}
+
+% \begin{tikzpicture}[node distance=1.5cm, auto, thick]
+
+%     % Define styles for the different layers
+%     \tikzstyle{conv} = [draw, rectangle, minimum width=2cm, minimum height=1cm]
+%     \tikzstyle{pool} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
+%     \tikzstyle{upconv} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=green!20]
+%     \tikzstyle{output} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=red!20]
+
+%     % Encoder
+%     \node (input) [conv] {Input};
+%     \node (enc1) [conv, below=of input] {Conv3D, 1$\rightarrow$16};
+%     \node (enc2) [conv, below=of enc1] {Conv3D, 16$\rightarrow$16};
+%     \node (enc3) [conv, below=of enc2] {Conv3D, 16$\rightarrow$32};
+%     \node (enc4) [conv, below=of enc3] {Conv3D, 32$\rightarrow$32};
+%     \node (enc5) [conv, below=of enc4] {Conv3D, 32$\rightarrow$64};
+%     \node (enc6) [conv, below=of enc5] {Conv3D, 64$\rightarrow$64};
+%     \node (pool) [pool, below=of enc6] {MaxPool3D};
+
+%     % Decoder
+%     \node (upconv1) [upconv, right=of enc4, xshift=2cm] {UpConv3D, 64$\rightarrow$32};
+%     \node (dec1) [conv, right=of enc3, xshift=2cm] {Conv3D, 64$\rightarrow$32};
+%     \node (dec2) [conv, right=of enc2, xshift=2cm] {Conv3D, 32$\rightarrow$32};
+%     \node (upconv2) [upconv, right=of enc2, xshift=2cm] {UpConv3D, 32$\rightarrow$16};
+%     \node (dec3) [conv, right=of enc1, xshift=2cm] {Conv3D, 32$\rightarrow$16};
+%     \node (dec4) [conv, right=of input, xshift=2cm] {Conv3D, 16$\rightarrow$16};
+%     \node (output) [output, right=of dec4] {Output, Conv3D, 16$\rightarrow$2};
+
+%     % Connections
+%     \draw[->] (input) -- (enc1);
+%     \draw[->] (enc1) -- (enc2);
+%     \draw[->] (enc2) -- (enc3);
+%     \draw[->] (enc3) -- (enc4);
+%     \draw[->] (enc4) -- (enc5);
+%     \draw[->] (enc5) -- (enc6);
+%     \draw[->] (enc6) -- (pool);
+%     \draw[->] (pool) -- ++(0,-0.5) -| (upconv1);
+%     \draw[->] (upconv1) -- (dec1);
+%     \draw[->] (dec1) -- (dec2);
+%     \draw[->] (dec2) -- (upconv2);
+%     \draw[->] (upconv2) -- (dec3);
+%     \draw[->] (dec3) -- (dec4);
+%     \draw[->] (dec4) -- (output);
+
+%     % Skip connections
+%     \draw[->, dashed] (enc2.east) -- ++(1,0) |- (dec1);
+%     \draw[->, dashed] (enc4.east) -- ++(1,0) |- (dec3);
+
+% \end{tikzpicture}
+
+% \end{document}
+
+
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\begin{document}
+
+\[ P_\Omega(M) = \begin{pmatrix}
+1 & -1 & 3 \\
+4 & 5 & -1 \\
+-1 & 2 & 9
+\end{pmatrix} \]
+
+The indices \( \Omega \) (where the values are known) are:
+
+\[ \Omega = \{ (0,0), (0,2), (1,0), (1,1), (2,1), (2,2) \} \]
+Thus, \( P_\Omega(M) \) is:
+\[ P_\Omega(M) = \begin{pmatrix}
+1 & 0 & 3 \\
+4 & 5 & 0 \\
+0 & 2 & 9
+\end{pmatrix} \]
+
+During each iteration, \( X \) is updated through the SVT algorithm. Let's say in one of the iterations, \( X \) is:
+
+\[ X = \begin{pmatrix}
+1.1 & 0.2 & 2.8 \\
+4.1 & 4.9 & 0.1 \\
+-0.2 & 1.9 & 8.8
+\end{pmatrix} \]
+Applying \( P_\Omega \) to \( X \):
+\[ P_\Omega(X) = \begin{pmatrix}
+1.1 & 0 & 2.8 \\
+4.1 & 4.9 & 0 \\
+0 & 1.9 & 8.8
+\end{pmatrix} \]
+Now, let's compute the difference \( P_\Omega(M) - P_\Omega(X) \):
+\[ P_\Omega(M) - P_\Omega(X) = \begin{pmatrix}
+1 - 1.1 & 0 & 3 - 2.8 \\
+4 - 4.1 & 5 - 4.9 & 0 \\
+0 & 2 - 1.9 & 9 - 8.8
+\end{pmatrix} = \begin{pmatrix}
+-0.1 & 0 & 0.2 \\
+-0.1 & 0.1 & 0 \\
+0 & 0.1 & 0.2
+\end{pmatrix} \]
+The algorithm updates \( Y \) using this difference:
+\[ Y^{(k+1)} = Y^{(k)} + \beta (P_\Omega(M) - P_\Omega(X^{(k+1)})) \]
+The updated \( Y \) ensures that the next \( X \) will move closer to maintaining \( P_\Omega(X) = P_\Omega(M) \).
+### Code Implementation
+With these concepts clarified, let's implement the `matrix_complete` function:
+```python
+import numpy as np
+def soft_threshold(S, tau):
+return np.maximum(S - tau, 0)
+def matrix_complete(M, tolerance=8.1e-5, beta_val=None, tau_val=None, max_iter=1000, iter_print=10):
+D, N = M.shape
+Omega = np.where(M != -1)
+# Initialize parameters
+K = len(Omega[0])
+if beta_val is None:
+beta_val = 0.82 * D * N / K
+if tau_val is None:
+tau_val = 0.37 * max(D, N)
+P_Omega_M = np.zeros_like(M)
+P_Omega_M[Omega] = M[Omega]
+norm_P_Omega_M = np.linalg.norm(P_Omega_M, 'fro') ** 2
+Y = np.zeros_like(M)
+for k in range(max_iter):
+U, S, Vt = np.linalg.svd(Y, full_matrices=False)
+S_thresh = soft_threshold(S, tau_val)
+X = (U * S_thresh) @ Vt
+Y = Y + beta_val * (P_Omega_M - np.multiply(P_Omega_M != 0, X))
+if k % iter_print == 0:
+error = np.linalg.norm(np.multiply(P_Omega_M != 0, P_Omega_M - X), 'fro') ** 2
+relative_error = np.sqrt(error / norm_P_Omega_M)
+print(f"Iteration {k}: Relative error = {relative_error:.6f}")
+if np.sqrt(np.linalg.norm(np.multiply(P_Omega_M != 0, P_Omega_M - X), 'fro') ** 2 / norm_P_Omega_M) <= tolerance:
+break
+return X
+# Test the function
+np.random.seed(11232)
+M_test = np.random.rand(4, 5)
+M_test[0, 2] = -1
+M_test[3, 1] = -1
+M_test[1, 0] = -1
+M_test[2, 3] = -1
+X_correct = np.array([
+[0.28184808, 0.22232085, 0.25328388, 0.50521773, 0.82542652],
+[0.21899948, 0.0900134, 0.84216102, 0.65204837, 0.01802106],
+[0.07918562, 0.90582226, 0.65758943, 0.15359926, 0.48446993],
+[0.3112642, 0.23217241, 0.88039408, 0.6651078, 0.32746706]
+])
+X_test = matrix_complete(M_test, tolerance=1e-4, beta_val=0.5*20/16, tau_val=1.0)
+np.testing.assert_almost_equal(X_test, X_correct)
+print('--- TEST PASSED ---')
+```
+This code defines the `matrix_complete` function, which performs matrix completion using the Singular Value Thresholding (SVT) algorithm. It includes the soft-thresholding function and iteratively updates \( Y \) and \( X \) while checking the stopping condition. The test at the end ensures that the function works correctly
+
+% \begin{figure}[h]
+%     \centering
+% \begin{tikzpicture}[node distance=1cm, auto, thick]
+
+%     % Define styles
+%     \tikzstyle{rec} = [draw, rectangle, minimum width=0.2cm, minimum height=0.5cm]
+
+%     % ENCODER
+%     \node (en1_input) [rec] {};
+%     \node (en1con1_output) [rec, right=of en1_input] {};
+%     \node (en1con2_output) [rec, right=of en1con1_output] {};
+
+%     \node (en2_input) [rec, below=of en1con2_output] {};
+%     \node (en2con1_output) [rec, right=of en2_input] {};
+%     \node (en2con2_output) [rec, right=of en2con1_output] {};
+
+%     \node (en3_input) [rec, below=of en2con2_output] {};
+%     \node (en3con1_output) [rec, right=of en3_input] {};
+%     \node (en3con2_output) [rec, right=of en3con1_output] {};
+
+%     % DECODER
+%     \node (de1_input) [rec, above=of en3con2_output] {};
+%     \node (de1con1_output) [rec, right=of de1_input] {};
+%     \node (de1con2_output) [rec, right=of de1con1_output] {};
+
+%     \node (de2_input) [rec, above=of de1con2_output] {};
+%     \node (de2con1_output) [rec, right=of de2_input] {};
+%     \node (de2con2_output) [rec, right=of de2con1_output] {};
+
+%     % CONNECTIONS
+%     \draw[->] (en1_input) -- (en1con1_output);
+%     \draw[->] (en1con1_output) -- (en1con2_output);
+%     \draw[->] (en1con2_output) -- ++(0,-0.5) -| (en2_input);
+%     \draw[->] (en2_input) -- (en2con1_output);
+%     \draw[->] (en2con1_output) -- (en2con2_output);
+%     \draw[->] (en2con2_output) -- ++(0,-0.5) -| (en3_input);
+%     \draw[->] (en3_input) -- (en3con1_output);
+%     \draw[->] (en3con1_output) -- (en3con2_output);
+%     \draw[->] (en3con2_output) -- ++(0,0.5) -| (de1_input);
+%     \draw[->] (de1_input) -- (de1con1_output);
+%     \draw[->] (de1con1_output) -- (de1con2_output);
+%     \draw[->] (de1con2_output) -- ++(0,0.5) -| (de2_input);
+%     \draw[->] (de2_input) -- (de2con1_output);
+%     \draw[->] (de2con1_output) -- (de2con2_output);
+
+%     % Skip connections
+%     \draw[->, dashed] (en2con2_output.east) -- ++(0.5,0) |- (de1_input.west);
+%     \draw[->, dashed] (en1con2_output.east) -- ++(0.5,0) |- (de2_input.west);
+
+% \end{tikzpicture}
+% \caption{U-Net Architecture Diagram}
+% \end{figure}
+
+\end{document}

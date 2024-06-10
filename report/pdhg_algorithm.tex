@@ -1,0 +1,164 @@
+% % % % % \documentclass{article}
+% % % % % \usepackage{amsmath}
+% % % % % \usepackage{algorithm}
+% % % % % \usepackage{algorithmic}
+
+% % % % % \begin{document}
+
+% % % % % \begin{algorithm}
+% % % % % \caption{Unrolled PDHG algorithm for general linear operator $\mathbf{A}$ with $d(\cdot, \cdot) = \frac{1}{2} \| \cdot - \cdot \|_2^2$ and \textit{fixed} regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+% % % % % \begin{algorithmic}[1]
+% % % % % \STATE \textbf{Input:} $L = \| [\mathbf{A}, \nabla]^\textbf{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $x_0$
+% % % % % \STATE \textbf{Output:} reconstructed image $x_{TV}$
+% % % % % \STATE $x_0 = x_0$
+% % % % % \STATE $p_0 = 0$
+% % % % % \STATE $q_0 = 0$
+% % % % % \FOR{$k < T$}
+% % % % %     \STATE $p_{k+1} = \left(p_k + \sigma (\mathbf{A} \tilde{x}_k - \mathbf{y})\right) / (1 + \sigma)$
+% % % % %     \STATE $q_{k+1} = \text{clip}_{\Lambda_\Theta} \left(q_k + \sigma \nabla \tilde{x}_k \right)$
+% % % % %     \STATE $x_{k+1} = x_k - \tau \mathbf{A}^H p_{k+1} - \tau \nabla^T q_{k+1}$
+% % % % %     \STATE $\tilde{x}_{k+1} = x_{k+1} + \theta (x_{k+1} - x_k)$
+% % % % % \ENDFOR
+% % % % % \STATE $x_{TV} = x_T$
+% % % % % \end{algorithmic}
+% % % % % \end{algorithm}
+
+% % % % % \end{document}
+
+% % % % \documentclass{article}
+% % % % \usepackage{amsmath}
+% % % % \usepackage{algorithm}
+% % % % \usepackage{algorithmic}
+
+% % % % \begin{document}
+
+% % % % \begin{algorithm}
+% % % % \caption{Unrolled PDHG algorithm for general linear operator $\mathbf{A}$ with $d(\cdot, \cdot) = \frac{1}{2} \| \cdot - \cdot \|_2^2$ and fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+% % % % \begin{algorithmic}[1]
+% % % % \STATE \textbf{Input:} $L = \| [\mathbf{A}, \nabla]^T \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $x_0$
+% % % % \STATE \textbf{Output:} reconstructed image $x_{TV}$
+% % % % \STATE $x_0 = x_0$
+% % % % \STATE $p_0 = 0$
+% % % % \STATE $q_0 = 0$
+% % % % \FOR{$k < T$}
+% % % %     \STATE $p_{k+1} = \left(p_k + \sigma (\mathbf{A} \tilde{x}_k - \mathbf{y})\right) / (1 + \sigma)$
+% % % %     \STATE $q_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(q_k + \sigma \nabla \tilde{x}_k \right)$
+% % % %     \STATE $x_{k+1} = x_k - \tau \mathbf{A}^H p_{k+1} - \tau \nabla^T q_{k+1}$
+% % % %     \STATE $\tilde{x}_{k+1} = x_{k+1} + \theta (x_{k+1} - x_k)$
+% % % % \ENDFOR
+% % % % \STATE $x_{TV} = x_T$
+% % % % \end{algorithmic}
+% % % % \end{algorithm}
+
+% % % % \end{document}
+
+
+% % % \documentclass{article}
+% % % \usepackage{amsmath}
+% % % \usepackage{algorithm}
+% % % \usepackage{algorithmic}
+
+% % % \begin{document}
+
+% % % \begin{algorithm}
+% % % \caption{Unrolled PDHG algorithm for general linear operator $\mathbf{A}$ with $d(\cdot, \cdot) = \frac{1}{2} \| \cdot - \cdot \|_2^2$ and fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+% % % \begin{algorithmic}[1]
+% % % \STATE \textbf{Input:} $L = \| [\mathbf{A}, \nabla]^T \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $\mathbf{x}_0$
+% % % \STATE \textbf{Output:} reconstructed image $\mathbf{x}_{TV}$
+% % % \STATE $\mathbf{x}_0 = \mathbf{x}_0$
+% % % \STATE $\mathbf{p}_0 = 0$
+% % % \STATE $\mathbf{q}_0 = 0$
+% % % \FOR{$k < T$}
+% % %     \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma (\mathbf{A} \tilde{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+% % %     \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(\mathbf{q}_k + \sigma \nabla \tilde{\mathbf{x}}_k \right)$
+% % %     \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{A}^H \mathbf{p}_{k+1} - \tau \nabla^T \mathbf{q}_{k+1}$
+% % %     \STATE $\tilde{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
+% % % \ENDFOR
+% % % \STATE $\mathbf{x}_{TV} = \mathbf{x}_T$
+% % % \end{algorithmic}
+% % % \end{algorithm}
+
+% % % \end{document}
+
+
+% % \documentclass{article}
+% % \usepackage{amsmath}
+% % \usepackage{algorithm}
+% % \usepackage{algorithmic}
+
+% % \begin{document}
+
+% % \begin{algorithm}
+% % \caption{Unrolled PDHG algorithm for general linear operator $\mathbf{A}$ with $d(\cdot, \cdot) = \frac{1}{2} \| \cdot - \cdot \|_2^2$ and fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+% % \begin{algorithmic}[1]
+% % \STATE \textbf{Input:} $L = \| [\mathbf{A}, \nabla]^T \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $\mathbf{x}_0$
+% % \STATE \textbf{Output:} reconstructed image $\mathbf{x}_{TV}$
+% % \STATE $\mathbf{x}_0 = \mathbf{x}_0$
+% % \STATE $\mathbf{p}_0 = 0$
+% % \STATE $\mathbf{q}_0 = 0$
+% % \FOR{$k < T$}
+% %     \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma (\mathbf{A} \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+% %     \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
+% %     \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{A}^H \mathbf{p}_{k+1} - \tau \nabla^T \mathbf{q}_{k+1}$
+% %     \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
+% % \ENDFOR
+% % \STATE $\mathbf{x}_{\text{TV}} = \mathbf{x}_T$
+% % \end{algorithmic}
+% % \end{algorithm}
+
+% % \end{document}
+
+% \documentclass{article}
+% \usepackage{amsmath}
+% \usepackage{algorithm}
+% \usepackage{algorithmic}
+
+% \begin{document}
+
+% \begin{algorithm}
+% \caption{Unrolled PDHG algorithm for general linear operator $\mathbf{A}$ with $d(\cdot, \cdot) = \frac{1}{2} \| \cdot - \cdot \|_2^2$ and fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+% \begin{algorithmic}[1]
+% \STATE \textbf{Input:} $L = \| [\mathbf{A}, \nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $\mathbf{x}_0$
+% \STATE \textbf{Output:} reconstructed image $\mathbf{x}_{TV}$
+% \STATE $\mathbf{x}_0 = \mathbf{x}_0$
+% \STATE $\mathbf{p}_0 = 0$
+% \STATE $\mathbf{q}_0 = 0$
+% \FOR{$k < T$}
+%     \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma (\mathbf{A} \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+%     \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
+%     \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{A}^\text{H} \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
+%     \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
+% \ENDFOR
+% \STATE $\mathbf{x}_{\text{TV}} = \mathbf{x}_T$
+% \end{algorithmic}
+% \end{algorithm}
+
+% \end{document}
+
+
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\begin{document}
+
+\begin{algorithm}
+\caption{Unrolled PDHG algorithm for general linear operator $\mathbf{A}$ with $d(\cdot, \cdot) = \frac{1}{2} \| \cdot - \cdot \|_2^2$ and fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} $L = \| [\mathbf{A}, \nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $\mathbf{x}_0$
+\STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{TV}}$
+\STATE $\mathbf{x}_0 = \mathbf{x}_0$
+\STATE $\mathbf{p}_0 = 0$
+\STATE $\mathbf{q}_0 = 0$
+\FOR{$k < T$}
+    \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma (\mathbf{A} \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+    \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
+    \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{A}^\text{H} \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
+    \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
+\ENDFOR
+\STATE $\mathbf{x}_{\text{TV}} = \mathbf{x}_T$
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}

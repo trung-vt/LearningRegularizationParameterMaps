@@ -1,0 +1,132 @@
+\documentclass[12pt]{article}
+\usepackage{xeCJK}
+\usepackage{amssymb,tikz,pdftexcmds,xparse}
+\usepackage{url}
+\usepackage{titlesec}
+
+\usepackage{indentfirst}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{biblatex}
+\addbibresource{references.bib}
+
+
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{minted}
+
+% https://www.overleaf.com/learn/latex/Positioning_images_and_tables#Basic_positioning
+% To position the image to the centre
+\usepackage[export]{adjustbox}  
+
+\usepackage{xcolor}
+\usepackage{xparse}
+\usepackage{blindtext}
+\usepackage{hyperref}   % For hyperlinks
+
+\usemintedstyle{manni}
+
+\NewDocumentCommand{\codeword}{v}{%
+% \texttt{\textcolor{blue}{#1}}%
+\texttt{\textcolor{black}{#1}}%
+% \mint{html}|v|%
+}
+
+% \lstset{language=C,keywordstyle={\bfseries \color{blue}}}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  % language=Java,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2
+}
+
+
+\begin{document}
+
+
+
+
+For the final project, just list as many as possible here:
+
+- UNET Pytorch Github: \url{https://github.com/milesial/Pytorch-UNet} \cite{unet_pytorch_github}
+
+- UNET tutorial Pytorch (and Keras as well): \cite{unet_pyimagesearch_guide}
+
+- \url{https://scholar.google.co.uk/citations?user=fgSULeUAAAAJ&hl=en&oi=sra}
+
+- Introduction to mathematical imaging (total variation)\cite{papafitsoros_2015}
+
+- A COMBINED FIRST AND SECOND ORDER VARIATIONAL APPROACH FOR IMAGE
+RECONSTRUCTION \cite{papafitsoros_2013}
+
+- Book "Variational Methods in Image Processing" \cite{Gilboa2018}
+
+- Book "Variational Methods in Imaging" \cite{var_methods_imaging}
+
+- Introduction to CNN \cite{Lecun_CNN}
+
+  \url{https://ieeexplore.ieee.org/document/726791}
+
+- Introduction to UNET \cite{unet}
+
+- UNET and TV \cite{kostas_tv_unet}
+
+- TV in JPEG Decompression \cite{jpeg_decompress}
+
+- Comparing TV, TV$^2$, ICTV and TGV \cite{benning_et_al}
+
+- Benning's Thesis \cite{benning_thesis}
+
+- Stripped-Down UNET \cite{sd_unet} \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7167802/pdf/diagnostics-10-00110.pdf}
+
+- Algorithm Unrolling : Literature Review of UNETs ? (2020) \cite{algo_unrolling}
+    - summarise popular techniques for algorithm unrolling in various domains of signal and image processing including imaging, vision and recognition, and speech processing. 
+    - show the connections between iterative algorithms and neural networks and present recent theoretical results. 
+    - discuss limitations of unrolling and suggest possible future research directions.
+
+- \cite{Guo_2019}
+
+- \cite{nn_inverse_problems}
+
+- Le Cun came up with UNET? \cite{fast_approx_sparse_coding}
+
+- Thomas Pock explains Total Variant \cite{thomas_pock_TV}
+
+- Other Image Processing Methods
+
+    - \cite{taylor_former} TaylorFormer for Image Dehazing : \url{https://arxiv.org/abs/2308.14036} \url{https://github.com/fvl2020/iccv-2023-mb-taylorformer} \url{https://paperswithcode.com/paper/mb-taylorformer-multi-branch-efficient}
+
+\printbibliography
+
+\end{document}
+

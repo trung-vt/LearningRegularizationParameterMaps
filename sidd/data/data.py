@@ -48,36 +48,84 @@ def get_random_patches(input_image: Image, n_patches: int, patch_size=(256, 256)
     return patches
 
 
-def add_gaussian_noise(image: Image, sigma_min: int, sigma_max: int) -> Image:
-    image_np = np.array(image)
+# def add_gaussian_noise(image: Image, sigma_min: int, sigma_max: int) -> Image:
+#     # print(f"image.size: {image.size}")
+#     image = np.array(image, dtype=np.float32) / 255.0
+#     # row,col,ch= image.shape
+#     col, row = image.shape
+#     mean = 0
+#     # var = 0.1
+#     # sigma = var**0.5
+#     sigma = sigma_min + np.random.rand(1) * (sigma_max - sigma_min)
+#     # gauss = np.random.normal(mean,sigma,(row,col,ch))
+#     gauss = np.random.normal(mean,sigma,(col, row))
+#     # gauss = gauss.reshape(row,col,ch)
+#     gauss = gauss.reshape(col, row)
+#     noisy = image + gauss
+#     # noisy = np.clip(noisy, 0, 1)
+#     noisy = np.uint8(noisy*255)
+#     noisy = Image.fromarray(noisy)
+#     return noisy
 
-    xf = torch.tensor(image_np, dtype=torch.float)
 
-    xf /= 255.0
+# def get_variable_noise(sigma_min, sigma_max):
+#     return sigma_min + torch.rand(1) * (sigma_max - sigma_min)
 
-    std = torch.std(xf)
-    mu = torch.mean(xf)
+# def add_noise(xf: torch.tensor, sigma) -> torch.tensor:
+#     std = torch.std(xf)
+#     mu = torch.mean(xf)
 
-    x_centred = (xf  - mu) / std
+#     x_centred = (xf  - mu) / std
 
-    sigma = sigma_min + torch.rand(1) * (sigma_max - sigma_min)
+#     x_centred += sigma * torch.randn(xf.shape, dtype = xf.dtype)
 
-    x_centred += sigma * torch.randn(xf.shape, dtype = xf.dtype)
+#     xnoise = std * x_centred + mu
 
-    xnoise = std * x_centred + mu
+#     return xnoise
 
-    xnoise *= 255.0
+# def add_gaussian_noise(image: Image, sigma_min: int, sigma_max: int) -> Image:
+#     im_np = np.array(image)
+#     im_tensor = torch.tensor(im_np, dtype=torch.float)
+#     im_tensor /= 255.0
+#     sigma = get_variable_noise(sigma_min, sigma_max)
+#     noisy_im_tensor = add_noise(im_tensor, sigma)
+#     noisy_im_tensor *= 255.0
+#     noisy_im_np = noisy_im_tensor.to("cpu").detach().numpy().astype('uint8')
+#     # noisy_im_np = np.clip(noisy_im_np, 0, 255)
+#     noisy_image = Image.fromarray(noisy_im_np)
+#     return noisy_image
 
-    xnoise_np = xnoise.to("cpu").detach().numpy().astype('uint8')
 
-    del std, mu, x_centred, xnoise, xf
+# def add_gaussian_noise(image: Image, sigma_min: int, sigma_max: int) -> Image:
+#     image_np = np.array(image)
 
-    # clip the values to [0, 255]
-    xnoise_np = np.clip(xnoise_np, 0, 255)
+#     xf = torch.tensor(image_np, dtype=torch.float)
 
-    noisy_image = Image.fromarray(xnoise_np)
+#     xf /= 255.0
 
-    return noisy_image
+#     std = torch.std(xf)
+#     mu = torch.mean(xf)
+
+#     x_centred = (xf  - mu) / std
+
+#     sigma = sigma_min + torch.rand(1) * (sigma_max - sigma_min)
+
+#     x_centred += sigma * torch.randn(xf.shape, dtype = xf.dtype)
+
+#     xnoise = std * x_centred + mu
+
+#     xnoise *= 255.0
+
+#     xnoise_np = xnoise.to("cpu").detach().numpy().astype('uint8')
+
+#     del std, mu, x_centred, xnoise, xf
+
+#     # clip the values to [0, 255]
+#     xnoise_np = np.clip(xnoise_np, 0, 255)
+
+#     noisy_image = Image.fromarray(xnoise_np)
+
+#     return noisy_image
 
 
 def save_patches(patches: list, output_folder: str, output_file: str, min_sigma=0.1, max_sigma=0.5) -> None:
@@ -128,9 +176,10 @@ def get_and_save_patches(
         random.seed(rand_seed) # Random seed for reproducibility
 
     sidd_files = get_sidd_files(input_path, type)
-    for file in tqdm(sidd_files):
+    for i, file in tqdm(enumerate(sidd_files)):
         image = Image.open(file)
         image = image.convert("L") # Convert to grayscale
         patches = get_random_patches(image, n_patches, patch_size)
         output_file = file.split("/")[-1].split(".")[0]
         save_patches(patches, output_path, output_file, min_sigma, max_sigma)
+        break

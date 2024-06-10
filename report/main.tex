@@ -243,16 +243,31 @@ After training with many examples, the U-Net can learn to predict the regularisa
 
 \subsection{Total Variational Denoising}
 
+The total variational (TV) method is a method for image denoising that is based on the principle of minimising the total variation of the image.
+The total variation of an image is a measure of the amount of variation in the intensity of the image.
+The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
+
+The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
+By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image.
+
 Denoising problems can be described as 
 
 \begin{equation}
   \mathbf{z} = \mathbf{x}_{\text{true}} + \mathbf{e}
 \end{equation}
   
-where $\mathbf{x}_{\text{true}} \in V^n$ with $V \in \mathbb{R}$ is the object to be imaged, $\mathbf{e} \in V^n$ denotes sopme random noise component, and $\mathbf{z} \in V^n$ represents the measured data.
+where $\mathbf{x}_{\text{true}} \in V^n$ with $V \in \mathbb{R}$ is 
+the object to be imaged, 
+% the "true"/"clean" image,
+% denoised image
+$\mathbf{e} \in V^n$ denotes sopme random noise component, and $\mathbf{z} \in V^n$ represents 
+the measured data.
+% the noisy image.
 The goal is to recover $\mathbf{x}_{\text{true}}$ or at least a good enough reconstruction given $\mathbf{z}$.
 
 A prominent approach is to formulate the reconstruction as a minimisation problem:
+
+% The total variational denoising method works by finding the image that minimises the following objective function:
 
 \begin{equation}
   \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathit{R}(\mathbf{x})
@@ -274,76 +289,69 @@ The total variation of an image can be calculated using the following formula:
   \mathit{R}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
 \end{equation}
 
-where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
+where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda > 0$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
 
+
+This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and Sobel. 
+We can treat $\mathbf{x}$ as a matrix and calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image.
+Let $I$ represent $\mathbf{x}$, then:
 
 \begin{equation}
-  TV(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
+  \| \nabla \mathbf{x} \|_1 = \text{TV}(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
+\end{equation}
+
+where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$. (Note: $I$ looks like the identity matrix. Is there a better notation?)
+
+Note that, we can move $\lambda$ inside the norm, so the regularisation term can be written as:
+
+% Write a aligned equation
+\begin{equation}
+  \begin{aligned}
+    \mathit{R}(\mathbf{x}) 
+    &= \lambda \| \nabla \mathbf{x} \|_1 \\
+    &= \| \lambda \nabla \mathbf{x} \|_1 \\
+    &= \text{TV}(\lambda I) \\
+    &= \sum_{i,j} |\lambda I_{i,j} - \lambda I_{i+1,j}| + |\lambda I_{i,j} - \lambda I_{i,j+1}|
+  \end{aligned}
+\end{equation}
+
+We can see that the regularisation parameter needs not to be a scalar $\lambda$, but can be a matrix $\Lambda$.
+
+\begin{equation}
+  \mathit{R}(\mathbf{x}) = \| \Lambda \nabla \mathbf{x} \|_1
 \end{equation}
 
 
-
-
-
-
-
-
-
-\begin{equation}
-  \mathbf{z} = \arg\min_{\mathbf{z}} \frac{1}{2} \|\mathbf{z} - \mathbf{y}\|^2 + \lambda R(\mathbf{z})
-\end{equation}
-
-
-Denoising problems can be described as
-
-\[
-  \mathbf{z} = \arg\min_{\mathbf{z}} \frac{1}{2} \|\mathbf{z} - \mathbf{y}\|^2 + \lambda R(\mathbf{z})
-\]
-  
-where $\mathbf{y}$ is the noisy image, $\mathbf{z}$ is the denoised image, $R(\mathbf{z})$ is the regularisation term, and $\lambda$ is the regularisation parameter.
-
 The total variation of an image is a measure of the amount of variation in the intensity of the image.
-
-Denoising problems can be described as
-
-\[
-\min_{u} \frac{1}{2} ||u - f||^2 + \lambda R(u)
-\]
-
-where $f$ is the noisy image, $u$ is the denoised image, $R(u)$ is the regularisation term, and $\lambda$ is the regularisation parameter.
-
-The total variation of an image is a measure of the amount of variation in the intensity of the image.
-The total variation of an image can be calculated using the following formula:
-
-\[
-TV(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
-\]
-
-where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$.
 
 The total variational denoising method works by finding the image that minimises the following objective function:
 
-\[
-\min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
-\]
+Putting it all together, the total variation of an image can be calculated using the following formula:
 
-where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
+\begin{equation}
+  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}}  = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
+\end{equation}
+
+if we use a scalar $\lambda$ regularisation parameter, or
+
+\begin{equation}
+  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}}  = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \Lambda \nabla \mathbf{x} \|_1
+\end{equation}
+
+if we use a matrix $\Lambda$ of regularisation parameters.
+
+In this thesis, we will use the later form of the regularisation term.
+The U-Net will be used to find the regularisation parameter $\Lambda$ that produces the best denoised image for any particular noisy image.
+
 
 \subsection{U-Net}
 
-The total variational (TV) method is a method for image denoising that is based on the principle of minimising the total variation of the image.
-The total variation of an image is a measure of the amount of variation in the intensity of the image.
-The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
-
-The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
-By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image.
-
-\subsection{U-Net}
-
-The U-Net is a type of neural network that is commonly used for image segmentation.
+The U-Net is a type of neural network that is commonly used for image segmentation \cite{ronneberger2015unet}.
 The U-Net is an encoder-decoder network that is designed to take an image as input and produce a segmentation mask as output.
 The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
 The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
+
+In our case, we will optimise a U-Net model to find the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
 
 \section{Method}
 

@@ -183,13 +183,75 @@
 
 \section{Abstract}
 
-In this thesis we will describe the theory of application of total variational (TV) method to image denoising. 
+In this thesis we will describe the theory and application of the total variational (TV) method to image denoising. 
 We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
 We will then present the results of the method on a few different datasets.
 
+% \section{Overview}
+
 \section{Background}
 
+\subsection{Denoising problems}
+
+The history of image denoising: 
+
+Image denoising began in the 1960s with the development of the Wiener filter, which is a linear filter that minimises the mean squared error between the denoised image and the original image.
+The Wiener filter works by finding the image that minimises the following objective function:
+
+\[
+\min_{I} \frac{1}{2} ||I - I_{\text{noisy}}||^2
+\]
+
+where $I$ is the denoised image, $I_{\text{noisy}}$ is the noisy image, and $||\cdot||$ is the mean squared error between two images.
+
+The Wiener filter is a linear filter that works well for images that are corrupted by Gaussian noise.
+However, the Wiener filter does not work well for images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise.
+
+
+
 \subsection{Total Variational Denoising}
+
+Denoising problems can be described as 
+
+\[
+  \mathbf{z} = \mathbf{x}
+
+Denoising problems can be described as
+
+\[
+  \mathbf{z} = \arg\min_{\mathbf{z}} \frac{1}{2} \|\mathbf{z} - \mathbf{y}\|^2 + \lambda R(\mathbf{z})
+\]
+  
+where $\mathbf{y}$ is the noisy image, $\mathbf{z}$ is the denoised image, $R(\mathbf{z})$ is the regularisation term, and $\lambda$ is the regularisation parameter.
+
+The total variation of an image is a measure of the amount of variation in the intensity of the image.
+
+Denoising problems can be described as
+
+\[
+\min_{u} \frac{1}{2} ||u - f||^2 + \lambda R(u)
+\]
+
+where $f$ is the noisy image, $u$ is the denoised image, $R(u)$ is the regularisation term, and $\lambda$ is the regularisation parameter.
+
+The total variation of an image is a measure of the amount of variation in the intensity of the image.
+The total variation of an image can be calculated using the following formula:
+
+\[
+TV(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
+\]
+
+where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$.
+
+The total variational denoising method works by finding the image that minimises the following objective function:
+
+\[
+\min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
+\]
+
+where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
+
+\subsection{U-Net}
 
 The total variational (TV) method is a method for image denoising that is based on the principle of minimising the total variation of the image.
 The total variation of an image is a measure of the amount of variation in the intensity of the image.

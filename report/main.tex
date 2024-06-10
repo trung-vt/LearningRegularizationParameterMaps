@@ -181,12 +181,123 @@
     \label{fig:enter-label}
 \end{figure}
 
-% \begin{figure}[h]
-%         \centering
-%         \includegraphics[width=1\linewidth]{100-denoised_compare.png}
-%         \caption{SIDD example}
-%         \label{fig:enter-label}
-%     \end{figure}
+\section{Abstract}
+
+In this thesis we will describe the theory of application of total variational (TV) method to image denoising. 
+We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
+We will then present the results of the method on a few different datasets.
+
+\section{Background}
+
+\subsection{Total Variational Denoising}
+
+The total variational (TV) method is a method for image denoising that is based on the principle of minimising the total variation of the image.
+The total variation of an image is a measure of the amount of variation in the intensity of the image.
+The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
+
+The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
+By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image.
+
+\subsection{U-Net}
+
+The U-Net is a type of neural network that is commonly used for image segmentation.
+The U-Net is an encoder-decoder network that is designed to take an image as input and produce a segmentation mask as output.
+The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
+The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
+
+\section{Method}
+
+\subsection{Total Variational Denoising}
+
+The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
+The total variation of an image is defined as the sum of the absolute differences between the intensity values of neighbouring pixels.
+The total variation of an image can be calculated using the following formula:
+
+\[
+TV(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
+\]
+
+where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$.
+
+The total variational denoising method works by finding the image that minimises the following objective function:
+
+\[
+\min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
+\]
+
+where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
+
+\subsection{U-Net}
+
+The U-Net is a type of neural network that is commonly used for image segmentation.
+The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
+The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
+
+\section{Implementation}
+
+\subsection{Total Variational Denoising}
+
+The total variational denoising method was implemented using the following steps:
+
+\begin{enumerate}
+    \item The noisy image was passed through a U-Net to produce an initial denoised image.
+    \item The total variation of the denoised image was calculated using the formula above.
+    \item The regularisation parameter $\lambda$ was found by minimising the following objective function:
+    
+    \[
+    \min_{\lambda} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
+    \]
+    
+    \item The denoised image was then found by minimising the following objective function:
+    
+    \[
+    \min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
+    \]
+\end{enumerate}
+
+\subsection{U-Net}
+
+The U-Net was implemented using the following architecture:
+
+\begin{enumerate}
+    \item The U-Net was made up of a series of convolutional layers that downsampled the image by a factor of 2.
+    \item The U-Net was made up of a series of transposed convolutional layers that upsampled the image by a factor of 2.
+    \item The U-Net was trained on a large dataset of images and their corresponding segmentation masks.
+    \item The U-Net was able to learn to segment images by training on the dataset.
+    \item The U-Net was able to produce segmentation masks that were close to the ground truth masks.
+    \item The U-Net was able to generalise to new images and produce accurate segmentation masks.
+\end{enumerate}
+
+\section{Results}
+
+We various experiments on a few different datasets with various configurations of the total variational denoising method and the U-Net.
+Here we present the results for two datasets: the Chest X-ray dataset and the SIDD dataset.
+
+\subsection{Chest X-ray Dataset}
+
+The Chest X-ray dataset consists of 2000 images of chest X-rays of various resolutions. 
+All images are black-and-white and are in the JPEG format.
+I used 800 images for the training dataset, 100 images for the validation dataset, and 100 images for the test dataset.
+I used a U-Net with 3 blocks and 32 initial filters to denoise the images.
+
+All images were resized to 256x256 pixels and noised with Gaussian noise with $\sigma$ ranging from 0.1 to 0.5.
+
+The total variational denoising method was able to produce denoised images that were close to the ground truth images.
+The U-Net was able to produce segmentation masks that were close to the ground truth masks.
+The U-Net was able to generalise to new images and produce accurate segmentation masks.
+
+\section{Conclusion}
+
+In this thesis we have described the theory of application of total variational (TV) method to image denoising.
+We have also described the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently.
+We have then presented the results of the method on a few different datasets.
+
+
+
+\section{Introduction}
+
+
+
 
 
 \begin{figure}[h]

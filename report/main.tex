@@ -285,6 +285,15 @@ Here we will look at Gaussian noise. The data fidelity term appropriate for Gaus
 \end{equation}
 
 The regularisation term $\mathit{R}(\cdot)$ is the total variation of the image, which is a measure of the amount of variation in the intensity of the image.
+
+Let
+
+\begin{equation}
+\nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x_1}, \frac{\partial \mathbf{x}}{\partial x_2}, \ldots, \frac{\partial \mathbf{x}}{\partial x_n} \right)
+\end{equation}
+
+be the gradient of the image $\mathbf{x}$.
+
 The total variation of an image can be calculated using the following formula:
 
 \begin{equation}
@@ -302,7 +311,8 @@ We calculate the gradient in the horizontal and vertical directions separately, 
   \| \nabla \mathbf{x} \|_1 = \text{TV}(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
 \end{equation}
 
-where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$. (Note: $I$ looks like the identity matrix. Is there a better notation?)
+where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$. 
+% (Note: $I$ looks like the identity matrix. Is there a better notation?)
 
 Note that, we can move $\lambda$ inside the norm, so the regularisation term can be written as:
 
@@ -346,6 +356,12 @@ In this thesis, we will use the later form of the regularisation term.
 The U-Net will be used to find the regularisation parameter $\Lambda$ that produces the best denoised image for any particular noisy image.
 
 
+\subsection{Related Work}
+
+
+
+
+
 \subsection{U-Net}
 
 The U-Net is a type of neural network that is commonly used for image segmentation \cite{ronneberger2015unet}.
@@ -361,13 +377,7 @@ In our case, we will optimise a U-Net model to find the regularisation parameter
 
 The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
 The total variation of an image is defined as the sum of the absolute differences between the intensity values of neighbouring pixels.
-The total variation of an image can be calculated using the following formula:
 
-\[
-TV(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
-\]
-
-where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$.
 
 The total variational denoising method works by finding the image that minimises the following objective function:
 

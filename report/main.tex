@@ -1545,17 +1545,23 @@ The regularisation parameter map consistently produces higher PSNR and SSIM valu
 % \usepackage{graphicx}
 
 \begin{table}[h!]
+
 \centering
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{c|c c}
+% \hline
+ & \textbf{PDHG -} $\lambda$ & \textbf{PDHG -} $\Lambda_{\Theta}$ \\
 \hline
- & \textbf{PDHG -} $\lambda$ & \textbf{PDHG -} $\Lambda$ \\
-\hline
-\textbf{PSNR} & $33.43 \pm 2.16$ & $34.73 \pm 2.02$ \\
-\textbf{SSIM} & $0.87 \pm 0.04$ & $0.90 \pm 0.03$ \\
-\hline
+\textbf{SSIM} & $0.87 \pm 0.04$ & $\mathbf{0.90} \pm 0.03$ \\
+\textbf{PSNR} & $33.43 \pm 2.16$ & $\mathbf{34.73} \pm 2.02$ \\
+% \hline
 \end{tabular}
-\caption{Scalar $\lambda$ and $\Lambda$ map values}
+
+\caption{Mean and standard deviation of the measures SSIM and PSNR obtained over the test set for the chest x-ray dataset example. 
+The TV-reconstruction using the parameter-map $\Lambda_{\Theta}$ improves the both metrics.
+}
+
 \label{table:1}
+
 \end{table}
 
 

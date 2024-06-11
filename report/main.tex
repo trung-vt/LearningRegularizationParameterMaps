@@ -957,7 +957,7 @@ We trained for 100 epochs.
 % I used 800 images for the training dataset, 100 images for the validation dataset, and 100 images for the test dataset.
 % I used a U-Net with 3 blocks and 32 initial filters to denoise the images.
 
-All images were resized to 256x256 pixels and noised with Gaussian noise with $\sigma$ ranging from 0.1 to 0.5.
+% All images were resized to 256x256 pixels and noised with Gaussian noise with $\sigma$ ranging from 0.1 to 0.5.
 
 
 
@@ -969,19 +969,7 @@ All images were resized to 256x256 pixels and noised with Gaussian noise with $\
 
 % \subsection{Chest X-ray}
 
-\begin{figure}[h]
-    \centering
-    
-    \includegraphics[width=0.25\linewidth]{images//chest_xray/clean.png}
-    \includegraphics[width=0.25\linewidth]{images//chest_xray/noisy.png}
-    \includegraphics[width=0.25\linewidth]{images//chest_xray/single_lambda_best_0_08.png}
-    \includegraphics[width=0.25\linewidth]{images/chest_xray/lambda_map_best_using_function.png}
-    \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_1.png}
-    \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_3.png}
-        
-    \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
-    \label{fig:chest_xray}
-\end{figure}
+
 
 
 % \begin{figure}[h]
@@ -1823,6 +1811,20 @@ I used T = 256
 
 
 \section{Results}
+
+\begin{figure}[h]
+  \centering
+  
+  \includegraphics[width=0.25\linewidth]{images//chest_xray/clean.png}
+  \includegraphics[width=0.25\linewidth]{images//chest_xray/noisy.png}
+  \includegraphics[width=0.25\linewidth]{images//chest_xray/single_lambda_best_0_08.png}
+  \includegraphics[width=0.25\linewidth]{images/chest_xray/lambda_map_best_using_function.png}
+  \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_1.png}
+  \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_3.png}
+      
+  \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
+  \label{fig:chest_xray}
+\end{figure}
 
 
 \begin{figure}[h]

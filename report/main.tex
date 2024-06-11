@@ -1440,26 +1440,6 @@ All images were resized to 256x256 pixels and noised with Gaussian noise with $\
 
 
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
-        \caption{Chest X-ray example - grid search}
-    \label{fig:enter-label}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-        \includegraphics[width=1\linewidth]{images//chest_xray/outputa.png}
-        \caption{Chest X-ray box plots}
-    \label{fig:enter-label}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{images//chest_xray/output3.png}
-    \caption{Enter Caption}
-    \label{fig:enter-label}
-\end{figure}
 
 % \section{Test cases}
 
@@ -1601,9 +1581,11 @@ All images were resized to 256x256 pixels and noised with Gaussian noise with $\
     
 %     \end{minted}
 
-\subsubsection{Experiment 2 (true-voice-32)}
+% \subsubsection{Experiment 2 (true-voice-32)}
 
-\url{https://wandb.ai/wof/chest_xray/runs/wedf9ud9}
+Experiment
+
+("true-voice-32" \url{https://wandb.ai/wof/chest_xray/runs/wedf9ud9})
 
 I used T = 256
 
@@ -1636,11 +1618,11 @@ I used T = 256
 % \end{minted}
 
 
-\subsubsection{Other experiment A ()}:
+% \subsubsection{Other experiment A ()}:
 
-\url{https://wandb.ai/wof/chest_xray/runs/xnjgywx7/overview}
 
-This is an experiment where I removed PDHG completely and used only the UNet to learn how to denoise an image.
+
+(I also did an experiment where I removed PDHG completely and used only the UNet to learn how to denoise an image (\url{https://wandb.ai/wof/chest_xray/runs/xnjgywx7/overview}).)
 
 % \begin{minted}[frame=single,
 %                 framesep=3mm,
@@ -1841,6 +1823,28 @@ This is an experiment where I removed PDHG completely and used only the UNet to 
 
 
 \section{Results}
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
+      \caption{Chest X-ray example - grid search}
+  \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+      \includegraphics[width=1\linewidth]{images//chest_xray/outputa.png}
+      \caption{Chest X-ray box plots}
+  \label{fig:enter-label}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\linewidth]{images//chest_xray/output3.png}
+  \caption{Enter Caption}
+  \label{fig:enter-label}
+\end{figure}
 
 The total variational denoising method was able to produce denoised images that were close to the ground truth images.
 The U-Net was able to produce segmentation masks that were close to the ground truth masks.

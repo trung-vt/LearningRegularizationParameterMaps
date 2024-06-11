@@ -917,8 +917,10 @@ The final stage in our architecture employs a convolutional layer to convert the
 
 % \subsection{Chest X-ray Dataset}
 
-The original chest X-ray dataset consists of 2000 images of chest X-rays of various resolutions taken from a kaggle dataset \cite{kaggle}.
+We used the Chest X-Ray Images (Pneumonia) dataset which was downloaded from \url{https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia}. This is a dataset for binary classification of normal and pneumonia chest X-ray images. The dataset consists of 5,863 X-Ray images (JPEG) and 2 categories (Pneumonia/Normal).
 All images are black-and-white and are in the JPEG format.
+The X-rays images have various resolutions.
+
 We used 800 images for the training dataset, 100 images for the validation dataset, and 100 images for the test dataset.
 We cropped the images to squares and then resized all images to 256x256 pixels.
 For each image we generated a random value of $\sigma$ ranging from 0.1 to 0.5 and noised the image with Gaussian noise with that $\sigma$.
@@ -936,7 +938,7 @@ For each image we generated a random value of $\sigma$ ranging from 0.1 to 0.5 a
 % We performed various experiments on the Chest X-ray dataset and the SIDD dataset with various configurations of the total variational denoising method and the U-Net.
 
 % For both datasets, 
-we used a U-Net structure with 3 blocks and 32 initial filters to denoise the images.
+For learning the regularisation parameter map, we used a U-Net structure with 3 blocks and 32 initial filters to denoise the images, resulting in 1,796,034 trainable parameters.
 We used the Adam optimiser with an initial learning rate of 1e-4.
 The batch size is set to 1.
 We used the Mean Square Error (MSE) loss function to train the U-Net.

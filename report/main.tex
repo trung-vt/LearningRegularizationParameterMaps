@@ -490,7 +490,13 @@ We will refer to $\Lambda$ as the regularisation parameter map.
 
 
 
-Putting it all together, the total variation of an image can be calculated using the following formula:
+Putting it all together, 
+% the total variation of an image 
+the solution to the total variational denoising problem
+can be 
+% calculated
+defined
+using the following formula:
 
 \begin{equation}
   \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}}  = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
@@ -504,8 +510,12 @@ if we use a scalar $\lambda$ regularisation parameter, or
 
 if we use a regularisation parameter map $\Lambda$ of regularisation parameters.
 
-In this thesis, we will use the later form of the regularisation term.
-The U-Net will be used to find the regularisation parameter map $\Lambda$ any given (noisy) image.
+In this thesis, we will use
+U-Net to help us find the regularisation parameter map $\Lambda$ 
+% that the later form of the regularisation term.
+% The U-Net will be used to find the regularisation parameter map $\Lambda$ 
+given any given (noisy) image. 
+We will compare the results to the best-case scenario where we use a scalar regularisation parameter $\lambda$.
 
 Question: Idealy, if we pass in a clean image to U-Net then all the regularisation parameters should be zero, right?
 

@@ -492,11 +492,6 @@ We will refer to $\Lambda$ as the regularisation parameter map.
 
 
 
-
-The total variation of an image is a measure of the amount of variation in the intensity of the image.
-
-The total variational denoising method works by finding the image that minimises the following objective function:
-
 Putting it all together, the total variation of an image can be calculated using the following formula:
 
 \begin{equation}
@@ -520,12 +515,6 @@ Question: Idealy, if we pass in a clean image to U-Net then all the regularisati
 % The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
 % The total variation of an image is defined as the sum of the absolute differences between the intensity values of neighbouring pixels.
 
-
-% The total variational denoising method works by finding the image that minimises the following objective function:
-
-% \[
-% \min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
-% \]
 
 % where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
 

@@ -420,8 +420,12 @@ and the horizontal gradient is calculated as:
 \end{equation}
 
 \begin{equation}
-  TV(\mathbf{x}) = \|\nabla \mathbf{x}\|_1 = \sum_{z \in \mathcal{I}} \|\nabla \mathbf{x}(z)\|_1 := \sum_{z \in \mathcal{I}} \left( |\nabla_x \mathbf{x}(z)| + |\nabla_y \mathbf{x}(z)| \right),
+  \|\nabla \mathbf{x}\|_1 = \sum_{z \in \mathcal{I}} \|\nabla \mathbf{x}(z)\|_1 := \sum_{z \in \mathcal{I}} \left( |\nabla_x \mathbf{x}(z)| + |\nabla_y \mathbf{x}(z)| \right),
 \end{equation}
+
+% \begin{equation}
+%   TV(\mathbf{x}) = \|\nabla \mathbf{x}\|_1 = \sum_{z \in \mathcal{I}} \|\nabla \mathbf{x}(z)\|_1 := \sum_{z \in \mathcal{I}} \left( |\nabla_x \mathbf{x}(z)| + |\nabla_y \mathbf{x}(z)| \right),
+% \end{equation}
 
 
 This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and double-central (Sobel?). 

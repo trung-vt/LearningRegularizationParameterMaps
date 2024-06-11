@@ -347,6 +347,8 @@ backward difference operator, shift operator, central difference operator and me
 (\url{https://en.wikipedia.org/wiki/Total_variation_denoising#2D_signal_images})
 Let us focus on the forward difference operator. In particular, in the discrete case, given a matrix $\mathbf{x}$, $\nabla \mathbf{x}$ is two matrices, one for the vertical gradient $\nabla_{x} \mathbf{x}$ and one for the horizontal gradient $\nabla_{y} \mathbf{x}$.
 
+% This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and double-central (Sobel?). 
+
 \begin{equation}
   \nabla \mathbf{x} = \begin{bmatrix}
     \nabla_{x} \mathbf{x} \\
@@ -414,13 +416,10 @@ and the horizontal gradient is calculated as:
 % be the gradient of the image $\mathbf{x}$.
 % $\nabla \mathbf{x}$ is a vector of partial derivatives of $\mathbf{x}$ with respect to each variable. Each component of $\nabla \mathbf{x}$ is the partial derivative of the corresponding component of $\mathbf{x}$ with respect to the corresponding variable.
 
+We calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. 
 
 \begin{equation}
   \| \nabla \mathbf{x} \|_1 = \| \nabla_x \mathbf{x} \|_1 + \| \nabla_y \mathbf{x} \|_1
-\end{equation}
-
-\begin{equation}
-  \|\nabla \mathbf{x}\|_1 = \sum_{z \in \mathcal{I}} \|\nabla \mathbf{x}(z)\|_1 := \sum_{z \in \mathcal{I}} \left( |\nabla_x \mathbf{x}(z)| + |\nabla_y \mathbf{x}(z)| \right),
 \end{equation}
 
 % \begin{equation}
@@ -428,17 +427,15 @@ and the horizontal gradient is calculated as:
 % \end{equation}
 
 
-This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and double-central (Sobel?). 
-
 % It is more convenient to use the notation $I$ to represent the image as a matrix so we can define the gradient.
-We calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. 
-For the forward gradient, the vertical gradient is calculated as:
+
+For the forward gradient, the norm-1 of the vertical gradient is calculated as:
 
 \begin{equation}
   \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |\mathbf{x}_{1, j} - \mathbf{x}_{m,j}|
 \end{equation}
 
-and the horizontal gradient is calculated as:
+and norm-1 of the horizontal gradient is calculated as:
 
 \begin{equation}
   \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |\mathbf{x}_{i, 1} - \mathbf{x}_{i,n}|

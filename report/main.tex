@@ -592,9 +592,42 @@ The U-Net was implemented using the following architecture:
     \item The U-Net was able to generalise to new images and produce accurate segmentation masks.
 \end{enumerate}
 
+\section{Experimental Set-Up}
+
+We used two datasets for the experiments: the Chest X-ray dataset and the SIDD dataset.
+
+\subsection{Chest X-ray Dataset}
+
+The original chest X-ray dataset consists of 2000 images of chest X-rays of various resolutions taken from a kaggle dataset \cite{kaggle}.
+All images are black-and-white and are in the JPEG format.
+We used 800 images for the training dataset, 100 images for the validation dataset, and 100 images for the test dataset.
+We cropped the images to squares and then resized all images to 256x256 pixels.
+For each image we generated a random value of $\sigma$ ranging from 0.1 to 0.5 and noised the image with Gaussian noise with that $\sigma$.
+
+\subsection{SIDD Dataset}
+
+The original SIDD dataset consists of 320 images of various resolutions taken from the SIDD dataset \cite{sidd}.
+All images are sRGB and are in the PNG format.
+For each image, we randomly chose 32 patches of size 256x256 pixels.
+For each patch, we generated a random value of $\sigma$ ranging from 0.1 to 0.5 and noised the patch with Gaussian noise with that $\sigma$.
+We randomly picked 800 patches for the training dataset, 100 patches for the validation dataset, and 100 patches for the test dataset.
+
+\section{Experiments}
+
+We performed various experiments on the Chest X-ray dataset and the SIDD dataset with various configurations of the total variational denoising method and the U-Net.
+
+For both datasets, we used a U-Net structure with 3 blocks and 32 initial filters to denoise the images.
+We used the Adam optimiser with an initial learning rate of 1e-4.
+The batch size is set to 1.
+We used the Mean Square Error (MSE) loss function to train the U-Net.
+
+We set $T_{\text{train}}$ to 256 and $T_{\text{test}}$ to 256.
+We trained for 100 epochs.
+
+
+
 \section{Results}
 
-We various experiments on a few different datasets with various configurations of the total variational denoising method and the U-Net.
 Here we present the results for two datasets: the Chest X-ray dataset and the SIDD dataset.
 
 \subsection{Chest X-ray Dataset}

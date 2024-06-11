@@ -330,7 +330,14 @@ Here we will look at Gaussian noise. The data fidelity term appropriate for Gaus
   d(\mathbf{x}, \mathbf{z}) = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2
 \end{equation}
 
-The regularisation term $\mathcal{R}(\cdot)$ is the total variation of the image, which is a measure of the amount of variation in the intensity of the image.
+The regularisation term $\mathcal{R}(\cdot)$ is the total variation of the image, which is a measure of the amount of variation in the intensity of the image. The total variation of an image can be calculated using the following formula:
+
+\begin{equation}
+  \mathcal{R}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
+\end{equation}
+
+where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
+
 
 
 $\nabla$ denotes a finite-differences operator.
@@ -410,13 +417,6 @@ and the horizontal gradient is calculated as:
 % be the gradient of the image $\mathbf{x}$.
 % $\nabla \mathbf{x}$ is a vector of partial derivatives of $\mathbf{x}$ with respect to each variable. Each component of $\nabla \mathbf{x}$ is the partial derivative of the corresponding component of $\mathbf{x}$ with respect to the corresponding variable.
 
-The total variation of an image can be calculated using the following formula:
-
-\begin{equation}
-  \mathcal{R}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
-\end{equation}
-
-where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
 
 \begin{equation}
   \| \nabla \mathbf{x} \|_1 = \| \nabla_x \mathbf{x} \|_1 + \| \nabla_y \mathbf{x} \|_1

@@ -296,7 +296,7 @@ The TV method works by finding the image that has the smallest total variation a
 The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
 By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image.
 
-For a image $I \in \mathbb{R}^{w \times h}$,  $w, h \in \mathbb{N}$, we can represent the matrix $I$ with a vector $\mathbf{x} \in \mathbb{R}^n$ where $n = w \times h$.
+% For a image $I \in \mathbb{R}^{w \times h}$,  $w, h \in \mathbb{N}$, we can represent the matrix $I$ with a vector $\mathbf{x} \in \mathbb{R}^n$ where $n = w \times h$.
 
 Denoising problems can be described as 
 
@@ -304,11 +304,11 @@ Denoising problems can be described as
   \mathbf{z} = \mathbf{x}_{\text{true}} + \mathbf{e}
 \end{equation}
   
-where $\mathbf{x}_{\text{true}} \in \mathbb{R}^n$ is 
+where $\mathbf{x}_{\text{true}} \in \mathbb{R}^{m \times n}$ is 
 the object to be imaged, 
 % the "true"/"clean" image,
 % denoised image
-$\mathbf{e} \in \mathbb{R}^n$ denotes sopme random noise component, and $\mathbf{z} \in \mathbb{R}^n$ represents 
+$\mathbf{e} \in \mathbb{R}^{m \times n}$ denotes sopme random noise component, and $\mathbf{z} \in \mathbb{R}^{m \times n}$ represents 
 the measured data.
 % the noisy image.
 The goal is to recover $\mathbf{x}_{\text{true}}$ or at least a good enough reconstruction given $\mathbf{z}$.
@@ -341,42 +341,101 @@ backward difference operator, shift operator, central difference operator and me
 \url{https://en.wikipedia.org/wiki/Total_variation_denoising#2D_signal_images}
 
 
-In particular, in the discrete case, given a matrix $\mathbf{x}$, $\nabla \mathbf{x}$ is two matrices, one for the horizontal gradient and one for the vertical gradient. 
+In particular, in the discrete case, given a matrix $\mathbf{x}$, $\nabla \mathbf{x}$ is two matrices, one for the vertical gradient $\nabla_{x} \mathbf{x}$ and one for the horizontal gradient $\nabla_{y} \mathbf{x}$.
 
 \begin{equation}
   \nabla \mathbf{x} = \begin{bmatrix}
-    \nabla_{\text{h}} \mathbf{x} \\
-    \nabla_{\text{v}} \mathbf{x}
+    \nabla_{x} \mathbf{x} \\
+    \nabla_{y} \mathbf{x}
   \end{bmatrix}
 \end{equation}
 
-where $\nabla_{\text{h}} \mathbf{x}$ is the horizontal gradient of the image $\mathbf{x}$ and $\nabla_{\text{v}} \mathbf{x}$ is the vertical gradient of the image $\mathbf{x}$.
 
-For the forward gradient, the horizontal gradient is calculated as:
+
+For the forward gradient, the vertical gradient is calculated as:
 
 \begin{equation}
-  \nabla_{\text{h}} \mathbf{x} = \begin{bmatrix}
-    \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} \\
-    \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} \\
-    \vdots & \vdots & \ddots & \vdots \\
-    \mathbf{x}_{m,2} - \mathbf{x}_{m,1} & \mathbf{x}_{m,3} - \mathbf{x}_{m,2} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m,n-1} \\
-  \end{bmatrix}
+  \begin{align}
+  \nabla_{x} \mathbf{x} &= \begin{bmatrix}
+    \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{2, 2} - \mathbf{x}_{1, 2} & \ldots & \mathbf{x}_{2, n-1} - \mathbf{x}_{1, n-1} & \mathbf{x}_{2, n} - \mathbf{x}_{1, n} \\
+    \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \mathbf{x}_{3, 2} - \mathbf{x}_{2, 2} & \ldots & \mathbf{x}_{3, n-1} - \mathbf{x}_{2, n-1} & \mathbf{x}_{3, n} - \mathbf{x}_{2, n}  \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m, 2} - \mathbf{x}_{m-1, 2} & \ldots & \mathbf{x}_{m, n-1} - \mathbf{x}_{m-1, n-1} & \mathbf{x}_{m, n} - \mathbf{x}_{m-1, n} \\
+    \mathbf{x}_{1, 1} - \mathbf{x}_{m, 1} & \mathbf{x}_{1, 2} - \mathbf{x}_{m, 2} & \ldots & \mathbf{x}_{1, n-1} - \mathbf{x}_{m, n-1} & \mathbf{x}_{1, n} - \mathbf{x}_{m, n} \\
+  \end{bmatrix} \\
+  &= \begin{bmatrix}
+    -1 & 1 & \ldots & 0 & 0 \\
+    0 & -1 & \ldots & 0 & 0 \\
+     \vdots & \vdots & \ddots & \vdots & \vdots \\
+    0 & 0 & \ldots & -1 & 1 \\
+    1 & 0 & \ldots & 0 & -1
+    \end{bmatrix} \mathbf{x}
+  \end{align}
 \end{equation}
 
-and the vertical gradient is calculated as:
+and the horizontal gradient is calculated as:
 
 \begin{equation}
-  \nabla_{\text{v}} \mathbf{x} = \begin{bmatrix}
-    \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \ldots & \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} \\
-    \mathbf{x}_{2,2} - \mathbf{x}_{1,2} & \mathbf{x}_{3,2} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{m,2} - \mathbf{x}_{m-1,2} \\
-    \vdots & \vdots & \ddots & \vdots \\
-    \mathbf{x}_{2,n} - \mathbf{x}_{1,n} & \mathbf{x}_{3,n} - \mathbf{x}_{2,n} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m-1,n} \\
-  \end{bmatrix}
+  \begin{align}
+  \nabla_{y} \mathbf{x} &= \begin{bmatrix}
+    \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} & \mathbf{x}_{1,1} - \mathbf{x}_{1,n} \\
+    \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} & \mathbf{x}_{2,1} - \mathbf{x}_{2,n}  \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    \mathbf{x}_{m-1,2} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m-1,3} - \mathbf{x}_{m-1,2} & \ldots & \mathbf{x}_{m-1,n} - \mathbf{x}_{m-1,n-1} & \mathbf{x}_{m-1,1} - \mathbf{x}_{m-1,n} \\
+    \mathbf{x}_{m,2} - \mathbf{x}_{m,1} & \mathbf{x}_{m,3} - \mathbf{x}_{m,2} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m,n-1} & \mathbf{x}_{m,1} - \mathbf{x}_{m,n} \\
+  \end{bmatrix} \\
+  &=  \mathbf{x} \begin{bmatrix}
+    -1 & 0 & \ldots & 0 & 1 \\
+    1 & -1 & \ldots & 0 & 0 \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    0 & 0 & \ldots & -1 & 0 \\
+    0 & 0 & \ldots & 1 & -1
+    \end{bmatrix}
+  \end{align}
 \end{equation}
+
+
+
+
+
+
+% \begin{equation}
+%   \begin{align}
+%   \nabla_{\text{v}} \mathbf{x} &= \begin{bmatrix}
+%     \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \ldots & \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} \\
+%     \mathbf{x}_{2,2} - \mathbf{x}_{1,2} & \mathbf{x}_{3,2} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{m,2} - \mathbf{x}_{m-1,2} \\
+%     \vdots & \vdots & \ddots & \vdots \\
+%     \mathbf{x}_{2,n} - \mathbf{x}_{1,n} & \mathbf{x}_{3,n} - \mathbf{x}_{2,n} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m-1,n} \\
+%   \end{bmatrix} \\
+%   &= \begin{bmatrix}
+%     -1 & 1 & 0 & \ldots & 0 & 0 \\
+%     0 & -1 & 1 & \ldots & 0 & 0 \\
+%     \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+%     0 & 0 & 0 & \ldots & -1 & 1
+%     \end{bmatrix} \mathbf{x}
+%   \end{align}
+% \end{equation}
+
+% \begin{equation}
+%   \nabla_{\text{v}} \mathbf{x} = \begin{bmatrix}
+%     \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \ldots & \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} \\
+%     \mathbf{x}_{2,2} - \mathbf{x}_{1,2} & \mathbf{x}_{3,2} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{m,2} - \mathbf{x}_{m-1,2} \\
+%     \vdots & \vdots & \ddots & \vdots \\
+%     \mathbf{x}_{2,n} - \mathbf{x}_{1,n} & \mathbf{x}_{3,n} - \mathbf{x}_{2,n} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m-1,n} \\
+%   \end{bmatrix}
+% \end{equation}
 
 \begin{equation}
   \nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x}, \frac{\partial \mathbf{x}}{\partial y} \right)
 \end{equation}
+
+\begin{equation}
+  TV(\mathbf{x}) = \|\nabla \mathbf{x}\|_1 = \sum_{z \in \mathcal{I}} \|\nabla \mathbf{x}(z)\|_1 := \sum_{z \in \mathcal{I}} \left( |\nabla_x \mathbf{x}(z)| + |\nabla_y \mathbf{x}(z)| \right),
+\end{equation}
+
+% TODO: Copy equation (11) from the paper
+
+% TODO: Write nabla the operation explicitly in matrix multiplication form.
 
 % Let
 
@@ -395,12 +454,28 @@ The total variation of an image can be calculated using the following formula:
 
 where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
 
+\begin{equation}
+  \| \nabla \mathbf{x} \|_1 = \| \nabla_x \mathbf{x} \|_1 + \| \nabla_y \mathbf{x} \|_1
+\end{equation}
+
+
+
 
 This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and double-central (Sobel?). 
 
 % It is more convenient to use the notation $I$ to represent the image as a matrix so we can define the gradient.
 We calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. 
-The following is the formula for the forward gradient:
+For the forward gradient, the vertical gradient is calculated as:
+
+\begin{equation}
+  \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |\mathbf{x}_{1, j} - \mathbf{x}_{m,j}|
+\end{equation}
+
+and the horizontal gradient is calculated as:
+
+\begin{equation}
+  \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |\mathbf{x}_{i, 1} - \mathbf{x}_{i,n}|
+\end{equation}
 
 % \begin{equation}
 %   \| \nabla \mathbf{x} \|_1 = \text{TV}(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
@@ -409,9 +484,9 @@ The following is the formula for the forward gradient:
 % where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$. 
 % % (Note: $I$ looks like the identity matrix. Is there a better notation?)
 
-\begin{equation}
-  \| \nabla \mathbf{x} \|_1 = \sum_{i,j} |\mathbf{x}_{i,j} - \mathbf{x}_{i+1,j}| + |\mathbf{x}_{i,j} - \mathbf{x}_{i,j+1}|
-\end{equation}
+% \begin{equation}
+%   \| \nabla \mathbf{x} \|_1 = \sum_{i,j} |\mathbf{x}_{i,j} - \mathbf{x}_{i+1,j}| + |\mathbf{x}_{i,j} - \mathbf{x}_{i,j+1}|
+% \end{equation}
 
 where $\mathbf{x}_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $\mathbf{x}$. Note that $\mathbf{x}_{i,j}$ can be a scalar for a black-and-white image or a vector of 3 values for a colour image.
 
@@ -433,6 +508,10 @@ We can see that the regularisation parameter needs not to be a scalar $\lambda$,
 \begin{equation}
   \mathcal{R}(\mathbf{x}) = \| \Lambda \nabla \mathbf{x} \|_1
 \end{equation}
+
+
+
+
 
 
 The total variation of an image is a measure of the amount of variation in the intensity of the image.

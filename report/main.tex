@@ -181,6 +181,48 @@
     \label{fig:enter-label}
 \end{figure}
 
+\section{Acknowledgements}
+
+I would like to thank my supervisor, Dr. Kostas Papafitsoros, for his guidance and support throughout this project.
+
+I would like to thank at this point all the people that made this journey towards
+the completion of this Ph.D. thesis a pleasant one and made the last four years
+truly memorable.
+Firstly, I would like to thank Carola Sch¨onlieb for being an excellent supervisor
+from every perspective. Her continuous help and encouragement played a
+great role to my academic evolution. She was the one that introduced me to
+the field of mathematical imaging and showed me how a modern professional
+mathematician should be.
+The people I lived with in Cambridge played an important role during my
+Ph.D.. A big thanks goes to Sara Merino for being the best flatmate and
+friend possible for the last four years. The same amount of gratitude goes as
+well to Nayia Constantinou and Luca Calatroni. I could not have asked for
+better flatmates and good friends.
+A stimulating environment in the office makes the working hours pleasant
+and never boring. Bati Sengul and Spencer Hughes were an excellent pair of
+officemates and friends and I thank them a lot for that.
+I would like to thank Thalia Sotirchou for her love and support during the
+demanding last year of the Ph.D..
+Many thanks to all my friends in CCA and CMS, Marc Briant, Kolyan Ray
+(my gym-mate), Damon Civin, Ed Mottram, Vaggelis Papoutsellis, Julio Brau,
+Ioan Manolescu and also Panagiotis Kosteletos for all the nice moments we had
+together.
+Moreover, I would like to thank my collaborators Jan Lellmann, Kristian
+Bredies and Daniel Spector as well as Martin Benning and Tuomo Valkonen
+for useful discussions.
+I am grateful to the CCA directors Arieh Iserles and James Norris for giving me
+the opportunity to be part of it and to Emma Hacking for providing excellent
+administrative support. I also acknowledge the financial support provided
+by the Engineering and Physical Sciences Research Council, the Cambridge
+Centre for Analysis, the department of Pure Mathematics and Mathematical
+Statistics, the department of Applied Mathematics and Theoretical Physics
+and the King Abdullah University of Science and Technology.
+I would like to thank the thesis examiners Dr. Anders Hansen and Professor
+Antonin Chambolle for carefully reading the manuscript and for the fruitful
+discussion during the examination.
+Above all I would like to thank my mother Emmy, my sister Nassia and all my
+family, without whom I would not have achieved all these!
+
 \begin{abstract}
 
 
@@ -191,6 +233,10 @@ We will then present the results of the method on a few different datasets.
 
 
 % \section{Overview}
+
+\section{Mathematical preliminaries}
+
+
 
 \section{Background}
 
@@ -286,14 +332,60 @@ Here we will look at Gaussian noise. The data fidelity term appropriate for Gaus
 
 The regularisation term $\mathcal{R}(\cdot)$ is the total variation of the image, which is a measure of the amount of variation in the intensity of the image.
 
-Let
+
+$\nabla$ denotes a finite-differences operator.
+\cite{finite_difference_op}.
+Finite difference operators include, forward difference operator,
+backward difference operator, shift operator, central difference operator and mean operator.
+
+\url{https://en.wikipedia.org/wiki/Total_variation_denoising#2D_signal_images}
+
+
+In particular, in the discrete case, given a matrix $\mathbf{x}$, $\nabla \mathbf{x}$ is two matrices, one for the horizontal gradient and one for the vertical gradient. 
 
 \begin{equation}
-\nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x_1}, \frac{\partial \mathbf{x}}{\partial x_2}, \ldots, \frac{\partial \mathbf{x}}{\partial x_n} \right)
+  \nabla \mathbf{x} = \begin{bmatrix}
+    \nabla_{\text{h}} \mathbf{x} \\
+    \nabla_{\text{v}} \mathbf{x}
+  \end{bmatrix}
 \end{equation}
 
-be the gradient of the image $\mathbf{x}$.
-$\nabla \mathbf{x}$ is a vector of partial derivatives of $\mathbf{x}$ with respect to each variable. Each component of $\nabla \mathbf{x}$ is the partial derivative of the corresponding component of $\mathbf{x}$ with respect to the corresponding variable.
+where $\nabla_{\text{h}} \mathbf{x}$ is the horizontal gradient of the image $\mathbf{x}$ and $\nabla_{\text{v}} \mathbf{x}$ is the vertical gradient of the image $\mathbf{x}$.
+
+For the forward gradient, the horizontal gradient is calculated as:
+
+\begin{equation}
+  \nabla_{\text{h}} \mathbf{x} = \begin{bmatrix}
+    \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} \\
+    \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \mathbf{x}_{m,2} - \mathbf{x}_{m,1} & \mathbf{x}_{m,3} - \mathbf{x}_{m,2} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m,n-1} \\
+  \end{bmatrix}
+\end{equation}
+
+and the vertical gradient is calculated as:
+
+\begin{equation}
+  \nabla_{\text{v}} \mathbf{x} = \begin{bmatrix}
+    \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \ldots & \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} \\
+    \mathbf{x}_{2,2} - \mathbf{x}_{1,2} & \mathbf{x}_{3,2} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{m,2} - \mathbf{x}_{m-1,2} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \mathbf{x}_{2,n} - \mathbf{x}_{1,n} & \mathbf{x}_{3,n} - \mathbf{x}_{2,n} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m-1,n} \\
+  \end{bmatrix}
+\end{equation}
+
+\begin{equation}
+  \nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x}, \frac{\partial \mathbf{x}}{\partial y} \right)
+\end{equation}
+
+% Let
+
+% \begin{equation}
+% \nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x_1}, \frac{\partial \mathbf{x}}{\partial x_2}, \ldots, \frac{\partial \mathbf{x}}{\partial x_n} \right)
+% \end{equation}
+
+% be the gradient of the image $\mathbf{x}$.
+% $\nabla \mathbf{x}$ is a vector of partial derivatives of $\mathbf{x}$ with respect to each variable. Each component of $\nabla \mathbf{x}$ is the partial derivative of the corresponding component of $\mathbf{x}$ with respect to the corresponding variable.
 
 The total variation of an image can be calculated using the following formula:
 
@@ -304,16 +396,24 @@ The total variation of an image can be calculated using the following formula:
 where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
 
 
-This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and Sobel. 
-It is more convenient to use the notation $I$ to represent the image as a matrix so we can define the gradient.
-We calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. The following is the formula for the forward gradient:
+This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and double-central (Sobel?). 
+
+% It is more convenient to use the notation $I$ to represent the image as a matrix so we can define the gradient.
+We calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. 
+The following is the formula for the forward gradient:
+
+% \begin{equation}
+%   \| \nabla \mathbf{x} \|_1 = \text{TV}(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
+% \end{equation}
+
+% where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$. 
+% % (Note: $I$ looks like the identity matrix. Is there a better notation?)
 
 \begin{equation}
-  \| \nabla \mathbf{x} \|_1 = \text{TV}(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
+  \| \nabla \mathbf{x} \|_1 = \sum_{i,j} |\mathbf{x}_{i,j} - \mathbf{x}_{i+1,j}| + |\mathbf{x}_{i,j} - \mathbf{x}_{i,j+1}|
 \end{equation}
 
-where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$. 
-% (Note: $I$ looks like the identity matrix. Is there a better notation?)
+where $\mathbf{x}_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $\mathbf{x}$. Note that $\mathbf{x}_{i,j}$ can be a scalar for a black-and-white image or a vector of 3 values for a colour image.
 
 Note that, we can move $\lambda$ inside the norm, so the regularisation term can be written as:
 
@@ -357,6 +457,19 @@ In this thesis, we will use the later form of the regularisation term.
 The U-Net will be used to find the regularisation parameter $\Lambda$ that produces the best denoised image for any particular noisy image.
 
 
+% The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
+% The total variation of an image is defined as the sum of the absolute differences between the intensity values of neighbouring pixels.
+
+
+% The total variational denoising method works by finding the image that minimises the following objective function:
+
+% \[
+% \min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
+% \]
+
+% where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
+
+
 \subsection{Related Work}
 
 
@@ -376,17 +489,7 @@ In our case, we will optimise a U-Net model to find the regularisation parameter
 
 \subsection{Total Variational Denoising}
 
-The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
-The total variation of an image is defined as the sum of the absolute differences between the intensity values of neighbouring pixels.
 
-
-The total variational denoising method works by finding the image that minimises the following objective function:
-
-\[
-\min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
-\]
-
-where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
 
 \subsection{U-Net}
 

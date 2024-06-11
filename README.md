@@ -1,5 +1,13 @@
 # Task
 
+## TODO: 
+
+- [ ] Write unit tests for
+  - [ ] `GradOps`
+    - [ ] `apply_G`
+
+## Notes:
+
 **Try to keep a note of everything! Don't delete anything unless absolutely wrong or redundant.**
 
 Train

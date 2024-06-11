@@ -18,3 +18,5 @@ pytorch-ignite # for faster PSNR and SSIM?
 # https://pytorch.org/ignite/generated/ignite.metrics.PSNR.html
 # https://pytorch.org/ignite/generated/ignite.metrics.SSIM.html
 # https://pytorch-ignite.ai/tutorials/beginner/01-getting-started/
+
+pygmentize # for latex

@@ -396,46 +396,10 @@ and the horizontal gradient is calculated as:
 
 
 
-
-
-
 % \begin{equation}
-%   \begin{align}
-%   \nabla_{\text{v}} \mathbf{x} &= \begin{bmatrix}
-%     \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \ldots & \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} \\
-%     \mathbf{x}_{2,2} - \mathbf{x}_{1,2} & \mathbf{x}_{3,2} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{m,2} - \mathbf{x}_{m-1,2} \\
-%     \vdots & \vdots & \ddots & \vdots \\
-%     \mathbf{x}_{2,n} - \mathbf{x}_{1,n} & \mathbf{x}_{3,n} - \mathbf{x}_{2,n} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m-1,n} \\
-%   \end{bmatrix} \\
-%   &= \begin{bmatrix}
-%     -1 & 1 & 0 & \ldots & 0 & 0 \\
-%     0 & -1 & 1 & \ldots & 0 & 0 \\
-%     \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
-%     0 & 0 & 0 & \ldots & -1 & 1
-%     \end{bmatrix} \mathbf{x}
-%   \end{align}
+%   \nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x}, \frac{\partial \mathbf{x}}{\partial y} \right)
 % \end{equation}
 
-% \begin{equation}
-%   \nabla_{\text{v}} \mathbf{x} = \begin{bmatrix}
-%     \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \ldots & \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} \\
-%     \mathbf{x}_{2,2} - \mathbf{x}_{1,2} & \mathbf{x}_{3,2} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{m,2} - \mathbf{x}_{m-1,2} \\
-%     \vdots & \vdots & \ddots & \vdots \\
-%     \mathbf{x}_{2,n} - \mathbf{x}_{1,n} & \mathbf{x}_{3,n} - \mathbf{x}_{2,n} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m-1,n} \\
-%   \end{bmatrix}
-% \end{equation}
-
-\begin{equation}
-  \nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x}, \frac{\partial \mathbf{x}}{\partial y} \right)
-\end{equation}
-
-\begin{equation}
-  TV(\mathbf{x}) = \|\nabla \mathbf{x}\|_1 = \sum_{z \in \mathcal{I}} \|\nabla \mathbf{x}(z)\|_1 := \sum_{z \in \mathcal{I}} \left( |\nabla_x \mathbf{x}(z)| + |\nabla_y \mathbf{x}(z)| \right),
-\end{equation}
-
-% TODO: Copy equation (11) from the paper
-
-% TODO: Write nabla the operation explicitly in matrix multiplication form.
 
 % Let
 
@@ -458,7 +422,9 @@ where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda
   \| \nabla \mathbf{x} \|_1 = \| \nabla_x \mathbf{x} \|_1 + \| \nabla_y \mathbf{x} \|_1
 \end{equation}
 
-
+\begin{equation}
+  TV(\mathbf{x}) = \|\nabla \mathbf{x}\|_1 = \sum_{z \in \mathcal{I}} \|\nabla \mathbf{x}(z)\|_1 := \sum_{z \in \mathcal{I}} \left( |\nabla_x \mathbf{x}(z)| + |\nabla_y \mathbf{x}(z)| \right),
+\end{equation}
 
 
 This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and double-central (Sobel?). 
@@ -492,24 +458,36 @@ where $\mathbf{x}_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $\
 
 Note that, we can move $\lambda$ inside the norm, so the regularisation term can be written as:
 
-% Write a aligned equation
 \begin{equation}
-  \begin{aligned}
     \mathcal{R}(\mathbf{x}) 
-    &= \lambda \| \nabla \mathbf{x} \|_1 \\
-    &= \| \lambda \nabla \mathbf{x} \|_1 \\
-    &= \text{TV}(\lambda I) \\
-    &= \sum_{i,j} |\lambda I_{i,j} - \lambda I_{i+1,j}| + |\lambda I_{i,j} - \lambda I_{i,j+1}|
-  \end{aligned}
+    = \lambda \| \nabla \mathbf{x} \|_1 \\
+    = \| \lambda \nabla \mathbf{x} \|_1 \\
+    = \| \lambda \nabla_x \mathbf{x} \|_1 + \| \lambda \nabla_y \mathbf{x} \|_1
 \end{equation}
 
-We can see that the regularisation parameter needs not to be a scalar $\lambda$, but can be a diagonal matrix $\Lambda \in \mathbb{R}^{n}$.
+% % Write a aligned equation
+% \begin{equation}
+%   \begin{aligned}
+%     \mathcal{R}(\mathbf{x}) 
+%     &= \lambda \| \nabla \mathbf{x} \|_1 \\
+%     &= \| \lambda \nabla \mathbf{x} \|_1 \\
+%     &= \text{TV}(\lambda I) \\
+%     &= \sum_{i,j} |\lambda I_{i,j} - \lambda I_{i+1,j}| + |\lambda I_{i,j} - \lambda I_{i,j+1}|
+%   \end{aligned}
+% \end{equation}
+
+We can see that the regularisation parameter does not need to be a scalar.
+
+
+
+% $\lambda$, but can be a diagonal matrix $\Lambda \in \mathbb{R}^{n}$.
 
 \begin{equation}
   \mathcal{R}(\mathbf{x}) = \| \Lambda \nabla \mathbf{x} \|_1
+  = \| \Lambda^{(x)} \nabla_x \mathbf{x} \|_1 + \| \Lambda^{(y)} \nabla_y \mathbf{x} \|_1
 \end{equation}
 
-
+where $\Lambda^{(x)}$ and $\Lambda^{(y)}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively.
 
 
 

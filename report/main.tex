@@ -931,11 +931,12 @@ For each image we generated a random value of $\sigma$ ranging from 0.1 to 0.5 a
 % For each patch, we generated a random value of $\sigma$ ranging from 0.1 to 0.5 and noised the patch with Gaussian noise with that $\sigma$.
 % We randomly picked 800 patches for the training dataset, 100 patches for the validation dataset, and 100 patches for the test dataset.
 
-\section{Experiments}
+% \section{Experiments}
 
-We performed various experiments on the Chest X-ray dataset and the SIDD dataset with various configurations of the total variational denoising method and the U-Net.
+% We performed various experiments on the Chest X-ray dataset and the SIDD dataset with various configurations of the total variational denoising method and the U-Net.
 
-For both datasets, we used a U-Net structure with 3 blocks and 32 initial filters to denoise the images.
+% For both datasets, 
+we used a U-Net structure with 3 blocks and 32 initial filters to denoise the images.
 We used the Adam optimiser with an initial learning rate of 1e-4.
 The batch size is set to 1.
 We used the Mean Square Error (MSE) loss function to train the U-Net.
@@ -945,22 +946,20 @@ We trained for 100 epochs.
 
 
 
-\section{Results}
+% \section{Results}
 
-Here we present the results for two datasets: the Chest X-ray dataset and the SIDD dataset.
+% Here we present the results for two datasets: the Chest X-ray dataset and the SIDD dataset.
 
-\subsection{Chest X-ray Dataset}
+% \subsection{Chest X-ray Dataset}
 
-The Chest X-ray dataset consists of 2000 images of chest X-rays of various resolutions. 
-All images are black-and-white and are in the JPEG format.
-I used 800 images for the training dataset, 100 images for the validation dataset, and 100 images for the test dataset.
-I used a U-Net with 3 blocks and 32 initial filters to denoise the images.
+% The Chest X-ray dataset consists of 2000 images of chest X-rays of various resolutions. 
+% All images are black-and-white and are in the JPEG format.
+% I used 800 images for the training dataset, 100 images for the validation dataset, and 100 images for the test dataset.
+% I used a U-Net with 3 blocks and 32 initial filters to denoise the images.
 
 All images were resized to 256x256 pixels and noised with Gaussian noise with $\sigma$ ranging from 0.1 to 0.5.
 
-The total variational denoising method was able to produce denoised images that were close to the ground truth images.
-The U-Net was able to produce segmentation masks that were close to the ground truth masks.
-The U-Net was able to generalise to new images and produce accurate segmentation masks.
+
 
 
 
@@ -1841,10 +1840,16 @@ This is an experiment where I removed PDHG completely and used only the UNet to 
 
 
 
+\section{Results}
 
+The total variational denoising method was able to produce denoised images that were close to the ground truth images.
+The U-Net was able to produce segmentation masks that were close to the ground truth masks.
+The U-Net was able to generalise to new images and produce accurate segmentation masks.
 
 
 \section{Conclusion}
+
+
 
 This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.
 

@@ -178,50 +178,50 @@
     \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
     \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
     \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\Lambda_\theta$ with PSNR = 34.29}
-    \label{fig:enter-label}
+    \label{fig:SIDD-chest-example-1}
 \end{figure}
 
-\section{Acknowledgements}
+% \section{Acknowledgements}
 
-I would like to thank my supervisor, Dr. Kostas Papafitsoros, for his guidance and support throughout this project.
+% I would like to thank my supervisor, Dr. Kostas Papafitsoros, for his guidance and support throughout this project.
 
-I would like to thank at this point all the people that made this journey towards
-the completion of this Ph.D. thesis a pleasant one and made the last four years
-truly memorable.
-Firstly, I would like to thank Carola Sch¨onlieb for being an excellent supervisor
-from every perspective. Her continuous help and encouragement played a
-great role to my academic evolution. She was the one that introduced me to
-the field of mathematical imaging and showed me how a modern professional
-mathematician should be.
-The people I lived with in Cambridge played an important role during my
-Ph.D.. A big thanks goes to Sara Merino for being the best flatmate and
-friend possible for the last four years. The same amount of gratitude goes as
-well to Nayia Constantinou and Luca Calatroni. I could not have asked for
-better flatmates and good friends.
-A stimulating environment in the office makes the working hours pleasant
-and never boring. Bati Sengul and Spencer Hughes were an excellent pair of
-officemates and friends and I thank them a lot for that.
-I would like to thank Thalia Sotirchou for her love and support during the
-demanding last year of the Ph.D..
-Many thanks to all my friends in CCA and CMS, Marc Briant, Kolyan Ray
-(my gym-mate), Damon Civin, Ed Mottram, Vaggelis Papoutsellis, Julio Brau,
-Ioan Manolescu and also Panagiotis Kosteletos for all the nice moments we had
-together.
-Moreover, I would like to thank my collaborators Jan Lellmann, Kristian
-Bredies and Daniel Spector as well as Martin Benning and Tuomo Valkonen
-for useful discussions.
-I am grateful to the CCA directors Arieh Iserles and James Norris for giving me
-the opportunity to be part of it and to Emma Hacking for providing excellent
-administrative support. I also acknowledge the financial support provided
-by the Engineering and Physical Sciences Research Council, the Cambridge
-Centre for Analysis, the department of Pure Mathematics and Mathematical
-Statistics, the department of Applied Mathematics and Theoretical Physics
-and the King Abdullah University of Science and Technology.
-I would like to thank the thesis examiners Dr. Anders Hansen and Professor
-Antonin Chambolle for carefully reading the manuscript and for the fruitful
-discussion during the examination.
-Above all I would like to thank my mother Emmy, my sister Nassia and all my
-family, without whom I would not have achieved all these!
+% I would like to thank at this point all the people that made this journey towards
+% the completion of this Ph.D. thesis a pleasant one and made the last four years
+% truly memorable.
+% Firstly, I would like to thank Carola Sch¨onlieb for being an excellent supervisor
+% from every perspective. Her continuous help and encouragement played a
+% great role to my academic evolution. She was the one that introduced me to
+% the field of mathematical imaging and showed me how a modern professional
+% mathematician should be.
+% The people I lived with in Cambridge played an important role during my
+% Ph.D.. A big thanks goes to Sara Merino for being the best flatmate and
+% friend possible for the last four years. The same amount of gratitude goes as
+% well to Nayia Constantinou and Luca Calatroni. I could not have asked for
+% better flatmates and good friends.
+% A stimulating environment in the office makes the working hours pleasant
+% and never boring. Bati Sengul and Spencer Hughes were an excellent pair of
+% officemates and friends and I thank them a lot for that.
+% I would like to thank Thalia Sotirchou for her love and support during the
+% demanding last year of the Ph.D..
+% Many thanks to all my friends in CCA and CMS, Marc Briant, Kolyan Ray
+% (my gym-mate), Damon Civin, Ed Mottram, Vaggelis Papoutsellis, Julio Brau,
+% Ioan Manolescu and also Panagiotis Kosteletos for all the nice moments we had
+% together.
+% Moreover, I would like to thank my collaborators Jan Lellmann, Kristian
+% Bredies and Daniel Spector as well as Martin Benning and Tuomo Valkonen
+% for useful discussions.
+% I am grateful to the CCA directors Arieh Iserles and James Norris for giving me
+% the opportunity to be part of it and to Emma Hacking for providing excellent
+% administrative support. I also acknowledge the financial support provided
+% by the Engineering and Physical Sciences Research Council, the Cambridge
+% Centre for Analysis, the department of Pure Mathematics and Mathematical
+% Statistics, the department of Applied Mathematics and Theoretical Physics
+% and the King Abdullah University of Science and Technology.
+% I would like to thank the thesis examiners Dr. Anders Hansen and Professor
+% Antonin Chambolle for carefully reading the manuscript and for the fruitful
+% discussion during the examination.
+% Above all I would like to thank my mother Emmy, my sister Nassia and all my
+% family, without whom I would not have achieved all these!
 
 \begin{abstract}
 
@@ -588,6 +588,416 @@ The U-Net was implemented using the following architecture:
     \item The U-Net was able to produce segmentation masks that were close to the ground truth masks.
     \item The U-Net was able to generalise to new images and produce accurate segmentation masks.
 \end{enumerate}
+
+\section{Introduction}
+
+
+\subsubsection{What is image denoising?}
+
+\subsubsection{Why is image denoising important?}
+
+
+This project is largely based on the research paper "Learning regularisation Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling" \cite{kofler2023learning} and utilises part of the Smartphone Image Denoising Dataset (SIDD) \cite{SIDD_2018_CVPR}.
+
+ 
+% I find image processing in general and image denoising in particular very interesting.
+
+The primary goal of this mini-project is to learn about a specific type of neural network called the U-Net, a convolutional network architecture
+designed for segmentation of images \cite{ronneberger2015unet}, and apply it to the problem of image denoising. 
+
+In the rest of this report, I will explain the task of learning a regularisation parameter map using U-Net, describe the U-Net architecture in this problem, discuss the modelling and training process, and finally present some preliminary results. 
+
+
+
+\subsection{Background}
+
+Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
+% The paper \cite{kofler2023learning} that this project is based on discusses
+In particular, it combines U-Net with a traditional image-denoising algorithm called the Primal Dual Hybrid Gradient (PDHG) algorithm \cite{kofler2023learning}.
+% to solve the image denoising task. 
+% While the specifics of the algorithm are outside the scope of this project, 
+% the main idea is to use U-Net to learn the required input, so-called the regularisation parameters, of a specific image for the PDHG algorithm. 
+Specifically, a PDHG solver is appended to the end of the U-Net, treating the solver as the final layer of the entire network to create an end-to-end unsupervised model.
+% To denoise images, the PDHG algorithm requires defining some regularisation parameters as part of the cost function. 
+
+% By treating PDHG as the final layer, this approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network.
+
+One notable aspect of using U-Net in this problem is that, instead of acting as a black box and outputting a denoised version of each input image, it outputs a parameter map used in another algorithm, demonstrating the flexibility of neural networks.
+% This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
+% This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
+
+Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
+
+
+
+\subsection{Contribution}
+
+In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
+
+Although much of the logic described in this project is implemented in an open-source project \cite{kofler2023learning}, getting started can be challenging. Therefore, a self-contained notebook with code and instructions to obtain the data was prepared to help fellow students experiment more easily. This notebook can run on Google Colab \cite{colab} and Kaggle \cite{kaggle}, providing an accessible platform for experimentation. Additionally, part of this report could serve as documentation for the open-source project, enhancing it with additional visualisations and explanations not provided in the original project. These additions aim to help readers of the paper gain a better understanding of the approach.
+
+\section{Task Description}
+
+
+
+\subsection{Primal Dual Hybrid Gradient (PDHG)}
+
+An iterative method to generate the output which in this case is the denoised image. 
+
+The algorithm is
+
+\begin{algorithm}
+\caption{PDHG algorithm with fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $\mathbf{x}_0$
+\STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{TV}}$
+% \STATE $\mathbf{y} = \mathbf{x}_0$
+\STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
+\STATE $\mathbf{p}_0 = 0$
+\STATE $\mathbf{q}_0 = 0$
+\FOR{$k < T$}
+    % \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+    \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{x}_0)\right) / (1 + \sigma)$
+    \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
+    \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
+    \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
+\ENDFOR
+\STATE $\mathbf{x}_{\text{TV}} = \mathbf{x}_T$
+\end{algorithmic}
+\end{algorithm}
+
+% NOTE: $\mathbf{y}$ is the noisy image $\mathbf{x}_0$ ???
+
+% HOWEVER, note that in the code, $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma  \times (\bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+
+\subsection{Objective}
+
+
+% Traditionally, the Total Variation (TV) method has been used to improve image reconstruction \cite{kofler2023learning}. 
+% For this method to work effectively, we need to learn the optimal regularisation parameters.
+One of the most widely applied image denoising methods is the so-called Total Variation (TV) regularisation \cite{kofler2023learning}.
+
+Formally, given the loss function
+\vspace{-3pt}
+$$ L(\mathbf{z}, \mathbf{x}) = \frac{1}{2} \| \mathbf{x} - \mathbf{z} \|_2^2 + \text{TV}(\mathbf{x}), $$
+
+our objective is to find $\hat{\mathbf{x}}$ such that
+$$ \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} L(\mathbf{z}, \mathbf{x}) $$
+where $\mathbf{z}$ is the input, presumably noisy, image and $\mathbf{x}$ represent the "clean" image we are looking for. We treat images as vectors, $\mathbf{x}, \mathbf{z} \in \mathbb{R}^{n^2}$, where $n$ is the height of the image, assuming the image is square. In this project, we use $n = 512$.
+
+ The $\text{TV}$ term can be expressed as either a scalar $\lambda$:
+$$
+\text{TV}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1, \quad \lambda \in \mathbb{R}
+$$
+or as a matrix $\mathbf{\Lambda}$:
+$$
+\text{TV}(\mathbf{x}) = \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1, \quad \mathbf{\Lambda} \in \mathbb{R}^{n^2}
+$$
+
+Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
+
+The challenge lies in finding or learning the regularisation parameter map $\mathbf{\Lambda}$. Using a single $\lambda$ value penalises all regions of the image equally, which is suboptimal. Instead, it would be better to assign higher penalties to smooth regions and lower penalties to detailed regions to preserve image details. However, this approach is not perfect, as it might leave noise in detailed areas.
+
+Since regularisation is multiplied by the gradient, higher $\lambda$ values will penalize areas with many changes (typically areas with more details), while lower $\lambda$ values prioritize detail preservation over noise reduction.
+
+The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, narrowing down the search space is challenging, as we potentially have $d^{(n^2)}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible.
+
+To address this, we can apply image segmentation. Effective image segmentation helps determine appropriate $\lambda$ values for different regions. A good network for learning image segmentation is U-Net \cite{ronneberger2015unet}.
+
+% U-Net assists in learning these regularisation parameters due to its proficiency in image segmentation. 
+
+
+\section{Architecture}
+
+\begin{figure}[h]
+    \centering
+\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
+
+    % Define styles for the different layers
+    \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
+    \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
+    \tikzstyle{inference} = [->, ultra thick, red]
+    \tikzstyle{normal} = [->, ultra thick, black]
+
+    \node (input) [output] {$\mathbf{x}_0$};
+    \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
+    \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
+    \node (pdhg) [function, below=of lambda] {PDHG Solver};
+    \node (final_output) [output, right=of pdhg] {$\mathbf{x}$};   
+    \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
+    \node (ground_truth) [output, above=of noise_generator] {$\mathbf{z}$};
+    \node (loss_function) [function, right=of final_output] {$L(\mathbf{z}, \mathbf{x})$};
+
+    \draw[inference] (input) -- (unet);
+    \draw[inference] (unet) -- (lambda);
+    \draw[inference] (lambda) -- (pdhg);
+    \draw[inference] (pdhg) -- (final_output);
+    \draw[inference] (input) -- ++(0, -0.5) -- (pdhg);
+    
+    \draw[->] (final_output) -- (loss_function);
+    \draw[->] (ground_truth) -| (loss_function);
+    \draw[->] (ground_truth) -- (noise_generator);
+    \draw[->] (noise_generator) -- (input);
+    \draw[->] (loss_function) -- ++(0, -1) -| (unet);
+
+\end{tikzpicture}
+
+\caption{The general architecture 
+% \caption{Training 
+% of PDHG Net 
+% \cite{kofler2023learning}
+}
+
+\label{fig:training}
+\end{figure}
+
+
+
+For this project, our model comprises two primary components:
+\begin{enumerate}
+    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image $\mathbf{x}_0$.
+    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver (refer to Appendix), which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}$. This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. The symbol $\Theta$ represents the set of trainable parameters within the network.
+\end{enumerate}
+
+We interpret the PDHG solver as the ultimate hidden layer within our network. The outcome of the loss function $L(\mathbf{z}, \mathbf{x})$ is subsequently employed for backpropagation, essential for training the parameters $\Theta$.
+
+For our implementation, we consider $n \times n$ images, specifically with $n = 512$.
+
+In terms of variables:
+\begin{itemize}
+    \item $\mathbf{z} \in \mathbb{R}^{n^2}$ represents the clean image, serving as the ground truth.
+    \item $\mathbf{x}_0 \in \mathbb{R}^{n^2}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
+    \item $\mathbf{\Lambda}_{\Theta}$, the regularisation parameters map, emerges as the final output from the U-Net and is instrumental for the PDHG algorithm solver. Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
+\end{itemize}
+
+The architecture of $\text{NET}_{\Theta}$ is inspired by the U-Net, a specialised type of convolutional neural network architecture.
+
+Let us first delve into the foundational concept of a convolutional neural network, which underpins the U-Net architecture.
+
+
+
+\subsection{
+Convolutional Neural Network (CNN) 
+}
+
+\begin{figure}[h]
+    \includegraphics[width=1\linewidth]{Le-Net 5.png}
+    
+    \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks \cite{726791}} 
+    \label{fig:enter-label}
+\end{figure}
+
+Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analyzing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
+
+\subsubsection*{Inspiration and Function}
+
+The design of CNNs draws inspiration from the human visual cortex, which processes visual stimuli by sequentially extracting features, ranging from simple edges and shapes to complex objects. CNNs replicate this hierarchical feature extraction using convolutional layers and pooling layers. 
+
+\subsubsection*{Convolutional Layers}
+
+In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilization of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
+A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasizes specific characteristics of the input. 
+When multiple filters are employed in a layer, they produce multiple feature maps, with each map corresponding to a different channel. 
+This design significantly reduces the proportion of trainable parameters relative to the number of output values, enhancing efficiency for image-related tasks.
+
+\subsubsection*{Pooling Layers}
+
+An essential component of CNNs is the pooling layer, typically implemented as a max-pooling layer. This layer simplifies the output by retaining only the maximum values from the defined regions in the feature map. The objective is to preserve the most significant features while reducing data dimensionality. In this project, max-pooling is a crucial technique used to enhance model performance.
+
+The convolutional and pooling layers constitute the foundational blocks of the U-Net architecture.
+
+\subsection{U-Net}
+
+A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
+
+\subsubsection*{Encoder}
+
+The U-Net architecture is bifurcated into two principal components: an Encoder and a Decoder. The Encoder functions similarly to a standard CNN, utilizing a combination of convolutional layers and max-pooling layers organized into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while concurrently reducing the feature map size due to the pooling.
+
+\subsubsection*{Decoder}
+
+Conversely, the Decoder is structured around a series of blocks that progressively halve the number of channels while enlarging the feature map size, effectively "unrolling" the data. Unlike the Encoder blocks, each Decoder block concludes with an up-convolutional layer followed by a skip connection. This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
+
+
+
+\begin{figure}[h]
+\hspace*{-0.5cm} % Adjust the value as needed
+\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick, transform shape, shift={(-10cm,0)}]
+    % Define styles
+    \tikzstyle{rec16_1} = [draw, rectangle, minimum width=0.1cm, minimum height=2cm, fill=blue!30]
+    \tikzstyle{rec16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=blue!30]
+    \tikzstyle{rec32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=blue!30]
+    \tikzstyle{rec64} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
+    \tikzstyle{rec64_2} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
+    \tikzstyle{rec2} = [draw, rectangle, minimum width=0.4cm, minimum height=2cm, fill=blue!30]
+    \tikzstyle{rec_white32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=white]
+    \tikzstyle{rec_white16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=white]
+    \tikzstyle{normalconv} = [->, ultra thick, blue]
+    \tikzstyle{maxpool} = [->, ultra thick, red]
+    \tikzstyle{upconv} = [->, ultra thick, green]
+    \tikzstyle{finalconv} = [->, ultra thick, black]
+
+    % ENCODER
+    \node (en1_input) [rec16_1] {};
+    \node (en1con1_output) [rec16, right=of en1_input] {};
+    \node (en1con2_output) [rec16, right=of en1con1_output] {};
+
+    \node (en2_input) [rec32, below=of en1con2_output] {};
+    \node (en2con1_output) [rec32, right=of en2_input] {};
+    \node (en2con2_output) [rec32, right=of en2con1_output] {};
+
+    \node (en3_input) [rec64, below=of en2con2_output] {};
+    \node (en3con1_output) [rec64, right=of en3_input] {};
+    \node (en3con2_output) [rec64, right=of en3con1_output] {};
+    \node (upcon1_input) [rec64_2, right=of en3con2_output] {};
+
+    % DECODER
+    \node (de1_input) [rec32, above=of upcon1_input] {};
+    \node (skip1_output) [rec_white32, left=0cm of de1_input] {};
+    \node (de1con1_output) [rec32, right=of de1_input] {};
+    \node (de1con2_output) [rec32, right=of de1con1_output] {};
+
+    \node (de2_input) [rec16, above=of de1con2_output] {};
+    \node (skip2_output) [rec_white16, left=0cm of de2_input] {};
+    \node (de2con1_output) [rec16, right=of de2_input] {};
+    \node (de2con2_output) [rec16, right=of de2con1_output] {};
+
+    % Final output layer
+    \node (final_output) [rec2, right=of de2con2_output] {};
+
+    % CONNECTIONS
+    \draw[normalconv] (en1_input) -- (en1con1_output);
+    \draw[normalconv] (en1con1_output) -- (en1con2_output);
+    % \draw[maxpool] (en1con2_output) -- ++(0,-0.5) -| (en2_input);
+    \draw[maxpool] (en1con2_output) -- (en2_input);
+    
+    \draw[normalconv] (en2_input) -- (en2con1_output);
+    \draw[normalconv] (en2con1_output) -- (en2con2_output);
+    % \draw[maxpool] (en2con2_output) -- ++(0,-0.5) -| (en3_input);
+    \draw[maxpool] (en2con2_output) -- (en3_input);
+    
+    \draw[normalconv] (en3_input) -- (en3con1_output);
+    \draw[normalconv] (en3con1_output) -- (en3con2_output);
+    \draw[maxpool] (en3con2_output) -- (upcon1_input);
+    
+    % \draw[upconv] (en3con2_output) -- ++(0,0.5) -| (de1_input);
+    \draw[upconv] (upcon1_input) -- (de1_input);
+    \draw[normalconv] (de1_input) -- (de1con1_output);
+    \draw[normalconv] (de1con1_output) -- (de1con2_output);
+    
+    % \draw[upconv] (de1con2_output) -- ++(0,0.5) -| (de2_input);
+    \draw[upconv] (de1con2_output) -- (de2_input);
+    \draw[normalconv] (de2_input) -- (de2con1_output);
+    \draw[normalconv] (de2con1_output) -- (de2con2_output);
+    
+    \draw[finalconv] (de2con2_output) -- (final_output);
+
+    % Skip connections
+    \draw[->, dashed, ultra thick] (en2con2_output.east) -- ++(0.5,0) |- (skip1_output.west);
+    \draw[->, dashed, ultra thick] (en1con2_output.east) -- ++(0.5,0) |- (skip2_output.west);
+
+\end{tikzpicture}
+\caption{Our $\text{NET}_{\Theta}$ Architecture}
+\label{fig:my_unet}
+\end{figure}
+
+In our model, the Encoder consists of three encoding blocks. The first block takes a single-channel input—a grayscale image—and expands it to 16 feature maps. The second and third blocks increase the number of channels further to 32 and 64, respectively.
+
+Conversely, the Decoder incorporates two decoding blocks, one fewer than the Encoder. This configuration deviates from some common implementations where the number of encoding and decoding blocks are equal, and a "bottle-neck" comprising two additional convolutional layers is placed between them. In our model, we treat the final block of the Encoder as this bottle-neck. The first decoding block in the Decoder reduces the number of channels back to 32, and the second further reduces them to 16.
+
+Each decoding block in our model concludes with an up-convolutional layer, which serves the same function as a typical convolutional layer, followed by a skip connection. The first skip connection takes the 32-channel output from the second encoding block and merges it with the 32-channel output from the first up-convolutional layer. This combination produces a 64-channel output, which is then processed by the first decoding block. The second skip connection similarly merges the 16-channel output from the first encoding block with the 16-channel output from the second up-convolutional layer, resulting in a 32-channel input for the second decoding block.
+
+The final stage in our architecture employs a convolutional layer to convert the 16-channel output from the last decoding block into a 2-channel output, thus producing two matrices as the ultimate output of our model.
+
+
+
+\section{Training and Results}
+
+% \subsection{Objective and Setup}
+
+The primary aim of this project is to explore the potential of achieving the optimal regularisation parameter map, $\mathbf{\Lambda}$, for a particular image. To this end, the training was conducted on a single image, using a grid search to determine the best single regularisation parameter, $\lambda$. The chosen $\lambda = 0.05$ yielded a PSNR (Peak Signal-to-Noise Ratio) of 35.64 dB, considered to be within the good range (30-40 dB). Our model, utilizing the regularisation map $\mathbf{\Lambda}$, improved the PSNR to 37.84 dB compared to the 24.13 dB of the noisy original, demonstrating the efficacy of the model-specific parameter map.
+
+\subsection{Data Preparation and Model Configuration}
+
+Training was performed on image ID 0065, which was rescaled by a factor of 0.5 and split into six 512$\times$512 patches. Gaussian noise (mean 0, standard deviation 0.3) was added to simulate conditions for robust model training. The model was trained with a batch size of 1, resulting in six iterations per epoch, over 10,000 epochs.
+
+\subsection{Training Details}
+
+The Mean Squared Error (MSE) loss function was chosen due to its effectiveness in Gaussian noise contexts. The Adam optimiser was utilized for its adaptive learning rate capabilities, set at 0.0001. LeakyReLU activation function with $\alpha = 0.01$ was used across all hidden layers to ensure non-linearity without significant information loss at zero activations. 
+
+The PDHG (Primal Dual Hybrid Gradient) solver, an integral part of the model, was run for 128 iterations per epoch. While increasing the number of iterations might improve results, time constraints limited our exploration.
+
+\subsection{Performance Metrics and Results}
+
+Performance was evaluated using the PSNR metric, calculated as:
+$$
+\text{PSNR} = 10 \cdot \log_{10} \left( \frac{{\text{MAX}^2}}{{\text{MSE}}} \right)
+$$
+where $\text{MAX}$ is the maximum possible pixel value, and $\text{MSE}$ is the mean squared error between the original and reconstructed images. 
+
+Each epoch of training took approximately 6 seconds, translating to about 1 second per patch. The total training duration was around 17 hours, dominated by the computational demands of the PDHG algorithm.
+
+\subsection{Inference and Efficiency}
+
+The inference time for our model was about 1 second per 512$\times$512 patch. For a full HD (1920$\times$1080) image, denoising required processing 12 patches, taking less than half a minute in total. This demonstrates that while our method is slower than traditional single-parameter denoising methods, it offers a systematic approach to optimizing regularisation without prior knowledge of the best $\lambda$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\linewidth, trim={0 0 0 10cm}, clip]{images/W&B Chart 5_27_2024, 5 09 06 PM.png}
+    \caption{Validation loss. Logged using wandb} 
+    \label{fig:training_progress}
+\end{figure}
+
+\begin{figure}[h]
+% \begin{center}
+\centering
+\begin{tabular}{ c c c c c c c c c }
+ \includegraphics[width=0.4\linewidth]{images/cur/image_clean.png}  & \includegraphics[width=0.4\linewidth]{images/cur/image_noisy.png} \\
+ Clean image & Noisy image. PSNR 24.13 dB \\
+   &  \\
+ \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_single_lambda.png} & \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_lambda_map.png}   \\
+ Denoised with $\lambda = 0.05$. PSNR 35.64 dB & Denoised with $\Lambda$ map. PSNR 
+ \textcolor{blue}{37.84 dB}  \\
+
+ 
+\end{tabular}
+
+    \caption{Comparison of output using single $\lambda$ and $\mathbf{\Lambda}$ map}
+
+
+% \end{center}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{images/cur/patch_2.png}
+    \vspace{-8pt}
+    
+    \caption{Comparison of patches. From left to right: (1) Original image. (2) Noisy image with synthetic Gaussian noise added with $\sigma = 0.3$. (3) Reconstruction with single $\lambda = 0.03$. (4) Reconstruction with $\mathbf{\Lambda}$ map. (5) Output of the U-Net: $\mathbf{\Lambda}$ map.}
+    \label{fig:compare_patches}
+\end{figure}
+
+\subsection{Analysis of the $\mathbf{\Lambda}$ Map}
+
+The $\mathbf{\Lambda}$ map generated by our model provides a visual representation of how the PDHG solver is directed to handle different regions of the image. In areas where the original image was predominantly white, such as on a box, the $\mathbf{\Lambda}$ map exhibits higher regularisation values, indicated by whiter pixels. This implies that the PDHG solver is instructed to penalize high gradients in these regions, effectively smoothing them out.
+
+Conversely, areas with intricate details, such as text on the box, display lower regularisation values, represented by darker pixels on the $\mathbf{\Lambda}$ map. This indicates that the solver is tuned to preserve finer details in these areas, maintaining clarity and sharpness.
+
+% \subsubsection*{Challenges in regularisation}
+
+Despite the intended function of the regularisation map, there are instances where the model does not perform as expected. For example, the squares on the color palettes in the background, which originally had smooth surfaces, should ideally exhibit high regularisation values. However, this is not always the case, suggesting areas for further refinement in the model's ability to accurately assess and respond to different textural features within an image.
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.34\linewidth]{100-clean.png}
+  \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
+  \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
+  \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
+  \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\Lambda_\theta$ with PSNR = 34.29}
+  \label{fig:SIDD-chest-example-1}
+\end{figure}
+
 
 \section{Experimental Set-Up}
 
@@ -1428,403 +1838,12 @@ Adam optimizer with a learning rate of 10−4, a batch size of 1
 2.5 times more work  but  2/30  amount of time
 
 
-\section{Introduction}
 
 
-\subsubsection{What is image denoising?}
 
-\subsubsection{Why is image denoising important?}
 
 
-This project is largely based on the research paper "Learning regularisation Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling" \cite{kofler2023learning} and utilises part of the Smartphone Image Denoising Dataset (SIDD) \cite{SIDD_2018_CVPR}.
 
- 
-% I find image processing in general and image denoising in particular very interesting.
-
-The primary goal of this mini-project is to learn about a specific type of neural network called the U-Net, a convolutional network architecture
-designed for segmentation of images \cite{ronneberger2015unet}, and apply it to the problem of image denoising. 
-
-In the rest of this report, I will explain the task of learning a regularisation parameter map using U-Net, describe the U-Net architecture in this problem, discuss the modelling and training process, and finally present some preliminary results. 
-
-
-
-\subsection{Background}
-
-Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
-% The paper \cite{kofler2023learning} that this project is based on discusses
-In particular, it combines U-Net with a traditional image-denoising algorithm called the Primal Dual Hybrid Gradient (PDHG) algorithm \cite{kofler2023learning}.
-% to solve the image denoising task. 
-% While the specifics of the algorithm are outside the scope of this project, 
-% the main idea is to use U-Net to learn the required input, so-called the regularisation parameters, of a specific image for the PDHG algorithm. 
-Specifically, a PDHG solver is appended to the end of the U-Net, treating the solver as the final layer of the entire network to create an end-to-end unsupervised model.
-% To denoise images, the PDHG algorithm requires defining some regularisation parameters as part of the cost function. 
-
-% By treating PDHG as the final layer, this approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network.
-
-One notable aspect of using U-Net in this problem is that, instead of acting as a black box and outputting a denoised version of each input image, it outputs a parameter map used in another algorithm, demonstrating the flexibility of neural networks.
-% This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
-% This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
-
-Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
-
-
-
-\subsection{Contribution}
-
-In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
-
-Although much of the logic described in this project is implemented in an open-source project \cite{kofler2023learning}, getting started can be challenging. Therefore, a self-contained notebook with code and instructions to obtain the data was prepared to help fellow students experiment more easily. This notebook can run on Google Colab \cite{colab} and Kaggle \cite{kaggle}, providing an accessible platform for experimentation. Additionally, part of this report could serve as documentation for the open-source project, enhancing it with additional visualisations and explanations not provided in the original project. These additions aim to help readers of the paper gain a better understanding of the approach.
-
-\section{Task Description}
-
-
-
-\subsection{Primal Dual Hybrid Gradient (PDHG)}
-
-An iterative method to generate the output which in this case is the denoised image. 
-
-The algorithm is
-
-\begin{algorithm}
-\caption{PDHG algorithm with fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
-\begin{algorithmic}[1]
-\STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $\mathbf{x}_0$
-\STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{TV}}$
-% \STATE $\mathbf{y} = \mathbf{x}_0$
-\STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
-\STATE $\mathbf{p}_0 = 0$
-\STATE $\mathbf{q}_0 = 0$
-\FOR{$k < T$}
-    % \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
-    \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{x}_0)\right) / (1 + \sigma)$
-    \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
-    \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
-    \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
-\ENDFOR
-\STATE $\mathbf{x}_{\text{TV}} = \mathbf{x}_T$
-\end{algorithmic}
-\end{algorithm}
-
-% NOTE: $\mathbf{y}$ is the noisy image $\mathbf{x}_0$ ???
-
-% HOWEVER, note that in the code, $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma  \times (\bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
-
-\subsection{Objective}
-
-
-% Traditionally, the Total Variation (TV) method has been used to improve image reconstruction \cite{kofler2023learning}. 
-% For this method to work effectively, we need to learn the optimal regularisation parameters.
-One of the most widely applied image denoising methods is the so-called Total Variation (TV) regularisation \cite{kofler2023learning}.
-
-Formally, given the loss function
-\vspace{-3pt}
-$$ L(\mathbf{z}, \mathbf{x}) = \frac{1}{2} \| \mathbf{x} - \mathbf{z} \|_2^2 + \text{TV}(\mathbf{x}), $$
-
-our objective is to find $\hat{\mathbf{x}}$ such that
-$$ \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} L(\mathbf{z}, \mathbf{x}) $$
-where $\mathbf{z}$ is the input, presumably noisy, image and $\mathbf{x}$ represent the "clean" image we are looking for. We treat images as vectors, $\mathbf{x}, \mathbf{z} \in \mathbb{R}^{n^2}$, where $n$ is the height of the image, assuming the image is square. In this project, we use $n = 512$.
-
- The $\text{TV}$ term can be expressed as either a scalar $\lambda$:
-$$
-\text{TV}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1, \quad \lambda \in \mathbb{R}
-$$
-or as a matrix $\mathbf{\Lambda}$:
-$$
-\text{TV}(\mathbf{x}) = \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1, \quad \mathbf{\Lambda} \in \mathbb{R}^{n^2}
-$$
-
-Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
-
-The challenge lies in finding or learning the regularisation parameter map $\mathbf{\Lambda}$. Using a single $\lambda$ value penalises all regions of the image equally, which is suboptimal. Instead, it would be better to assign higher penalties to smooth regions and lower penalties to detailed regions to preserve image details. However, this approach is not perfect, as it might leave noise in detailed areas.
-
-Since regularisation is multiplied by the gradient, higher $\lambda$ values will penalize areas with many changes (typically areas with more details), while lower $\lambda$ values prioritize detail preservation over noise reduction.
-
-The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, narrowing down the search space is challenging, as we potentially have $d^{(n^2)}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible.
-
-To address this, we can apply image segmentation. Effective image segmentation helps determine appropriate $\lambda$ values for different regions. A good network for learning image segmentation is U-Net \cite{ronneberger2015unet}.
-
-% U-Net assists in learning these regularisation parameters due to its proficiency in image segmentation. 
-
-
-\section{Architecture}
-
-\begin{figure}[h]
-    \centering
-\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
-
-    % Define styles for the different layers
-    \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
-    \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
-    \tikzstyle{inference} = [->, ultra thick, red]
-    \tikzstyle{normal} = [->, ultra thick, black]
-
-    \node (input) [output] {$\mathbf{x}_0$};
-    \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
-    \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
-    \node (pdhg) [function, below=of lambda] {PDHG Solver};
-    \node (final_output) [output, right=of pdhg] {$\mathbf{x}$};   
-    \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
-    \node (ground_truth) [output, above=of noise_generator] {$\mathbf{z}$};
-    \node (loss_function) [function, right=of final_output] {$L(\mathbf{z}, \mathbf{x})$};
-
-    \draw[inference] (input) -- (unet);
-    \draw[inference] (unet) -- (lambda);
-    \draw[inference] (lambda) -- (pdhg);
-    \draw[inference] (pdhg) -- (final_output);
-    \draw[inference] (input) -- ++(0, -0.5) -- (pdhg);
-    
-    \draw[->] (final_output) -- (loss_function);
-    \draw[->] (ground_truth) -| (loss_function);
-    \draw[->] (ground_truth) -- (noise_generator);
-    \draw[->] (noise_generator) -- (input);
-    \draw[->] (loss_function) -- ++(0, -1) -| (unet);
-
-\end{tikzpicture}
-
-\caption{The general architecture 
-% \caption{Training 
-% of PDHG Net 
-% \cite{kofler2023learning}
-}
-
-\label{fig:training}
-\end{figure}
-
-
-
-For this project, our model comprises two primary components:
-\begin{enumerate}
-    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image $\mathbf{x}_0$.
-    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver (refer to Appendix), which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}$. This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. The symbol $\Theta$ represents the set of trainable parameters within the network.
-\end{enumerate}
-
-We interpret the PDHG solver as the ultimate hidden layer within our network. The outcome of the loss function $L(\mathbf{z}, \mathbf{x})$ is subsequently employed for backpropagation, essential for training the parameters $\Theta$.
-
-For our implementation, we consider $n \times n$ images, specifically with $n = 512$.
-
-In terms of variables:
-\begin{itemize}
-    \item $\mathbf{z} \in \mathbb{R}^{n^2}$ represents the clean image, serving as the ground truth.
-    \item $\mathbf{x}_0 \in \mathbb{R}^{n^2}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
-    \item $\mathbf{\Lambda}_{\Theta}$, the regularisation parameters map, emerges as the final output from the U-Net and is instrumental for the PDHG algorithm solver. Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
-\end{itemize}
-
-The architecture of $\text{NET}_{\Theta}$ is inspired by the U-Net, a specialised type of convolutional neural network architecture.
-
-Let us first delve into the foundational concept of a convolutional neural network, which underpins the U-Net architecture.
-
-
-
-\subsection{
-Convolutional Neural Network (CNN) 
-}
-
-\begin{figure}[h]
-    \includegraphics[width=1\linewidth]{Le-Net 5.png}
-    
-    \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks \cite{726791}} 
-    \label{fig:enter-label}
-\end{figure}
-
-Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analyzing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
-
-\subsubsection*{Inspiration and Function}
-
-The design of CNNs draws inspiration from the human visual cortex, which processes visual stimuli by sequentially extracting features, ranging from simple edges and shapes to complex objects. CNNs replicate this hierarchical feature extraction using convolutional layers and pooling layers. 
-
-\subsubsection*{Convolutional Layers}
-
-In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilization of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
-A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasizes specific characteristics of the input. 
-When multiple filters are employed in a layer, they produce multiple feature maps, with each map corresponding to a different channel. 
-This design significantly reduces the proportion of trainable parameters relative to the number of output values, enhancing efficiency for image-related tasks.
-
-\subsubsection*{Pooling Layers}
-
-An essential component of CNNs is the pooling layer, typically implemented as a max-pooling layer. This layer simplifies the output by retaining only the maximum values from the defined regions in the feature map. The objective is to preserve the most significant features while reducing data dimensionality. In this project, max-pooling is a crucial technique used to enhance model performance.
-
-The convolutional and pooling layers constitute the foundational blocks of the U-Net architecture.
-
-\subsection{U-Net}
-
-A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
-
-\subsubsection*{Encoder}
-
-The U-Net architecture is bifurcated into two principal components: an Encoder and a Decoder. The Encoder functions similarly to a standard CNN, utilizing a combination of convolutional layers and max-pooling layers organized into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while concurrently reducing the feature map size due to the pooling.
-
-\subsubsection*{Decoder}
-
-Conversely, the Decoder is structured around a series of blocks that progressively halve the number of channels while enlarging the feature map size, effectively "unrolling" the data. Unlike the Encoder blocks, each Decoder block concludes with an up-convolutional layer followed by a skip connection. This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
-
-
-
-\begin{figure}[h]
-\hspace*{-0.5cm} % Adjust the value as needed
-\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick, transform shape, shift={(-10cm,0)}]
-    % Define styles
-    \tikzstyle{rec16_1} = [draw, rectangle, minimum width=0.1cm, minimum height=2cm, fill=blue!30]
-    \tikzstyle{rec16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=blue!30]
-    \tikzstyle{rec32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=blue!30]
-    \tikzstyle{rec64} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
-    \tikzstyle{rec64_2} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
-    \tikzstyle{rec2} = [draw, rectangle, minimum width=0.4cm, minimum height=2cm, fill=blue!30]
-    \tikzstyle{rec_white32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=white]
-    \tikzstyle{rec_white16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=white]
-    \tikzstyle{normalconv} = [->, ultra thick, blue]
-    \tikzstyle{maxpool} = [->, ultra thick, red]
-    \tikzstyle{upconv} = [->, ultra thick, green]
-    \tikzstyle{finalconv} = [->, ultra thick, black]
-
-    % ENCODER
-    \node (en1_input) [rec16_1] {};
-    \node (en1con1_output) [rec16, right=of en1_input] {};
-    \node (en1con2_output) [rec16, right=of en1con1_output] {};
-
-    \node (en2_input) [rec32, below=of en1con2_output] {};
-    \node (en2con1_output) [rec32, right=of en2_input] {};
-    \node (en2con2_output) [rec32, right=of en2con1_output] {};
-
-    \node (en3_input) [rec64, below=of en2con2_output] {};
-    \node (en3con1_output) [rec64, right=of en3_input] {};
-    \node (en3con2_output) [rec64, right=of en3con1_output] {};
-    \node (upcon1_input) [rec64_2, right=of en3con2_output] {};
-
-    % DECODER
-    \node (de1_input) [rec32, above=of upcon1_input] {};
-    \node (skip1_output) [rec_white32, left=0cm of de1_input] {};
-    \node (de1con1_output) [rec32, right=of de1_input] {};
-    \node (de1con2_output) [rec32, right=of de1con1_output] {};
-
-    \node (de2_input) [rec16, above=of de1con2_output] {};
-    \node (skip2_output) [rec_white16, left=0cm of de2_input] {};
-    \node (de2con1_output) [rec16, right=of de2_input] {};
-    \node (de2con2_output) [rec16, right=of de2con1_output] {};
-
-    % Final output layer
-    \node (final_output) [rec2, right=of de2con2_output] {};
-
-    % CONNECTIONS
-    \draw[normalconv] (en1_input) -- (en1con1_output);
-    \draw[normalconv] (en1con1_output) -- (en1con2_output);
-    % \draw[maxpool] (en1con2_output) -- ++(0,-0.5) -| (en2_input);
-    \draw[maxpool] (en1con2_output) -- (en2_input);
-    
-    \draw[normalconv] (en2_input) -- (en2con1_output);
-    \draw[normalconv] (en2con1_output) -- (en2con2_output);
-    % \draw[maxpool] (en2con2_output) -- ++(0,-0.5) -| (en3_input);
-    \draw[maxpool] (en2con2_output) -- (en3_input);
-    
-    \draw[normalconv] (en3_input) -- (en3con1_output);
-    \draw[normalconv] (en3con1_output) -- (en3con2_output);
-    \draw[maxpool] (en3con2_output) -- (upcon1_input);
-    
-    % \draw[upconv] (en3con2_output) -- ++(0,0.5) -| (de1_input);
-    \draw[upconv] (upcon1_input) -- (de1_input);
-    \draw[normalconv] (de1_input) -- (de1con1_output);
-    \draw[normalconv] (de1con1_output) -- (de1con2_output);
-    
-    % \draw[upconv] (de1con2_output) -- ++(0,0.5) -| (de2_input);
-    \draw[upconv] (de1con2_output) -- (de2_input);
-    \draw[normalconv] (de2_input) -- (de2con1_output);
-    \draw[normalconv] (de2con1_output) -- (de2con2_output);
-    
-    \draw[finalconv] (de2con2_output) -- (final_output);
-
-    % Skip connections
-    \draw[->, dashed, ultra thick] (en2con2_output.east) -- ++(0.5,0) |- (skip1_output.west);
-    \draw[->, dashed, ultra thick] (en1con2_output.east) -- ++(0.5,0) |- (skip2_output.west);
-
-\end{tikzpicture}
-\caption{Our $\text{NET}_{\Theta}$ Architecture}
-\label{fig:my_unet}
-\end{figure}
-
-In our model, the Encoder consists of three encoding blocks. The first block takes a single-channel input—a grayscale image—and expands it to 16 feature maps. The second and third blocks increase the number of channels further to 32 and 64, respectively.
-
-Conversely, the Decoder incorporates two decoding blocks, one fewer than the Encoder. This configuration deviates from some common implementations where the number of encoding and decoding blocks are equal, and a "bottle-neck" comprising two additional convolutional layers is placed between them. In our model, we treat the final block of the Encoder as this bottle-neck. The first decoding block in the Decoder reduces the number of channels back to 32, and the second further reduces them to 16.
-
-Each decoding block in our model concludes with an up-convolutional layer, which serves the same function as a typical convolutional layer, followed by a skip connection. The first skip connection takes the 32-channel output from the second encoding block and merges it with the 32-channel output from the first up-convolutional layer. This combination produces a 64-channel output, which is then processed by the first decoding block. The second skip connection similarly merges the 16-channel output from the first encoding block with the 16-channel output from the second up-convolutional layer, resulting in a 32-channel input for the second decoding block.
-
-The final stage in our architecture employs a convolutional layer to convert the 16-channel output from the last decoding block into a 2-channel output, thus producing two matrices as the ultimate output of our model.
-
-
-
-\section{Training and Results}
-
-% \subsection{Objective and Setup}
-
-The primary aim of this project is to explore the potential of achieving the optimal regularisation parameter map, $\mathbf{\Lambda}$, for a particular image. To this end, the training was conducted on a single image, using a grid search to determine the best single regularisation parameter, $\lambda$. The chosen $\lambda = 0.05$ yielded a PSNR (Peak Signal-to-Noise Ratio) of 35.64 dB, considered to be within the good range (30-40 dB). Our model, utilizing the regularisation map $\mathbf{\Lambda}$, improved the PSNR to 37.84 dB compared to the 24.13 dB of the noisy original, demonstrating the efficacy of the model-specific parameter map.
-
-\subsection{Data Preparation and Model Configuration}
-
-Training was performed on image ID 0065, which was rescaled by a factor of 0.5 and split into six 512$\times$512 patches. Gaussian noise (mean 0, standard deviation 0.3) was added to simulate conditions for robust model training. The model was trained with a batch size of 1, resulting in six iterations per epoch, over 10,000 epochs.
-
-\subsection{Training Details}
-
-The Mean Squared Error (MSE) loss function was chosen due to its effectiveness in Gaussian noise contexts. The Adam optimiser was utilized for its adaptive learning rate capabilities, set at 0.0001. LeakyReLU activation function with $\alpha = 0.01$ was used across all hidden layers to ensure non-linearity without significant information loss at zero activations. 
-
-The PDHG (Primal Dual Hybrid Gradient) solver, an integral part of the model, was run for 128 iterations per epoch. While increasing the number of iterations might improve results, time constraints limited our exploration.
-
-\subsection{Performance Metrics and Results}
-
-Performance was evaluated using the PSNR metric, calculated as:
-$$
-\text{PSNR} = 10 \cdot \log_{10} \left( \frac{{\text{MAX}^2}}{{\text{MSE}}} \right)
-$$
-where $\text{MAX}$ is the maximum possible pixel value, and $\text{MSE}$ is the mean squared error between the original and reconstructed images. 
-
-Each epoch of training took approximately 6 seconds, translating to about 1 second per patch. The total training duration was around 17 hours, dominated by the computational demands of the PDHG algorithm.
-
-\subsection{Inference and Efficiency}
-
-The inference time for our model was about 1 second per 512$\times$512 patch. For a full HD (1920$\times$1080) image, denoising required processing 12 patches, taking less than half a minute in total. This demonstrates that while our method is slower than traditional single-parameter denoising methods, it offers a systematic approach to optimizing regularisation without prior knowledge of the best $\lambda$.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.6\linewidth, trim={0 0 0 10cm}, clip]{images/W&B Chart 5_27_2024, 5 09 06 PM.png}
-    \caption{Validation loss. Logged using wandb} 
-    \label{fig:training_progress}
-\end{figure}
-
-\begin{figure}[h]
-% \begin{center}
-\centering
-\begin{tabular}{ c c c c c c c c c }
- \includegraphics[width=0.4\linewidth]{images/cur/image_clean.png}  & \includegraphics[width=0.4\linewidth]{images/cur/image_noisy.png} \\
- Clean image & Noisy image. PSNR 24.13 dB \\
-   &  \\
- \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_single_lambda.png} & \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_lambda_map.png}   \\
- Denoised with $\lambda = 0.05$. PSNR 35.64 dB & Denoised with $\Lambda$ map. PSNR 
- \textcolor{blue}{37.84 dB}  \\
-
- 
-\end{tabular}
-
-    \caption{Comparison of output using single $\lambda$ and $\mathbf{\Lambda}$ map}
-
-
-% \end{center}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1.0\linewidth]{images/cur/patch_2.png}
-    \vspace{-8pt}
-    
-    \caption{Comparison of patches. From left to right: (1) Original image. (2) Noisy image with synthetic Gaussian noise added with $\sigma = 0.3$. (3) Reconstruction with single $\lambda = 0.03$. (4) Reconstruction with $\mathbf{\Lambda}$ map. (5) Output of the U-Net: $\mathbf{\Lambda}$ map.}
-    \label{fig:compare_patches}
-\end{figure}
-
-\subsection{Analysis of the $\mathbf{\Lambda}$ Map}
-
-The $\mathbf{\Lambda}$ map generated by our model provides a visual representation of how the PDHG solver is directed to handle different regions of the image. In areas where the original image was predominantly white, such as on a box, the $\mathbf{\Lambda}$ map exhibits higher regularisation values, indicated by whiter pixels. This implies that the PDHG solver is instructed to penalize high gradients in these regions, effectively smoothing them out.
-
-Conversely, areas with intricate details, such as text on the box, display lower regularisation values, represented by darker pixels on the $\mathbf{\Lambda}$ map. This indicates that the solver is tuned to preserve finer details in these areas, maintaining clarity and sharpness.
-
-% \subsubsection*{Challenges in regularisation}
-
-Despite the intended function of the regularisation map, there are instances where the model does not perform as expected. For example, the squares on the color palettes in the background, which originally had smooth surfaces, should ideally exhibit high regularisation values. However, this is not always the case, suggesting areas for further refinement in the model's ability to accurately assess and respond to different textural features within an image.
 \section{Conclusion}
 
 This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.

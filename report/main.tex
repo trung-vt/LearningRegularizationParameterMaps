@@ -910,6 +910,19 @@ Each decoding block in our model concludes with an up-convolutional layer, which
 The final stage in our architecture employs a convolutional layer to convert the 16-channel output from the last decoding block into a 2-channel output, thus producing two matrices as the ultimate output of our model.
 
 
+\section{Experimental Set-up}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/100-clean.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/100-psnr_35.99-lambda_0.02.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/100-lambda_map-psnr_37.26-ssim_0.95.png}
+  \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\Lambda_\theta$ with PSNR = 37.62}
+  \label{fig:enter-label}
+\end{figure}
+
+
 
 \section{Training and Results}
 
@@ -1074,15 +1087,6 @@ We have then presented the results of the method on a few different datasets.
 
 
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.34\linewidth]{images//chest_xray/100-clean.png}
-    \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
-    \includegraphics[width=0.34\linewidth]{images//chest_xray/100-psnr_35.99-lambda_0.02.png}
-    \includegraphics[width=0.34\linewidth]{images//chest_xray/100-lambda_map-psnr_37.26-ssim_0.95.png}
-    \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\Lambda_\theta$ with PSNR = 37.62}
-    \label{fig:enter-label}
-\end{figure}
 
 
 % \begin{figure}[h]

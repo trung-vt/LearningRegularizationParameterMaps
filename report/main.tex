@@ -756,47 +756,6 @@ more efficiently.
 
 \section{Architecture}
 
-\begin{figure}[ht]
-    \centering
-\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
-
-    % Define styles for the different layers
-    \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
-    \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
-    \tikzstyle{inference} = [->, ultra thick, red]
-    \tikzstyle{normal} = [->, ultra thick, black]
-
-    \node (input) [output] {$\mathbf{x}_0$};
-    \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
-    \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
-    \node (pdhg) [function, below=of lambda] {PDHG Solver};
-    \node (final_output) [output, right=of pdhg] {$\mathbf{x}$};   
-    \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
-    \node (ground_truth) [output, above=of noise_generator] {$\mathbf{z}$};
-    \node (loss_function) [function, right=of final_output] {$\text{MSE}(\mathbf{z}, \mathbf{x})$};
-
-    \draw[inference] (input) -- (unet);
-    \draw[inference] (unet) -- (lambda);
-    \draw[inference] (lambda) -- (pdhg);
-    \draw[inference] (pdhg) -- (final_output);
-    \draw[inference] (input) -- ++(0, -0.5) -- (pdhg);
-    
-    \draw[->] (final_output) -- (loss_function);
-    \draw[->] (ground_truth) -| (loss_function);
-    \draw[->] (ground_truth) -- (noise_generator);
-    \draw[->] (noise_generator) -- (input);
-    \draw[->] (loss_function) -- ++(0, -1) -| (unet);
-
-\end{tikzpicture}
-
-\caption{The general architecture 
-% \caption{Training 
-% of PDHG Net 
-% \cite{kofler2023learning}
-}
-
-\label{fig:training}
-\end{figure}
 
 
 
@@ -810,16 +769,62 @@ For this project, our model comprises two primary components:
     % The symbol $\Theta$ represents the set of trainable parameters within the network.
 \end{enumerate}
 
+The general architecture is depicted in shown in Figure 1,
+
+\begin{figure}[ht]
+  \centering
+\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
+
+  % Define styles for the different layers
+  \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
+  \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
+  \tikzstyle{inference} = [->, ultra thick, red]
+  \tikzstyle{normal} = [->, ultra thick, black]
+
+  \node (input) [output] {$\mathbf{x}_{\text{noisy}}$};
+  \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
+  \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
+  \node (pdhg) [function, below=of lambda] {PDHG Solver};
+  \node (final_output) [output, right=of pdhg] {$\mathbf{x}_{\text{denoised}}$};   
+  \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
+  \node (ground_truth) [output, above=of noise_generator] {$\mathbf{x_{\text{true}}}$};
+  \node (loss_function) [function, right=of final_output] {$\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x}_{\text{denoised}})$};
+
+  \draw[inference] (input) -- (unet);
+  \draw[inference] (unet) -- (lambda);
+  \draw[inference] (lambda) -- (pdhg);
+  \draw[inference] (pdhg) -- (final_output);
+  \draw[inference] (input) -- ++(0, -0.5) -- (pdhg);
+  
+  \draw[->] (final_output) -- (loss_function);
+  \draw[->] (ground_truth) -| (loss_function);
+  \draw[->] (ground_truth) -- (noise_generator);
+  \draw[->] (noise_generator) -- (input);
+  \draw[->] (loss_function) -- ++(0, -1) -| (unet);
+
+\end{tikzpicture}
+
+\caption{The general architecture 
+% \caption{Training 
+% of PDHG Net 
+% \cite{kofler2023learning}
+}
+
+\label{fig:training}
+\end{figure}
+
+where
+\begin{itemize}
+    \item $\mathbf{x_{\text{true}}}$ represents the clean image, serving as the ground truth.
+    \item $\mathbf{x_{\text{noisy}}}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
+    \item $\mathbf{\Lambda}_{\Theta}$, the regularisation parameters map, emerges as the final output from the U-Net and is instrumental for the PDHG algorithm solver. Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
+\end{itemize}
+
 We interpret the PDHG solver as the ultimate hidden layer within our network. The outcome of the loss function $\text{MSE}(\mathbf{z}, \mathbf{x})$ is subsequently employed for backpropagation, essential for training the parameters $\Theta$.
 
 For our implementation, we consider $n \times n$ images, specifically with $n = 512$.
 
-In terms of variables:
-\begin{itemize}
-    \item $\mathbf{z} \in \mathbb{R}^{n^2}$ represents the clean image, serving as the ground truth.
-    \item $\mathbf{x}_0 \in \mathbb{R}^{n^2}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
-    \item $\mathbf{\Lambda}_{\Theta}$, the regularisation parameters map, emerges as the final output from the U-Net and is instrumental for the PDHG algorithm solver. Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
-\end{itemize}
+
 
 The architecture of $\text{NET}_{\Theta}$ is inspired by the U-Net, a specialised type of convolutional neural network architecture.
 

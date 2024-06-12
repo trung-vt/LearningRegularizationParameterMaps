@@ -531,7 +531,12 @@ Note that, we can move $\lambda$ inside the norm, so the regularisation term can
 %   \end{aligned}
 % \end{equation}
 
-We can see that the regularisation parameter does not need to be a scalar.
+The regularisation parameter does not need to be a scalar.
+% Each pixel in the image can have its own regularisation parameter.
+We can swap the scalar $\lambda$ with a regularisation parameter map $\mathbf{\Lambda}$. 
+This gives us a new regularisation term that can be written as:
+% $\in \mathbb{R}^{m \times n}$, 
+% where each element of $\mathbf{\Lambda}$ is a regularisation parameter for the corresponding pixel in the image $\mathbf{x}$.
 
 
 

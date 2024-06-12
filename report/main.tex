@@ -533,7 +533,24 @@ Note that, we can move $\lambda$ inside the norm, so the regularisation term can
 
 The regularisation parameter does not need to be a scalar.
 % Each pixel in the image can have its own regularisation parameter.
-We can swap the scalar $\lambda$ with a regularisation parameter map $\mathbf{\Lambda}$. 
+We can swap the scalar $\lambda$ with a regularisation parameter map $\mathbf{\Lambda}$,
+
+\begin{equation}
+  \mathbf{\Lambda} = \begin{bmatrix}
+    \mathbf{\Lambda}^(x) \\
+    \mathbf{\Lambda}^(y)
+  \end{bmatrix}
+\end{equation}
+
+where $\mathbf{\Lambda}^{(x)}, \mathbf{\Lambda}^{(y)} \in \mathbb{R}^{m \times n}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively.
+Here we will assume $\mathbf{\Lambda}^{(x)} = \mathbf{\Lambda}^{(y)}$ and denote them as $\mathbf{\Lambda}^(xy)$, i.e.
+\begin{equation}
+  \mathbf{\Lambda} = \begin{bmatrix}
+    \mathbf{\Lambda}^(xy) \\
+    \mathbf{\Lambda}^(xy)
+  \end{bmatrix}
+\end{equation}
+
 This gives us a new regularisation term that can be written as:
 % $\in \mathbb{R}^{m \times n}$, 
 % where each element of $\mathbf{\Lambda}$ is a regularisation parameter for the corresponding pixel in the image $\mathbf{x}$.
@@ -544,11 +561,11 @@ This gives us a new regularisation term that can be written as:
 
 \begin{equation}
   \mathcal{R}(\mathbf{x}) = \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
-  = \| \mathbf{\Lambda}^{(x)} \circ \nabla_x \mathbf{x} \|_1 + \| \mathbf{\Lambda}^{(y)} \circ \nabla_y \mathbf{x} \|_1
+  = \| \mathbf{\Lambda}^{(xy)} \circ \nabla_x \mathbf{x} \|_1 + \| \mathbf{\Lambda}^{(xy)} \circ \nabla_y \mathbf{x} \|_1
 \end{equation}
 
-where $\mathbf{\Lambda}^{(x)}, \mathbf{\Lambda}^{(y)} \in \mathbb{R}^{m \times n}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively, and $\circ$ denotes the Hadamard or element-wise product.
-We will refer to $\mathbf{\Lambda}$ as the regularisation parameter map.
+where $\circ$ denotes the Hadamard or element-wise product.
+% We will refer to $\mathbf{\Lambda}$ as the regularisation parameter map.
 
 
 
@@ -577,7 +594,7 @@ In this dissertation, we will use
 U-Net to help us find the regularisation parameter map $\mathbf{\Lambda}$ 
 % that the later form of the regularisation term.
 % The U-Net will be used to find the regularisation parameter map $\mathbf{\Lambda}$ 
-given any given (noisy) image. 
+given any (noisy) image. 
 We will compare the results to the best-case scenario where we use a scalar regularisation parameter $\lambda$.
 
 % Question: Idealy, if we pass in a clean image to U-Net then all the regularisation parameters should be zero, right?

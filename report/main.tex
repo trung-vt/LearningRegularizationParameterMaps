@@ -225,40 +225,18 @@
 % Above all I would like to thank my mother Emmy, my sister Nassia and all my
 % family, without whom I would not have achieved all these!
 
-\begin{abstract}
+
+\section{Introduction}
+
+% \subsection{Background}
+
+% \begin{abstract}
 
 
 In this thesis we will describe the theory and application of the total variational (TV) method to image denoising. 
 We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
-We will then present the results of the method on a few different datasets.
-\end{abstract}
+% We will then present the results of the method on a few different datasets.
 
-
-% \section{Overview}
-
-% \section{Mathematical preliminaries}
-
-\section{Introduction}
-
-
-% \subsubsection{What is image denoising?}
-
-% \subsubsection{Why is image denoising important?}
-
-
-% This project is largely based on the research paper "Learning regularisation Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling" \cite{kofler2023learning} and utilises part of the Smartphone Image Denoising Dataset (SIDD) \cite{SIDD_2018_CVPR}.
-
- 
-% I find image processing in general and image denoising in particular very interesting.
-
-% The primary goal of this mini-project is to learn about a specific type of neural network called the U-Net, a convolutional network architecture
-% designed for segmentation of images \cite{ronneberger2015unet}, and apply it to the problem of image denoising. 
-
-% In the rest of this report, I will explain the task of learning a regularisation parameter map using U-Net, describe the U-Net architecture in this problem, discuss the modelling and training process, and finally present some preliminary results. 
-
-
-
-\subsection{Background}
 
 Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
 % The paper \cite{kofler2023learning} that this project is based on discusses
@@ -278,6 +256,33 @@ One notable aspect of using U-Net in this problem is that, instead of acting as 
 % Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
 
 
+% \end{abstract}
+
+
+% \section{Overview}
+
+% \section{Mathematical preliminaries}
+
+
+% \subsubsection{What is image denoising?}
+
+% \subsubsection{Why is image denoising important?}
+
+
+% This project is largely based on the research paper "Learning regularisation Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling" \cite{kofler2023learning} and utilises part of the Smartphone Image Denoising Dataset (SIDD) \cite{SIDD_2018_CVPR}.
+
+ 
+% I find image processing in general and image denoising in particular very interesting.
+
+% The primary goal of this mini-project is to learn about a specific type of neural network called the U-Net, a convolutional network architecture
+% designed for segmentation of images \cite{ronneberger2015unet}, and apply it to the problem of image denoising. 
+
+% In the rest of this report, I will explain the task of learning a regularisation parameter map using U-Net, describe the U-Net architecture in this problem, discuss the modelling and training process, and finally present some preliminary results. 
+
+
+
+
+
 
 
 % In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
@@ -288,21 +293,22 @@ One notable aspect of using U-Net in this problem is that, instead of acting as 
 
 \subsection{Denoising problems}
 
-The history of image denoising: 
+% The history of image denoising: 
 
-Image denoising began in the 1960s with the development of the Wiener filter, which is a linear filter that minimises the mean squared error between the denoised image and the original image.
-The Wiener filter works by finding the image that minimises the following objective function:
+% Image denoising began in the 1960s with the development of the Wiener filter, which is a linear filter that minimises the mean squared error between the denoised image and the original image.
+% The Wiener filter works by finding the image that minimises the following objective function:
 
-\[
-\min_{I} \frac{1}{2} ||I - I_{\text{noisy}}||^2
-\]
+% \[
+% \min_{I} \frac{1}{2} ||I - I_{\text{noisy}}||^2
+% \]
 
-where $I$ is the denoised image, $I_{\text{noisy}}$ is the noisy image, and $||\cdot||$ is the mean squared error between two images.
+% where $I$ is the denoised image, $I_{\text{noisy}}$ is the noisy image, and $||\cdot||$ is the mean squared error between two images.
 
-The Wiener filter is a linear filter that works well for images that are corrupted by Gaussian noise.
-However, the Wiener filter does not work well for images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise.
+% The Wiener filter is a linear filter that works well for images that are corrupted by Gaussian noise.
+% However, the Wiener filter does not work well for images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise.
 
-Before the advance of Neural networks, the total variational (TV) method was one of the most popular methods for image denoising.
+% Before the advance of Neural networks, the total variational (TV) method was one of the most popular methods for image denoising.
+Total variational (TV) method is one of the most popular methods for image denoising.
 The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
 
 The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.

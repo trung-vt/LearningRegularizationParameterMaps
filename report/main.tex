@@ -1564,17 +1564,29 @@ The TV-reconstruction using the parameter-map $\Lambda_{\Theta}$ improves both m
 
 \end{table}
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_psnr_diff.png}
+  \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_ssim_diff.png}
+  \caption{Histograms of the PSNR and SSIM differences between using $\lambda$ scalar and using $\Lambda_{\Theta}$ map for
+  reconstructions of noisy versions of the test images. 
+  % In all bilevel algorithms the
+  % ground truth-free statistics-based upper level objective was used.
+  }
+  \label{fig:hist_diff}
+\end{figure}
+
 
 
 More visualisations:
 
-- Histograms of the PSNR and SSIM differences (see Figure 9 of Dualization paper)
+% - Histograms of the PSNR and SSIM differences (see Figure 9 of Dualization paper)
 
 - Show Lambda map: use a different colormap with legend showing the range of the values (0.00 to 0.05) (page 29 of the paper)
 
-- Table of PSNR and SSIM values for each image: Table 4 in paper
+% - Table of PSNR and SSIM values for each image: Table 4 in paper
 
-- Scale the box plots like figure 13 in paper
+% - Scale the box plots like figure 13 in paper
 
 - (More experiments) Fix the sigma for test images
 

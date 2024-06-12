@@ -547,7 +547,7 @@ This gives us a new regularisation term that can be written as:
   = \| \mathbf{\Lambda}^{(x)} \circ \nabla_x \mathbf{x} \|_1 + \| \mathbf{\Lambda}^{(y)} \circ \nabla_y \mathbf{x} \|_1
 \end{equation}
 
-where $\mathbf{\Lambda}^{(x)}$ and $\mathbf{\Lambda}^{(y)}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively, and $\circ$ denotes the Hadamard or element-wise product.
+where $\mathbf{\Lambda}^{(x)}, \mathbf{\Lambda}^{(y)} \in \mathbb{R}^{m \times n}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively, and $\circ$ denotes the Hadamard or element-wise product.
 We will refer to $\mathbf{\Lambda}$ as the regularisation parameter map.
 
 

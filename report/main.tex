@@ -668,7 +668,7 @@ The algorithm is
 \begin{algorithm}[H]
 \caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}$ (adapted from ...)}
 \begin{algorithmic}[1]
-\STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
+\STATE \textbf{Input:} $L = \| [\mathbf{I}, \nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
 \STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
 % \STATE $\mathbf{y} = \mathbf{x}_0$
 \STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
@@ -685,18 +685,18 @@ The algorithm is
 \end{algorithmic}
 \end{algorithm}
 
-where $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[0, \boldsymbol{\Lambda}]$.
+where $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[0, \boldsymbol{\Lambda}]$.
 
-The choice of $L$ is taken from \cite{Sidky_2012}. 
+The choice of $L$ is taken from \cite{Sidky_2012} \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
 The number of iterations $T$ is a hyperparameter that we can choose for the training process.
 
-(TODO: Understand what $L$ is. Do we need to include $\theta = 1$? Can we write $\bar{\mathbf{x}}_{k+1} = 2 \mathbf{x}_{k+1} - \mathbf{x}_k$.)
+(TODO: Understand what $L$ is. Do we need to include $\theta = 1$? Can we write $\bar{\mathbf{x}}_{k+1} = 2 \mathbf{x}_{k+1} - \mathbf{x}_k$? In the code, initially $\mathbf{p}_0 = \mathbf{x}_0$?)
 
 (For comparison with the original version in \cite{kofler2023learning}:
 
 \includegraphics[width=1\linewidth]{images/references/PDHG original.png}
 
-)
+For denoising, $\mathbf{A}$ is the identity matrix. If $\mathbf{A}^{\text{H}}$ is the conjugate transpose, then it is also an identity matrix.)
 
 % NOTE: $\mathbf{y}$ is the noisy image $\mathbf{x}_0$ ???
 

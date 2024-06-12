@@ -687,6 +687,9 @@ The algorithm is
 
 where $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[0, \boldsymbol{\Lambda}]$.
 
+The choice of $L$ is taken from \cite{Sidky_2012}. 
+The number of iterations $T$ is a hyperparameter that we can choose for the training process.
+
 % NOTE: $\mathbf{y}$ is the noisy image $\mathbf{x}_0$ ???
 
 % HOWEVER, note that in the code, $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma  \times (\bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$

@@ -13,6 +13,7 @@
 \usepackage{graphicx}   % for trimming images
 \usepackage{tikz}
 \usepackage{subcaption} % for subfigures
+\usepackage{wrapfig}
 \usetikzlibrary{shapes, arrows.meta, positioning}
 
 % Adjust spacing for section
@@ -1523,13 +1524,15 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
-  \caption{Chest X-ray example: clean, noisy, $\lambda = 0.07$ with PSNR = 29.945, $\mathbf{\Lambda}_\theta$ with PSNR = \textbf{31.248}}
+  \caption{Chest X-ray example: clean, noisy with $\sigma = 0.5$, $\lambda = 0.07$ with PSNR = 29.945, $\mathbf{\Lambda}_\theta$ with PSNR = \textbf{31.248}}
   \label{fig:enter-label}
 \end{figure}
 
+\newpage
 
 
 
+% \begin{wrapfigure}{l}{1\textwidth}
 \begin{figure}[h]
   \centering
   \begin{subfigure}{0.48\textwidth}
@@ -1545,8 +1548,11 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
   \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
   \label{fig:enter-label}
 \end{figure}
+% \end{wrapfigure}{l}
 
+\newpage
 
+\newpage
 
 Plotting the values for all the test images, we can see that the regularisation parameter map consistently outperforms the scalar $\lambda$.
 The box plots in Figure \ref{fig:box_plots} show the distribution of PSNR and SSIM values for the test images

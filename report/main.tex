@@ -817,16 +817,19 @@ where
 \begin{itemize}
     \item $\mathbf{x_{\text{true}}}$ represents the clean image, serving as the ground truth.
     \item $\mathbf{x_{\text{noisy}}}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
-    \item $\mathbf{\Lambda}_{\Theta}$, the regularisation parameters map, emerges as the final output from the U-Net and is instrumental for the PDHG algorithm solver. Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
+    \item $\mathbf{\Lambda}_{\Theta}$ is the regularisation parameters map which is the final output from the U-Net. 
+    % Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
 \end{itemize}
 
-We interpret the PDHG solver as the ultimate hidden layer within our network. The outcome of the loss function $\text{MSE}(\mathbf{z}, \mathbf{x})$ is subsequently employed for backpropagation, essential for training the parameters $\Theta$.
+We can treat the PDHG solver as the final hidden layer in our network. 
+The result of the loss function $\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x_{\text{denoised}}})$ 
+is then used for backpropagation to train the parameters $\Theta$.
 
-For our implementation, we consider $n \times n$ images, specifically with $n = 512$.
+% For our implementation, we consider $256 \times 256$.
 
 
 
-The architecture of $\text{NET}_{\Theta}$ is inspired by the U-Net, a specialised type of convolutional neural network architecture.
+As previously mentioned, the specific architecture for $\text{NET}_{\Theta}$ is the U-Net, a special type of convolutional neural network architecture.
 
 % Let us first delve into the foundational concept of a convolutional neural network, which underpins the U-Net architecture.
 

@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+\usepackage{csquotes}
 \usepackage{xeCJK}
 \usepackage{amssymb,tikz,pdftexcmds,xparse}
 \usepackage{url}
@@ -99,7 +100,7 @@
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{listings}
 \usepackage{color}
-\usepackage{minted}
+% \usepackage{minted}
 
 % https://www.overleaf.com/learn/latex/Positioning_images_and_tables#Basic_positioning
 % To position the image to the centre
@@ -110,7 +111,7 @@
 \usepackage{blindtext}
 \usepackage{hyperref}   % For hyperlinks
 
-\usemintedstyle{manni}
+% \usemintedstyle{manni}
 
 \NewDocumentCommand{\codeword}{v}{%
 % \texttt{\textcolor{blue}{#1}}%
@@ -173,7 +174,7 @@
 
 % \vspace{-12pt}
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=0.34\linewidth]{100-clean.png}
 %     \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
@@ -413,7 +414,7 @@ Let us focus on the forward difference operator. In particular, in the discrete 
 For the forward gradient, the vertical gradient is calculated as:
 
 \begin{equation}
-  \begin{align}
+  \begin{aligned}
   \nabla_{x} \mathbf{x} &= \begin{bmatrix}
     \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{2, 2} - \mathbf{x}_{1, 2} & \ldots & \mathbf{x}_{2, n-1} - \mathbf{x}_{1, n-1} & \mathbf{x}_{2, n} - \mathbf{x}_{1, n} \\
     \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \mathbf{x}_{3, 2} - \mathbf{x}_{2, 2} & \ldots & \mathbf{x}_{3, n-1} - \mathbf{x}_{2, n-1} & \mathbf{x}_{3, n} - \mathbf{x}_{2, n}  \\
@@ -428,13 +429,13 @@ For the forward gradient, the vertical gradient is calculated as:
     0 & 0 & \ldots & -1 & 1 \\
     1 & 0 & \ldots & 0 & -1
     \end{bmatrix} \mathbf{x}
-  \end{align}
+  \end{aligned}
 \end{equation}
 
 and the horizontal gradient is calculated as:
 
 \begin{equation}
-  \begin{align}
+  \begin{aligned}
   \nabla_{y} \mathbf{x} &= \begin{bmatrix}
     \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} & \mathbf{x}_{1,1} - \mathbf{x}_{1,n} \\
     \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} & \mathbf{x}_{2,1} - \mathbf{x}_{2,n}  \\
@@ -449,7 +450,7 @@ and the horizontal gradient is calculated as:
     0 & 0 & \ldots & -1 & 0 \\
     0 & 0 & \ldots & 1 & -1
     \end{bmatrix}
-  \end{align}
+  \end{aligned}
 \end{equation}
 
 
@@ -693,7 +694,7 @@ To address this, we can apply image segmentation. Effective image segmentation h
 
 \section{Architecture}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
 \begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
 
@@ -764,7 +765,7 @@ Let us first delve into the foundational concept of a convolutional neural netwo
 Convolutional Neural Network (CNN) 
 }
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \includegraphics[width=1\linewidth]{Le-Net 5.png}
     
     \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks \cite{726791}} 
@@ -817,7 +818,7 @@ Conversely, the Decoder is structured around a series of blocks that progressive
 % \end{enumerate}
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \hspace*{-0.5cm} % Adjust the value as needed
 \begin{tikzpicture}[node distance=0.3cm, auto, ultra thick, transform shape, shift={(-10cm,0)}]
     % Define styles
@@ -971,7 +972,7 @@ We trained for 100 epochs.
 
 
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=1\linewidth]{images//chest_xray/results.png}
         
@@ -979,7 +980,7 @@ We trained for 100 epochs.
 %     \label{fig:chest_xray}
 % \end{figure}
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=0.6\linewidth]{images//chest_xray/Lambda vs PSNR.png}
         
@@ -1081,14 +1082,14 @@ We trained for 100 epochs.
 
 % The inference time for our model was about 1 second per 512$\times$512 patch. For a full HD (1920$\times$1080) image, denoising required processing 12 patches, taking less than half a minute in total. This demonstrates that while our method is slower than traditional single-parameter denoising methods, it offers a systematic approach to optimizing regularisation without prior knowledge of the best $\lambda$.
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=0.6\linewidth, trim={0 0 0 10cm}, clip]{images/W&B Chart 5_27_2024, 5 09 06 PM.png}
 %     \caption{Validation loss. Logged using wandb} 
 %     \label{fig:training_progress}
 % \end{figure}
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 % % \begin{center}
 % \centering
 % \begin{tabular}{ c c c c c c c c c }
@@ -1108,7 +1109,7 @@ We trained for 100 epochs.
 % % \end{center}
 % \end{figure}
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=1.0\linewidth]{images/cur/patch_2.png}
 %     \vspace{-8pt}
@@ -1128,7 +1129,7 @@ We trained for 100 epochs.
 % Despite the intended function of the regularisation map, there are instances where the model does not perform as expected. For example, the squares on the color palettes in the background, which originally had smooth surfaces, should ideally exhibit high regularisation values. However, this is not always the case, suggesting areas for further refinement in the model's ability to accurately assess and respond to different textural features within an image.
 
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %   \centering
 %   \includegraphics[width=0.34\linewidth]{100-clean.png}
 %   \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
@@ -1149,7 +1150,7 @@ We trained for 100 epochs.
 
 
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=0.8\linewidth]{100-line_plots.png}
 %     \caption{SIDD example: grid search}
@@ -1163,7 +1164,7 @@ We trained for 100 epochs.
 
 % \subsection{Tutle}
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=0.25\linewidth]{images/tests/turtle clean.png}
 %     \includegraphics[width=0.25\linewidth]{images/tests/turtle noisy.png}
@@ -1178,7 +1179,7 @@ We trained for 100 epochs.
 
 % \subsection{Square}
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=0.19\linewidth]{images/tests/square clean.png}
 %     \includegraphics[width=0.19\linewidth]{images/tests/square noisy.png}
@@ -1448,7 +1449,7 @@ We trained for 100 epochs.
 
 % \subsection{MRI}
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %     \centering
 %     \includegraphics[width=0.25\linewidth]{images//tests/MRI.png}
 %     \caption{Enter Caption}
@@ -1478,7 +1479,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
   \label{fig:line_plots}
 \end{figure}
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %   \includegraphics[width=1\linewidth]{images//chest_xray/chest_xray-denoised_compare.png}
 %   \caption{Chest X-ray example - denoised images}
 %   \label{fig:chest_xray}
@@ -1486,7 +1487,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %   \centering
   
 %   \includegraphics[width=0.25\linewidth]{images//chest_xray/clean.png}
@@ -1503,7 +1504,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %   \centering
 %   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-clean.png}
 %   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
@@ -1515,7 +1516,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 % \newpage
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/clean.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
@@ -1531,7 +1532,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 
 % \begin{wrapfigure}{l}{1\textwidth}
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \begin{subfigure}{0.48\textwidth}
   \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map.png}
@@ -1556,14 +1557,14 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 
 
-% \begin{figure}[h]
+% \begin{figure}[ht]
 %   \centering
 %       \includegraphics[width=1\linewidth]{images//chest_xray/outputa.png}
 %       \caption{Chest X-ray box plots}
 %   \label{fig:enter-label}
 % \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   % \includegraphics[width=1\linewidth]{images//chest_xray/output3.png}
   \includegraphics[width=0.5\linewidth]{images//chest_xray/box_plots_1.png}

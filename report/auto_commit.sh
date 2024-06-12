@@ -1,0 +1,1 @@
+git add "report/main.tex" "report/main.pdf" && git commit -m "update latex report" && git push

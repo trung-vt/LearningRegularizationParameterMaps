@@ -242,7 +242,7 @@
 % \begin{abstract}
 
 
-In this thesis we will describe the theory and application of the total variational (TV) method to image denoising. 
+In this dissertation we will describe the theory and application of the total variational (TV) method to image denoising. 
 We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
 % We will then present the results of the method on a few different datasets.
 
@@ -300,7 +300,7 @@ One notable aspect of using U-Net in this problem is that, instead of acting as 
 
 
 
-\subsection{Denoising problems}
+% \subsection{Denoising problems}
 
 % The history of image denoising: 
 
@@ -317,11 +317,11 @@ One notable aspect of using U-Net in this problem is that, instead of acting as 
 % However, the Wiener filter does not work well for images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise.
 
 % Before the advance of Neural networks, the total variational (TV) method was one of the most popular methods for image denoising.
-Total variational (TV) method is one of the most popular methods for image denoising.
-The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
+% Total variational (TV) method is one of the most popular methods for image denoising.
+% The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
 
-The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
-By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image \cite{RUDIN1992259}.
+% The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
+% By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image \cite{RUDIN1992259}.
 
 % The TV method is able to denoise images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise, and is able to produce high-quality denoised images \cite{rudin1992nonlinear}.
 
@@ -338,11 +338,6 @@ By minimising the total variation of the image, the TV method is able to remove 
 % The U-Net is able to produce high-quality denoised images that are close to the ground truth images \cite{ronneberger2015unet}.
 
 Here we combine the traditional TV method with the U-Net to produce a more efficient method for image denoising.
-
-The problem with TV method is that it is not clear how to choose the regularisation parameter $\lambda$.
-The U-Net can be used to find the regularisation parameter $\lambda$ more efficiently.
-After training with many examples, the U-Net can learn to predict the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
-
 
 
 
@@ -573,7 +568,7 @@ if we use a scalar $\lambda$ regularisation parameter, or
 
 if we use a regularisation parameter map $\mathbf{\Lambda}$ of regularisation parameters.
 
-In this thesis, we will use
+In this dissertation, we will use
 U-Net to help us find the regularisation parameter map $\mathbf{\Lambda}$ 
 % that the later form of the regularisation term.
 % The U-Net will be used to find the regularisation parameter map $\mathbf{\Lambda}$ 
@@ -695,6 +690,12 @@ where $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values o
 % $$
 
 % Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
+
+
+The problem with TV method is that it is not clear how to choose the regularisation parameter $\lambda$.
+The U-Net can be used to find the regularisation parameter $\lambda$ more efficiently.
+After training with many examples, the U-Net can learn to predict the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
+
 
 The challenge lies in finding or learning the regularisation parameter map $\mathbf{\Lambda}$. Using a single $\lambda$ value penalises all regions of the image equally, which is suboptimal. Instead, it would be better to assign higher penalties to smooth regions and lower penalties to detailed regions to preserve image details. However, this approach is not perfect, as it might leave noise in detailed areas.
 
@@ -1210,7 +1211,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 
 % \section{Conclusion}
 
-% In this thesis we have described the theory of application of total variational (TV) method to image denoising.
+% In this dissertation we have described the theory of application of total variational (TV) method to image denoising.
 % We have also described the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently.
 % We have then presented the results of the method on a few different datasets.
 

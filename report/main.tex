@@ -275,15 +275,14 @@ One notable aspect of using U-Net in this problem is that, instead of acting as 
 % This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
 % This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
 
-Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
+% Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
 
 
 
-\subsection{Contribution}
 
-In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
+% In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
 
-Although much of the logic described in this project is implemented in an open-source project \cite{kofler2023learning}, getting started can be challenging. Therefore, a self-contained notebook with code and instructions to obtain the data was prepared to help fellow students experiment more easily. This notebook can run on Google Colab \cite{colab} and Kaggle \cite{kaggle}, providing an accessible platform for experimentation. Additionally, part of this report could serve as documentation for the open-source project, enhancing it with additional visualisations and explanations not provided in the original project. These additions aim to help readers of the paper gain a better understanding of the approach.
+% Although much of the logic described in this project is implemented in an open-source project \cite{kofler2023learning}, getting started can be challenging. Therefore, a self-contained notebook with code and instructions to obtain the data was prepared to help fellow students experiment more easily. This notebook can run on Google Colab \cite{colab} and Kaggle \cite{kaggle}, providing an accessible platform for experimentation. Additionally, part of this report could serve as documentation for the open-source project, enhancing it with additional visualisations and explanations not provided in the original project. These additions aim to help readers of the paper gain a better understanding of the approach.
 
 
 
@@ -573,13 +572,6 @@ Question: Idealy, if we pass in a clean image to U-Net then all the regularisati
 
 % where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
 
-
-\subsection{Related Work}
-
-
-
-
-
 \subsection{U-Net}
 
 The U-Net is a type of neural network that is commonly used for image segmentation \cite{ronneberger2015unet}.
@@ -590,11 +582,14 @@ The U-Net is able to learn to segment images by training on a large dataset of i
 In our case, we will optimise a U-Net model to find the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
 
 
-% \subsection{Total Variational Denoising}
+\subsection{Related Work}
+
+
+\subsection{Contribution}
 
 
 
-% \subsection{U-Net}
+
 
 % The U-Net is a type of neural network that is commonly used for image segmentation.
 % The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
@@ -1468,10 +1463,10 @@ For this particular test image, the best scalar $\lambda$ was 0.02, which result
 The regularisation parameter map generated by our method resulted in a PSNR of 37.26 dB.
 The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
-  \includegraphics[width=0.75\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
+  \includegraphics[width=0.66\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
   
       \caption{Chest X-ray example - grid search}
   \label{fig:line_plots}
@@ -1512,7 +1507,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 %   \label{fig:enter-label}
 % \end{figure}
 
-\newpage
+% \newpage
 
 \begin{figure}[h]
   \centering
@@ -1524,12 +1519,13 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
   \label{fig:enter-label}
 \end{figure}
 
+
 \newpage
 
 
 
 % \begin{wrapfigure}{l}{1\textwidth}
-\begin{figure}[H]
+\begin{figure}[h]
   \centering
   \begin{subfigure}{0.48\textwidth}
   \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map.png}

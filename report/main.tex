@@ -635,7 +635,7 @@ we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG).
 The algorithm is
 
 \begin{algorithm}
-\caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+\caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}$ (adapted from ...)}
 \begin{algorithmic}[1]
 \STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
 \STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{TV}}$
@@ -646,7 +646,7 @@ The algorithm is
 \FOR{$k < T$}
     % \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
     \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{x}_0)\right) / (1 + \sigma)$
-    \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}_\Theta} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
+    \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
     \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
     \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
 \ENDFOR

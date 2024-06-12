@@ -12,6 +12,7 @@
 \usepackage{algorithmic}
 \usepackage{graphicx}   % for trimming images
 \usepackage{tikz}
+\usepackage{subcaption} % for subfigures
 \usetikzlibrary{shapes, arrows.meta, positioning}
 
 % Adjust spacing for section
@@ -1475,7 +1476,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 \begin{figure}[h]
   \centering
   % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
-  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
+  \includegraphics[width=0.75\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
   
       \caption{Chest X-ray example - grid search}
   \label{fig:line_plots}
@@ -1531,10 +1532,16 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.48\linewidth]{images//chest_xray/ex_2/lambda_map.png}
-  \includegraphics[width=0.48\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram.png}
-  \includegraphics[width=0.48\linewidth]{images//chest_xray/ex_2/lambda_map_log.png}
-  \includegraphics[width=0.48\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram_log.png}
+  \begin{subfigure}{0.48\textwidth}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram.png}\
+  \caption{$\mathbf{\Lambda}_{\Theta}$ map and histogram of the values}
+  \end{subfigure}
+  \begin{subfigure}{0.48\textwidth}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_log.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram_log.png}
+  \caption{$\log{(\mathbf{\Lambda}_{\Theta} + 0.05)}$ and histogram of the log values}
+  \end{subfigure}
   \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
   \label{fig:enter-label}
 \end{figure}

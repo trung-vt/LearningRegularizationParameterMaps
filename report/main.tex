@@ -806,7 +806,7 @@ A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends
 
 \subsubsection*{Encoder}
 
-The U-Net architecture is bifurcated into two principal components: an Encoder and a Decoder. The Encoder functions similarly to a standard CNN, utilizing a combination of convolutional layers and max-pooling layers organized into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while concurrently reducing the feature map size due to the pooling.
+The U-Net architecture is divided into two principal components: an Encoder and a Decoder. The Encoder functions similarly to a standard CNN, utilizing a combination of convolutional layers and max-pooling layers organized into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while concurrently reducing the feature map size due to the pooling.
 
 \subsubsection*{Decoder}
 
@@ -906,10 +906,15 @@ Conversely, the Decoder is structured around a series of blocks that progressive
 \label{fig:my_unet}
 \end{figure}
 
-In our model, the Encoder consists of three encoding blocks. The first block takes a single-channel input—a grayscale image—and expands it to 16 feature maps. The second and third blocks increase the number of channels further to 32 and 64, respectively.
+In our model, the Encoder consists of three encoding blocks. 
+First we increase the number of channels to 32.
+The first block the double the number of channels to 
+64 feature maps. 
+The second and third blocks increase the number of channels further to 128 and 256, respectively.
 
-Conversely, the Decoder incorporates two decoding blocks, one fewer than the Encoder. This configuration deviates from some common implementations where the number of encoding and decoding blocks are equal, and a "bottle-neck" comprising two additional convolutional layers is placed between them. In our model, we treat the final block of the Encoder as this bottle-neck. The first decoding block in the Decoder reduces the number of channels back to 32, and the second further reduces them to 16.
+% Conversely, the Decoder incorporates two decoding blocks, one fewer than the Encoder. This configuration deviates from some common implementations where the number of encoding and decoding blocks are equal, and a "bottle-neck" comprising two additional convolutional layers is placed between them. In our model, we treat the final block of the Encoder as this bottle-neck. The first decoding block in the Decoder reduces the number of channels back to 32, and the second further reduces them to 16.
 
+Similarly we have three decoding blocks.
 Each decoding block in our model concludes with an up-convolutional layer, which serves the same function as a typical convolutional layer, followed by a skip connection. The first skip connection takes the 32-channel output from the second encoding block and merges it with the 32-channel output from the first up-convolutional layer. This combination produces a 64-channel output, which is then processed by the first decoding block. The second skip connection similarly merges the 16-channel output from the first encoding block with the 16-channel output from the second up-convolutional layer, resulting in a 32-channel input for the second decoding block.
 
 The final stage in our architecture employs a convolutional layer to convert the 16-channel output from the last decoding block into a 2-channel output, thus producing two matrices as the ultimate output of our model.

@@ -672,8 +672,8 @@ The algorithm is
 \STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
 % \STATE $\mathbf{y} = \mathbf{x}_0$
 \STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
-\STATE $\mathbf{p}_0 = 0$
-\STATE $\mathbf{q}_0 = 0$
+\STATE $\mathbf{p}_0 = \mathbf{0}$
+\STATE $\mathbf{q}_0 = \mathbf{0}$
 \FOR{$k < T$}
     % \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
     \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{x}_0)\right) / (1 + \sigma)$
@@ -685,7 +685,7 @@ The algorithm is
 \end{algorithmic}
 \end{algorithm}
 
-where $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[0, \boldsymbol{\Lambda}]$.
+where $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
 
 The choice of $L$ is taken from \cite{Sidky_2012} \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
 The number of iterations $T$ is a hyperparameter that we can choose for the training process.

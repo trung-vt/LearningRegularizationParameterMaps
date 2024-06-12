@@ -313,21 +313,21 @@ Total variational (TV) method is one of the most popular methods for image denoi
 The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
 
 The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
-By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image \cite{rudin1992nonlinear}.
+By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image \cite{RUDIN1992259}.
 
-The TV method is able to denoise images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise, and is able to produce high-quality denoised images \cite{rudin1992nonlinear}.
+% The TV method is able to denoise images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise, and is able to produce high-quality denoised images \cite{rudin1992nonlinear}.
 
-Before the advance of neural networks, image denoising was done by hand-crafted methods such as the total variational (TV) method \cite{rudin1992nonlinear}.
+% Before the advance of neural networks, image denoising was done by hand-crafted methods such as the total variational (TV) method \cite{rudin1992nonlinear}.
 
-Since the arrival of neural networks, the U-Net has been the most popular method for image denoising.
+% Since the arrival of neural networks, the U-Net has been the most popular method for image denoising.
 
-The U-Net is a type of neural network that is commonly used for image segmentation.
-The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
-The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
+% The U-Net is a type of neural network that is commonly used for image segmentation.
+% The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
+% The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
 
-The U-Net is able to learn to denoise images by training on a large dataset of noisy images and their corresponding clean images \cite{ronneberger2015unet}.
+% The U-Net is able to learn to denoise images by training on a large dataset of noisy images and their corresponding clean images \cite{ronneberger2015unet}.
 
-The U-Net is able to produce high-quality denoised images that are close to the ground truth images \cite{ronneberger2015unet}.
+% The U-Net is able to produce high-quality denoised images that are close to the ground truth images \cite{ronneberger2015unet}.
 
 Here we combine the traditional TV method with the U-Net to produce a more efficient method for image denoising.
 
@@ -552,13 +552,13 @@ defined
 using the following formula:
 
 \begin{equation}
-  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}}  = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
+  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
 \end{equation}
 
 if we use a scalar $\lambda$ regularisation parameter, or
 
-\begin{equation}
-  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}}  = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1
+\begin{equation} \label{eq:1}
+  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1
 \end{equation}
 
 if we use a regularisation parameter map $\mathbf{\Lambda}$ of regularisation parameters.
@@ -570,7 +570,7 @@ U-Net to help us find the regularisation parameter map $\mathbf{\Lambda}$
 given any given (noisy) image. 
 We will compare the results to the best-case scenario where we use a scalar regularisation parameter $\lambda$.
 
-Question: Idealy, if we pass in a clean image to U-Net then all the regularisation parameters should be zero, right?
+% Question: Idealy, if we pass in a clean image to U-Net then all the regularisation parameters should be zero, right?
 
 
 % The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
@@ -627,14 +627,17 @@ In our case, we will optimise a U-Net model to find the regularisation parameter
 
 \subsection{Primal Dual Hybrid Gradient (PDHG)}
 
-An iterative method to generate the output which in this case is the denoised image. 
+To solve equation
+(14) 
+% \ref{eq:1}, 
+we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG). 
 
 The algorithm is
 
 \begin{algorithm}
-\caption{PDHG algorithm with fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
+\caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}_\Theta$ (adapted from \cite{81})}
 \begin{algorithmic}[1]
-\STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, initial guess $\mathbf{x}_0$
+\STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
 \STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{TV}}$
 % \STATE $\mathbf{y} = \mathbf{x}_0$
 \STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$

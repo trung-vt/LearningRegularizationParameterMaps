@@ -123,7 +123,7 @@ class DynamicImagePrimalDualNN(nn.Module):
         xnoisy = x.clone()
 
         # dual variable
-        p = x.clone()
+        p = x.clone() # TODO: The paper says that p should be initialized with zeros, but here it is initialized with x.clone()?
         q = torch.zeros(mb, 3, Nx, Ny, Nt, dtype=x.dtype).to(device)
 
         # sigma, tau, theta

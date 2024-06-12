@@ -732,19 +732,20 @@ The number of iterations $T$ is a hyperparameter that we can choose for the trai
 
 
 % The problem with TV method is that it is not clear how to choose the regularisation parameter $\lambda$.
-The U-Net can be used to find the 
-% regularisation parameter $\lambda$ 
-regularisation parameter map $\mathbf{\Lambda}$
-more efficiently.
+
 % After training with many examples, the U-Net can learn to predict the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
 
 
-% The challenge lies in finding or learning the regularisation parameter map $\mathbf{\Lambda}$.  
+The challenge lies in finding the regularisation parameter map $\mathbf{\Lambda}$.  
+Narrowing down the search space is challenging, as we potentially have $d^{(n^2)}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible. The U-Net can be used to find the 
+% regularisation parameter $\lambda$ 
+regularisation parameter map $\mathbf{\Lambda}$
+more efficiently.
 % However, this approach is not perfect, as it might leave noise in detailed areas.
 
 
 
-% The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, narrowing down the search space is challenging, as we potentially have $d^{(n^2)}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible.
+% The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, 
 
 % To address this, we can apply image segmentation. 
 % Effective image segmentation helps determine appropriate $\lambda$ values for different regions. 
@@ -802,7 +803,9 @@ more efficiently.
 For this project, our model comprises two primary components:
 \begin{enumerate}
     \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image $\mathbf{x}_0$.
-    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver (refer to Appendix), which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}$. This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. The symbol $\Theta$ represents the set of trainable parameters within the network.
+    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver 
+    % (refer to Appendix), 
+    which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}$. This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. The symbol $\Theta$ represents the set of trainable parameters within the network.
 \end{enumerate}
 
 We interpret the PDHG solver as the ultimate hidden layer within our network. The outcome of the loss function $L(\mathbf{z}, \mathbf{x})$ is subsequently employed for backpropagation, essential for training the parameters $\Theta$.

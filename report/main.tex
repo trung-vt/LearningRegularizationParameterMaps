@@ -615,9 +615,11 @@ The U-Net is an encoder-decoder network that is designed to take an image as inp
 The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
 The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
 
-We refer to the set of trainable parameters in the U-Net as $\Theta$, and the output of the U-Net as $\Lambda_{\Theta}$.
 
-In our case, we will optimise a U-Net model to find the regularisation parameter map $\Lambda_{\Theta}$ that produces the best denoised image for any particular noisy image.
+In our case, we will optimise a U-Net model to find the regularisation parameter map 
+% $\Lambda_{\Theta}$ 
+$\Lambda_{\Theta}\\\$ 
+that produces the best denoised image for any particular noisy image.
 
 
 \subsection{Related Work}
@@ -768,6 +770,8 @@ For this project, our model comprises two primary components:
     % This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. 
     % The symbol $\Theta$ represents the set of trainable parameters within the network.
 \end{enumerate}
+
+We refer to the set of trainable parameters in the U-Net as $\Theta$, and the output of the U-Net as $\Lambda_{\Theta}$.
 
 The general architecture is depicted in shown in Figure 1,
 

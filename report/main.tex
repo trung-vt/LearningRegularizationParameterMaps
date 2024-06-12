@@ -537,21 +537,21 @@ We can swap the scalar $\lambda$ with a regularisation parameter map $\mathbf{\L
 
 \begin{equation}
   \mathbf{\Lambda} = \begin{bmatrix}
-    \mathbf{\Lambda}^(x) \\
-    \mathbf{\Lambda}^(y)
+    \mathbf{\Lambda}^{(x)} \\
+    \mathbf{\Lambda}^{(y)}
   \end{bmatrix}
 \end{equation}
 
 where $\mathbf{\Lambda}^{(x)}, \mathbf{\Lambda}^{(y)} \in \mathbb{R}^{m \times n}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively.
-Here we will assume $\mathbf{\Lambda}^{(x)} = \mathbf{\Lambda}^{(y)}$ and denote them as $\mathbf{\Lambda}^(xy)$, i.e.
+Here we will assume $\mathbf{\Lambda}^{(x)} = \mathbf{\Lambda}^{(y)}$ and denote them as $\mathbf{\Lambda}^{(xy)}$, i.e.
 \begin{equation}
   \mathbf{\Lambda} = \begin{bmatrix}
-    \mathbf{\Lambda}^(xy) \\
-    \mathbf{\Lambda}^(xy)
+    \mathbf{\Lambda}^{(xy)} \\
+    \mathbf{\Lambda}^{(xy)}
   \end{bmatrix}
 \end{equation}
 
-This gives us a new regularisation term that can be written as:
+This gives us a new regularisation term that can be written as
 % $\in \mathbb{R}^{m \times n}$, 
 % where each element of $\mathbf{\Lambda}$ is a regularisation parameter for the corresponding pixel in the image $\mathbf{x}$.
 
@@ -585,7 +585,7 @@ using the following formula:
 if we use a scalar $\lambda$ regularisation parameter, or
 
 \begin{equation} \label{eq:1}
-  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1
+  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
 \end{equation}
 
 if we use a regularisation parameter map $\mathbf{\Lambda}$ of regularisation parameters.
@@ -613,7 +613,9 @@ The U-Net is an encoder-decoder network that is designed to take an image as inp
 The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
 The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
 
-In our case, we will optimise a U-Net model to find the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
+We refer to the set of trainable parameters in the U-Net as $\Theta$, and the output of the U-Net as $\Lambda_{\Theta}$.
+
+In our case, we will optimise a U-Net model to find the regularisation parameter map $\Lambda_{\Theta}$ that produces the best denoised image for any particular noisy image.
 
 
 \subsection{Related Work}
@@ -621,7 +623,9 @@ In our case, we will optimise a U-Net model to find the regularisation parameter
 
 \subsection{Contribution}
 
+- Adapt the existing code of the dynamic image denoising project in \cite{kofler2023learning} to static image denoising. Train and evaluate the model using a new dataset - Chest X-ray dataset.
 
+- Present the theory of the total variational denoising method and the experimental set-up in detail so that a fellow student can understand the method and implement it themselves.
 
 
 

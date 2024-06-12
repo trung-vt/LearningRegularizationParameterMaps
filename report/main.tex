@@ -177,7 +177,7 @@
 %     \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
 %     \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
 %     \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
-%     \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\Lambda_\theta$ with PSNR = 34.29}
+%     \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\theta$ with PSNR = 34.29}
 %     \label{fig:SIDD-chest-example-1}
 % \end{figure}
 
@@ -478,15 +478,15 @@ We can see that the regularisation parameter does not need to be a scalar.
 
 
 
-% $\lambda$, but can be a diagonal matrix $\Lambda \in \mathbb{R}^{n}$.
+% $\lambda$, but can be a diagonal matrix $\mathbf{\Lambda} \in \mathbb{R}^{n}$.
 
 \begin{equation}
-  \mathcal{R}(\mathbf{x}) = \| \Lambda \circ \nabla \mathbf{x} \|_1
-  = \| \Lambda^{(x)} \circ \nabla_x \mathbf{x} \|_1 + \| \Lambda^{(y)} \circ \nabla_y \mathbf{x} \|_1
+  \mathcal{R}(\mathbf{x}) = \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
+  = \| \mathbf{\Lambda}^{(x)} \circ \nabla_x \mathbf{x} \|_1 + \| \mathbf{\Lambda}^{(y)} \circ \nabla_y \mathbf{x} \|_1
 \end{equation}
 
-where $\Lambda^{(x)}$ and $\Lambda^{(y)}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively, and $\circ$ denotes the Hadamard or element-wise product.
-We will refer to $\Lambda$ as the regularisation parameter map.
+where $\mathbf{\Lambda}^{(x)}$ and $\mathbf{\Lambda}^{(y)}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively, and $\circ$ denotes the Hadamard or element-wise product.
+We will refer to $\mathbf{\Lambda}$ as the regularisation parameter map.
 
 
 
@@ -505,15 +505,15 @@ using the following formula:
 if we use a scalar $\lambda$ regularisation parameter, or
 
 \begin{equation}
-  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}}  = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \Lambda \nabla \mathbf{x} \|_1
+  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}}  = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1
 \end{equation}
 
-if we use a regularisation parameter map $\Lambda$ of regularisation parameters.
+if we use a regularisation parameter map $\mathbf{\Lambda}$ of regularisation parameters.
 
 In this thesis, we will use
-U-Net to help us find the regularisation parameter map $\Lambda$ 
+U-Net to help us find the regularisation parameter map $\mathbf{\Lambda}$ 
 % that the later form of the regularisation term.
-% The U-Net will be used to find the regularisation parameter map $\Lambda$ 
+% The U-Net will be used to find the regularisation parameter map $\mathbf{\Lambda}$ 
 given any given (noisy) image. 
 We will compare the results to the best-case scenario where we use a scalar regularisation parameter $\lambda$.
 
@@ -1099,7 +1099,7 @@ We trained for 100 epochs.
 %  Clean image & Noisy image. PSNR 24.13 dB \\
 %    &  \\
 %  \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_single_lambda.png} & \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_lambda_map.png}   \\
-%  Denoised with $\lambda = 0.05$. PSNR 35.64 dB & Denoised with $\Lambda$ map. PSNR 
+%  Denoised with $\lambda = 0.05$. PSNR 35.64 dB & Denoised with $\mathbf{\Lambda}$ map. PSNR 
 %  \textcolor{blue}{37.84 dB}  \\
 
  
@@ -1137,7 +1137,7 @@ We trained for 100 epochs.
 %   \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
 %   \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
 %   \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
-%   \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\Lambda_\theta$ with PSNR = 34.29}
+%   \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\theta$ with PSNR = 34.29}
 %   \label{fig:SIDD-chest-example-1}
 % \end{figure}
 
@@ -1474,7 +1474,9 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
+  % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
+  
       \caption{Chest X-ray example - grid search}
   \label{fig:line_plots}
 \end{figure}
@@ -1498,7 +1500,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 %   \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_3.png}
       
 %   % \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
-%   \caption{Chest X-ray example: clean, noisy, denoised using scalar $\lambda = 0.02$ with PSNR = 35.99, denoised using $\Lambda_\theta$ with PSNR = 37.26, $\Lambda_\theta$}
+%   \caption{Chest X-ray example: clean, noisy, denoised using scalar $\lambda = 0.02$ with PSNR = 35.99, denoised using $\mathbf{\Lambda}_\theta$ with PSNR = 37.26, $\mathbf{\Lambda}_\theta$}
 %   \label{fig:chest_xray}
 % \end{figure}
 
@@ -1510,7 +1512,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 %   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
 %   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-psnr_35.99-lambda_0.02.png}
 %   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-lambda_map-psnr_37.26-ssim_0.95.png}
-%   \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\Lambda_\theta$ with PSNR = 37.62}
+%   \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\mathbf{\Lambda}_\theta$ with PSNR = 37.62}
 %   \label{fig:enter-label}
 % \end{figure}
 
@@ -1520,7 +1522,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
-  \caption{Chest X-ray example: clean, noisy, $\lambda = 0.07$ with PSNR = 29.99, $\Lambda_\theta$ with PSNR = \textbf{31.29}}
+  \caption{Chest X-ray example: clean, noisy, $\lambda = 0.07$ with PSNR = 29.945, $\mathbf{\Lambda}_\theta$ with PSNR = \textbf{31.248}}
   \label{fig:enter-label}
 \end{figure}
 
@@ -1533,7 +1535,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
   \includegraphics[width=0.48\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram.png}
   \includegraphics[width=0.48\linewidth]{images//chest_xray/ex_2/lambda_map_log.png}
   \includegraphics[width=0.48\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram_log.png}
-  \caption{The produced $\Lambda_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
+  \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
   \label{fig:enter-label}
 \end{figure}
 
@@ -1571,7 +1573,7 @@ The regularisation parameter map consistently produces higher PSNR and SSIM valu
 \centering
 \begin{tabular}{c|c c}
 % \hline
- & \textbf{PDHG -} $\lambda$ & \textbf{PDHG -} $\Lambda_{\Theta}$ \\
+ & \textbf{PDHG -} $\lambda$ & \textbf{PDHG -} $\mathbf{\Lambda}_{\Theta}$ \\
 \hline
 \textbf{SSIM} & $0.87 \pm 0.04$ & $\mathbf{0.90} \pm 0.03$ \\
 \textbf{PSNR} & $33.43 \pm 2.16$ & $\mathbf{34.73} \pm 2.02$ \\
@@ -1579,7 +1581,7 @@ The regularisation parameter map consistently produces higher PSNR and SSIM valu
 \end{tabular}
 
 \caption{Mean and standard deviation of the measures SSIM and PSNR obtained over the test set for the chest x-ray dataset example. 
-The TV-reconstruction using the parameter-map $\Lambda_{\Theta}$ improves both measures.
+The TV-reconstruction using the parameter-map $\mathbf{\Lambda}_{\Theta}$ improves both measures.
 }
 
 \label{table:1}
@@ -1590,8 +1592,9 @@ The TV-reconstruction using the parameter-map $\Lambda_{\Theta}$ improves both m
   \centering
   \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_psnr_diff.png}
   \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_ssim_diff.png}
-  \caption{Histograms of the PSNR and SSIM differences between using $\lambda$ scalar and using $\Lambda_{\Theta}$ map for
+  \caption{Histograms of the PSNR and SSIM differences between using $\lambda$ scalar and using $\mathbf{\Lambda}_{\Theta}$ map for
   reconstructions of noisy versions of the test images. 
+  The $\mathbf{\Lambda}_{\Theta}$ map method consistently outperforms the scalar $\lambda$ method.
   % In all bilevel algorithms the
   % ground truth-free statistics-based upper level objective was used.
   }

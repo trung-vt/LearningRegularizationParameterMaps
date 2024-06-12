@@ -180,7 +180,7 @@
 %     \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
 %     \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
 %     \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
-%     \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\theta$ with PSNR = 34.29}
+%     \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\Theta$ with PSNR = 34.29}
 %     \label{fig:SIDD-chest-example-1}
 % \end{figure}
 
@@ -228,6 +228,14 @@
 
 
 \section{Introduction}
+
+- Rewrite parts written by ChatGPT, or written specifically for mini project but not relevant anymore
+
+- Check consistent notations
+
+- Redraw U-Net diagram
+
+- Arrange figures in correct locations
 
 % \subsection{Background}
 
@@ -927,13 +935,18 @@ The final stage in our architecture employs a convolutional layer to convert the
 
 % \subsection{Chest X-ray Dataset}
 
-We used the Chest X-Ray Images (Pneumonia) dataset which was downloaded from \url{https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia}. This is a dataset for binary classification of normal and pneumonia chest X-ray images. The dataset consists of 5,863 X-Ray images (JPEG) and 2 categories (Pneumonia/Normal).
+We used the Chest X-Ray Images (Pneumonia) dataset which was downloaded from \url{https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia}. 
+This is a dataset for binary classification of normal and pneumonia chest X-ray images. 
+The dataset consists of 5,863 X-Ray images (JPEG) and 2 categories (Pneumonia/Normal).
 All images are black-and-white and are in the JPEG format.
 The X-rays images have various resolutions.
 
-We used 800 images for the training dataset, 100 images for the validation dataset, and 100 images for the test dataset.
-We cropped the images to squares and then resized all images to 256x256 pixels.
-For each image we generated a random value of $\sigma$ ranging from 0.1 to 0.5 and noised the image with Gaussian noise with that $\sigma$.
+At the time of download, the original dataset had already been split into a training set, a validation set, and a test set.
+We picked 800 images for the training dataset for training and 100 images from the test set for testing. The validation set consists of only 8 images which were all used for validation.
+We used only images which were classified as normal.
+
+For consitent input, we cropped the images to squares and then resized them to $256 \times 256$.
+For each image we generated a random value of $\sigma$ uniformly in the range from 0.1 to 0.5, and noised the image with Gaussian noise with mean 0 and the corresponding standard deviation $\sigma$.
 
 % \subsection{SIDD Dataset}
 
@@ -948,13 +961,56 @@ For each image we generated a random value of $\sigma$ ranging from 0.1 to 0.5 a
 % We performed various experiments on the Chest X-ray dataset and the SIDD dataset with various configurations of the total variational denoising method and the U-Net.
 
 % For both datasets, 
-For learning the regularisation parameter map, we used a U-Net structure with 3 blocks and 32 initial filters to denoise the images, resulting in 1,796,034 trainable parameters.
-We used the Adam optimiser with an initial learning rate of 1e-4.
-The batch size is set to 1.
-We used the Mean Square Error (MSE) loss function to train the U-Net.
+For learning the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$, we used a U-Net structure with 1 initial double convolutional block, followed by 3 encoding blocks, 3 decoding blocks, and 1 final fully connected layer.
+The number of initial filters, or output channels of the first convolution layer, is set to 32.
+As commonly done, each encoding/decoding block contains a(n) downsampling/upsampling step, followed by 2 (fully) convolutional layers, in which the first convolutional layer doubles/halves the number channels which the second maintains the number of channels.
+In other words, the number of output channels of each subsequent encoding block is doubled, while the number of output channels of each subsequent decoding block is halved.
+The U-Net has 1 input channel and 2 final output channels.
+This leads to a 1-32-64-128-256-128-64-32-2 structure.
 
-We set $T_{\text{train}}$ to 256 and $T_{\text{test}}$ to 256.
-We trained for 100 epochs.
+All convolutional layers have a kernel size of $3 \times 3$ and a stride of 1.
+Each side of a feature map has zero-padding of size 1 to maintain the size of the feature map after the convolution.
+Keeping the number of size of the feature map constant after each convolution has the advantage of making the implementation of the skip connections simpler by not having to crop the output of the encoding blocks to match the size of the input of the decoding blocks.
+
+Each encoding block begins with a max pooling layer with $2 \times 2$ kernels and a step size of 2.
+Prior to the max pooling, a zeo-padding of size 1 is added in order to exactly halve the length of each side of the output.
+On the other hand, all upsampling steps are done with linear interpolation with a scale factor of 2 which doubles the length of each side of the feature map.
+In the end, the total number of trainable parameters of the set $\Theta$ is 1,796,034.
+
+For the activation function, we used the Leaky ReLU with a negative slope of 0.01.
+For the primal dual solver, we set the up-bound parameter to 0 and $T_{\text{train}}$ to 256.
+During testing we also set $T_{\text{test}}$ to 256.
+
+For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs.
+
+It is worth noting that, for the implementation of the U-Net, 
+we used the 3D implementations of the convolutional layers as well as the downsampling and upsmapling steps from the PyTorch library \cite{NEURIPS2019_9015}.
+The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
+The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
+
+%     "in_channels": 1,
+%     "out_channels": 2,
+%     "init_filters": 32,
+%     "n_blocks": 3,
+%     "activation": "LeakyReLU",
+%     "downsampling_kernel": (2, 2, 1),
+%     "downsampling_mode": "max",
+%     "upsampling_kernel": (2, 2, 1),
+%     "upsampling_mode": "linear_interpolation",
+
+%     "optimizer": "Adam",
+%     "learning_rate": 1e-4,
+%     "loss_function": "MSELoss",
+
+%     "up_bound": 0,
+    
+%     "device": "cuda:0",
+
+%     "wandb_mode": "online",
+%     "save_epoch_wandb": 10_000,
+%     "save_epoch_local": 10,
+%     "save_dir": "tmp_2",
+
 
 
 
@@ -1147,7 +1203,7 @@ We trained for 100 epochs.
 %   \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
 %   \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
 %   \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
-%   \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\theta$ with PSNR = 34.29}
+%   \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\Theta$ with PSNR = 34.29}
 %   \label{fig:SIDD-chest-example-1}
 % \end{figure}
 
@@ -1230,83 +1286,6 @@ We trained for 100 epochs.
 
 
 
-
-% \subsubsection{Experiment 2 (true-voice-32)}
-
-(The log can be found in 
-"true-voice-32" \url{https://wandb.ai/wof/chest_xray/runs/wedf9ud9})
-
-% I used T = 256
-
-% \begin{minted}[frame=single,
-%                 framesep=3mm,
-%                 linenos=true,
-%                 xleftmargin=21pt,
-%                 fontsize=\small,
-%                 tabsize=4]{Json}
-
-% {
-%     "train_num_samples": 200,
-%     "val_num_samples": 8,
-
-%     "T": 256,
-% }
-
-% {
-%   "_step": 4661,
-%   "_runtime": 104441.02872157095,
-%   "training_loss": 0.0003217149386182427,
-%   "validation_loss": 0.0003489509272185387,
-%   "_timestamp": 1717860475.3171396,
-%   "training PSNR": 35.358917236328125,
-%   "training SSIM": 0.9235859364974548,
-%   "validation PSNR": 34.98021697998047,
-%   "validation SSIM": 0.9137686309701653
-% }
-    
-% \end{minted}
-
-
-% \subsubsection{Other experiment A ()}:
-
-
-
-(I also did an experiment where I removed PDHG completely and used only the UNet to learn how to denoise an image (\url{https://wandb.ai/wof/chest_xray/runs/xnjgywx7/overview}).)
-
-% \begin{minted}[frame=single,
-%                 framesep=3mm,
-%                 linenos=true,
-%                 xleftmargin=21pt,
-%                 fontsize=\small,
-%                 tabsize=4]{Json}
-
-% {
-%     # TODO: 
-%     "val_data_path": f"{CHEST_XRAY_BASE_DATA_PATH}/test/NORMAL", 
-%     # More images in test folder. Val folder has only 8 images.
-%     "train_num_samples": 200,
-%     "val_num_samples": 20,
-
-%     "out_channels": 1,
-%     "init_filters": 64,
-%     "n_blocks": 3,
-%     "activation": "ReLU",
-    
-%     "T": 0,
-% }
-
-% {
-%   "validation_loss": 0.0004885616785031743,
-%   "_step": 2879,
-%   "_timestamp": 1717862098.4003837,
-%   "training_loss": 0.0001654919820066425,
-%   "validation SSIM": 0.8739885872308468,
-%   "_runtime": 2097.286071538925,
-%   "training PSNR": 38.07373046875,
-%   "training SSIM": 0.956982729046044,
-%   "validation PSNR": 33.51918411254883
-% }
-% \end{minted}
 
 
 % \subsubsection{Other experiment B (ruby-dust-28)}:
@@ -1472,22 +1451,28 @@ We trained for 100 epochs.
 
 
 \section{Results}
-Each test image was also noised with Gaussian noise with a random value of $\sigma$ ranging from 0.1 to 0.5.
+% Each test image was also noised with Gaussian noise with a random value of $\sigma$ ranging from 0.1 to 0.5.
 
-We compare the results using the regularisation parameter map generated by
-our method with the results using a scalar $\lambda$ for the total variational denoising method.
-For each test image, we run a grid search to find the best scalar $\lambda$.
-An example result is shown in Figure \ref{fig:line_plots}.
-For this particular test image, the best scalar $\lambda$ was 0.02, which resulted in a PSNR of 35.99 dB.
-The regularisation parameter map generated by our method resulted in a PSNR of 37.26 dB.
-The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
+As previously mentioned, we used 100 images with label "normal" from the test set provided in the Chest X-ray dataset for testing.
+Each test image was noised with a Gaussian noise of mean 0 and standard deviation $\sigma = 0.5$.
+For each test image, we also did a grid search with 81 equally spaced values between 0 and 0.8 in order to find the best scalar $\lambda$ for the total variational denoising method, which we used as a baseline to show the effectiveness of our method.
+
+% We compare the results using the regularisation parameter map generated by
+% our method with the results using a scalar $\lambda$ for the total variational denoising method.
+% For each test image, we run a grid search to find the best scalar $\lambda$.
+
+As an example, we present the results for one of the test images.
+The results of the grid search is shown in the line plots in figure 4.
+For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
+The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
+The clean and orignal versions as well as the resulting denoised images are shown in Figure 5.
 
 \begin{figure}[H]
   \centering
   % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
   \includegraphics[width=0.66\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
   
-      \caption{Chest X-ray example - grid search}
+      \caption{Grid search for the best scalar regularisation parameter $\lambda$ for the example test image. The highest PSNR of 29.945 dB was achieved by $\lambda = 0.07$.}
   \label{fig:line_plots}
 \end{figure}
 
@@ -1510,7 +1495,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 %   \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_3.png}
       
 %   % \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
-%   \caption{Chest X-ray example: clean, noisy, denoised using scalar $\lambda = 0.02$ with PSNR = 35.99, denoised using $\mathbf{\Lambda}_\theta$ with PSNR = 37.26, $\mathbf{\Lambda}_\theta$}
+%   \caption{Chest X-ray example: clean, noisy, denoised using scalar $\lambda = 0.02$ with PSNR = 35.99, denoised using $\mathbf{\Lambda}_\Theta$ with PSNR = 37.26, $\mathbf{\Lambda}_\Theta$}
 %   \label{fig:chest_xray}
 % \end{figure}
 
@@ -1522,7 +1507,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 %   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
 %   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-psnr_35.99-lambda_0.02.png}
 %   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-lambda_map-psnr_37.26-ssim_0.95.png}
-%   \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\mathbf{\Lambda}_\theta$ with PSNR = 37.62}
+%   \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\mathbf{\Lambda}_\Theta$ with PSNR = 37.62}
 %   \label{fig:enter-label}
 % \end{figure}
 
@@ -1534,7 +1519,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
-  \caption{Chest X-ray example: clean, noisy with $\sigma = 0.5$, $\lambda = 0.07$ with PSNR = 29.945, $\mathbf{\Lambda}_\theta$ with PSNR = \textbf{31.248}}
+  \caption{Chest X-ray example. The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.5$. The bottom row shows the denoised images using the TV method; the left image with PSNR = 29.945 was produced using the best scalar regularisation parameter $\lambda = 0.07$ , while the right image with PSNR = \textbf{31.248} was denoised using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
   \label{fig:enter-label}
 \end{figure}
 

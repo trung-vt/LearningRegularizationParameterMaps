@@ -371,7 +371,8 @@ A prominent approach is to formulate the reconstruction as a minimisation proble
 % The total variational denoising method works by finding the image that minimises the following objective function:
 
 \begin{equation}
-  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}(\mathbf{x})
+  % \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}(\mathbf{x})
+  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}(\mathbf{x})
 \end{equation}
 
 where $d(\cdot, \cdot)$ is a data fidelity term and $\mathcal{R}(\cdot)$ is a regularisation term.
@@ -552,13 +553,14 @@ defined
 using the following formula:
 
 \begin{equation}
-  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
+  % \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
+  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
 \end{equation}
 
 if we use a scalar $\lambda$ regularisation parameter, or
 
 \begin{equation} \label{eq:1}
-  \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1
+  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1
 \end{equation}
 
 if we use a regularisation parameter map $\mathbf{\Lambda}$ of regularisation parameters.
@@ -634,11 +636,11 @@ we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG).
 
 The algorithm is
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}$ (adapted from ...)}
 \begin{algorithmic}[1]
 \STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
-\STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{denoised}}$
+\STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
 % \STATE $\mathbf{y} = \mathbf{x}_0$
 \STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
 \STATE $\mathbf{p}_0 = 0$
@@ -650,7 +652,7 @@ The algorithm is
     \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
     \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
 \ENDFOR
-\STATE $\mathbf{x}_{\text{denoised}} = \mathbf{x}_T$
+\STATE $\hat{\mathbf{x}} = \mathbf{x}_T$
 \end{algorithmic}
 \end{algorithm}
 
@@ -660,31 +662,31 @@ where $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values o
 
 % HOWEVER, note that in the code, $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma  \times (\bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
 
-\subsection{Objective}
+% \subsection{Objective}
 
 
-% Traditionally, the Total Variation (TV) method has been used to improve image reconstruction \cite{kofler2023learning}. 
-% For this method to work effectively, we need to learn the optimal regularisation parameters.
-One of the most widely applied image denoising methods is the so-called Total Variation (TV) regularisation \cite{kofler2023learning}.
+% % Traditionally, the Total Variation (TV) method has been used to improve image reconstruction \cite{kofler2023learning}. 
+% % For this method to work effectively, we need to learn the optimal regularisation parameters.
+% One of the most widely applied image denoising methods is the so-called Total Variation (TV) regularisation \cite{kofler2023learning}.
 
-Formally, given the loss function
-\vspace{-3pt}
-$$ L(\mathbf{z}, \mathbf{x}) = \frac{1}{2} \| \mathbf{x} - \mathbf{z} \|_2^2 + \text{TV}(\mathbf{x}), $$
+% Formally, given the loss function
+% \vspace{-3pt}
+% $$ L(\mathbf{z}, \mathbf{x}) = \frac{1}{2} \| \mathbf{x} - \mathbf{z} \|_2^2 + \text{TV}(\mathbf{x}), $$
 
-our objective is to find $\hat{\mathbf{x}}$ such that
-$$ \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} L(\mathbf{z}, \mathbf{x}) $$
-where $\mathbf{z}$ is the input, presumably noisy, image and $\mathbf{x}$ represent the "clean" image we are looking for. We treat images as vectors, $\mathbf{x}, \mathbf{z} \in \mathbb{R}^{n^2}$, where $n$ is the height of the image, assuming the image is square. In this project, we use $n = 512$.
+% our objective is to find $\hat{\mathbf{x}}$ such that
+% $$ \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} L(\mathbf{z}, \mathbf{x}) $$
+% where $\mathbf{z}$ is the input, presumably noisy, image and $\mathbf{x}$ represent the "clean" image we are looking for. We treat images as vectors, $\mathbf{x}, \mathbf{z} \in \mathbb{R}^{n^2}$, where $n$ is the height of the image, assuming the image is square. In this project, we use $n = 512$.
 
- The $\text{TV}$ term can be expressed as either a scalar $\lambda$:
-$$
-\text{TV}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1, \quad \lambda \in \mathbb{R}
-$$
-or as a matrix $\mathbf{\Lambda}$:
-$$
-\text{TV}(\mathbf{x}) = \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1, \quad \mathbf{\Lambda} \in \mathbb{R}^{n^2}
-$$
+%  The $\text{TV}$ term can be expressed as either a scalar $\lambda$:
+% $$
+% \text{TV}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1, \quad \lambda \in \mathbb{R}
+% $$
+% or as a matrix $\mathbf{\Lambda}$:
+% $$
+% \text{TV}(\mathbf{x}) = \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1, \quad \mathbf{\Lambda} \in \mathbb{R}^{n^2}
+% $$
 
-Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
+% Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
 
 The challenge lies in finding or learning the regularisation parameter map $\mathbf{\Lambda}$. Using a single $\lambda$ value penalises all regions of the image equally, which is suboptimal. Instead, it would be better to assign higher penalties to smooth regions and lower penalties to detailed regions to preserve image details. However, this approach is not perfect, as it might leave noise in detailed areas.
 

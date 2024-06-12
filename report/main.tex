@@ -1504,16 +1504,41 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 
 
+% \begin{figure}[h]
+%   \centering
+%   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-clean.png}
+%   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
+%   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-psnr_35.99-lambda_0.02.png}
+%   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-lambda_map-psnr_37.26-ssim_0.95.png}
+%   \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\Lambda_\theta$ with PSNR = 37.62}
+%   \label{fig:enter-label}
+% \end{figure}
+
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/100-clean.png}
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex1-clean.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex1-noisy.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-psnr_35.99-lambda_0.02.png}
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/100-lambda_map-psnr_37.26-ssim_0.95.png}
-  \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\Lambda_\theta$ with PSNR = 37.62}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex1-denoised-map.png}
+  \caption{Chest X-ray example: clean, noisy, $\lambda = 0.07$ with PSNR = ..., $\Lambda_\theta$ with PSNR = ...}
   \label{fig:enter-label}
 \end{figure}
 
+
+
+Best lambda: 0.07417721518987341
+
+Best PSNR: 29.96266784426501
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex1-map.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex1-hist.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex1-map-log.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex1-hist-log.png}
+  \caption{The produced $\Lambda_{\Theta}$ map for the chest x-ray dataset example.}
+  \label{fig:enter-label}
+\end{figure}
 
 
 

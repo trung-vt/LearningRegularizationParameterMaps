@@ -236,11 +236,56 @@ We will then present the results of the method on a few different datasets.
 
 % \section{Overview}
 
-\section{Mathematical preliminaries}
+% \section{Mathematical preliminaries}
+
+\section{Introduction}
+
+
+\subsubsection{What is image denoising?}
+
+\subsubsection{Why is image denoising important?}
+
+
+This project is largely based on the research paper "Learning regularisation Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling" \cite{kofler2023learning} and utilises part of the Smartphone Image Denoising Dataset (SIDD) \cite{SIDD_2018_CVPR}.
+
+ 
+% I find image processing in general and image denoising in particular very interesting.
+
+The primary goal of this mini-project is to learn about a specific type of neural network called the U-Net, a convolutional network architecture
+designed for segmentation of images \cite{ronneberger2015unet}, and apply it to the problem of image denoising. 
+
+In the rest of this report, I will explain the task of learning a regularisation parameter map using U-Net, describe the U-Net architecture in this problem, discuss the modelling and training process, and finally present some preliminary results. 
 
 
 
-\section{Background}
+\subsection{Background}
+
+Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
+% The paper \cite{kofler2023learning} that this project is based on discusses
+In particular, it combines U-Net with a traditional image-denoising algorithm called the Primal Dual Hybrid Gradient (PDHG) algorithm \cite{kofler2023learning}.
+% to solve the image denoising task. 
+% While the specifics of the algorithm are outside the scope of this project, 
+% the main idea is to use U-Net to learn the required input, so-called the regularisation parameters, of a specific image for the PDHG algorithm. 
+Specifically, a PDHG solver is appended to the end of the U-Net, treating the solver as the final layer of the entire network to create an end-to-end unsupervised model.
+% To denoise images, the PDHG algorithm requires defining some regularisation parameters as part of the cost function. 
+
+% By treating PDHG as the final layer, this approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network.
+
+One notable aspect of using U-Net in this problem is that, instead of acting as a black box and outputting a denoised version of each input image, it outputs a parameter map used in another algorithm, demonstrating the flexibility of neural networks.
+% This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
+% This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
+
+Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
+
+
+
+\subsection{Contribution}
+
+In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
+
+Although much of the logic described in this project is implemented in an open-source project \cite{kofler2023learning}, getting started can be challenging. Therefore, a self-contained notebook with code and instructions to obtain the data was prepared to help fellow students experiment more easily. This notebook can run on Google Colab \cite{colab} and Kaggle \cite{kaggle}, providing an accessible platform for experimentation. Additionally, part of this report could serve as documentation for the open-source project, enhancing it with additional visualisations and explanations not provided in the original project. These additions aim to help readers of the paper gain a better understanding of the approach.
+
+
 
 \subsection{Denoising problems}
 
@@ -562,81 +607,24 @@ The U-Net is able to learn to segment images by training on a large dataset of i
 
 The total variational denoising method was implemented using the following steps:
 
-\begin{enumerate}
-    \item The noisy image was passed through a U-Net to produce an initial denoised image.
-    \item The total variation of the denoised image was calculated using the formula above.
-    \item The regularisation parameter $\lambda$ was found by minimising the following objective function:
+% \begin{enumerate}
+%     \item The noisy image was passed through a U-Net to produce an initial denoised image.
+%     \item The total variation of the denoised image was calculated using the formula above.
+%     \item The regularisation parameter $\lambda$ was found by minimising the following objective function:
     
-    \[
-    \min_{\lambda} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
-    \]
+%     \[
+%     \min_{\lambda} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
+%     \]
     
-    \item The denoised image was then found by minimising the following objective function:
+%     \item The denoised image was then found by minimising the following objective function:
     
-    \[
-    \min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
-    \]
-\end{enumerate}
-
-\subsection{U-Net}
-
-The U-Net was implemented using the following architecture:
-
-\begin{enumerate}
-    \item The U-Net was made up of a series of convolutional layers that downsampled the image by a factor of 2.
-    \item The U-Net was made up of a series of transposed convolutional layers that upsampled the image by a factor of 2.
-    \item The U-Net was trained on a large dataset of images and their corresponding segmentation masks.
-    \item The U-Net was able to learn to segment images by training on the dataset.
-    \item The U-Net was able to produce segmentation masks that were close to the ground truth masks.
-    \item The U-Net was able to generalise to new images and produce accurate segmentation masks.
-\end{enumerate}
-
-\section{Introduction}
-
-
-\subsubsection{What is image denoising?}
-
-\subsubsection{Why is image denoising important?}
-
-
-This project is largely based on the research paper "Learning regularisation Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling" \cite{kofler2023learning} and utilises part of the Smartphone Image Denoising Dataset (SIDD) \cite{SIDD_2018_CVPR}.
-
- 
-% I find image processing in general and image denoising in particular very interesting.
-
-The primary goal of this mini-project is to learn about a specific type of neural network called the U-Net, a convolutional network architecture
-designed for segmentation of images \cite{ronneberger2015unet}, and apply it to the problem of image denoising. 
-
-In the rest of this report, I will explain the task of learning a regularisation parameter map using U-Net, describe the U-Net architecture in this problem, discuss the modelling and training process, and finally present some preliminary results. 
+%     \[
+%     \min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
+%     \]
+% \end{enumerate}
 
 
 
-\subsection{Background}
-
-Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
-% The paper \cite{kofler2023learning} that this project is based on discusses
-In particular, it combines U-Net with a traditional image-denoising algorithm called the Primal Dual Hybrid Gradient (PDHG) algorithm \cite{kofler2023learning}.
-% to solve the image denoising task. 
-% While the specifics of the algorithm are outside the scope of this project, 
-% the main idea is to use U-Net to learn the required input, so-called the regularisation parameters, of a specific image for the PDHG algorithm. 
-Specifically, a PDHG solver is appended to the end of the U-Net, treating the solver as the final layer of the entire network to create an end-to-end unsupervised model.
-% To denoise images, the PDHG algorithm requires defining some regularisation parameters as part of the cost function. 
-
-% By treating PDHG as the final layer, this approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network.
-
-One notable aspect of using U-Net in this problem is that, instead of acting as a black box and outputting a denoised version of each input image, it outputs a parameter map used in another algorithm, demonstrating the flexibility of neural networks.
-% This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
-% This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
-
-Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
-
-
-
-\subsection{Contribution}
-
-In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
-
-Although much of the logic described in this project is implemented in an open-source project \cite{kofler2023learning}, getting started can be challenging. Therefore, a self-contained notebook with code and instructions to obtain the data was prepared to help fellow students experiment more easily. This notebook can run on Google Colab \cite{colab} and Kaggle \cite{kaggle}, providing an accessible platform for experimentation. Additionally, part of this report could serve as documentation for the open-source project, enhancing it with additional visualisations and explanations not provided in the original project. These additions aim to help readers of the paper gain a better understanding of the approach.
 
 \section{Task Description}
 
@@ -810,6 +798,8 @@ The convolutional and pooling layers constitute the foundational blocks of the U
 
 \subsection{U-Net}
 
+
+
 A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
 
 \subsubsection*{Encoder}
@@ -820,6 +810,17 @@ The U-Net architecture is bifurcated into two principal components: an Encoder a
 
 Conversely, the Decoder is structured around a series of blocks that progressively halve the number of channels while enlarging the feature map size, effectively "unrolling" the data. Unlike the Encoder blocks, each Decoder block concludes with an up-convolutional layer followed by a skip connection. This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
 
+
+% The U-Net was implemented using the following architecture:
+
+% \begin{enumerate}
+%     \item The U-Net was made up of a series of convolutional layers that downsampled the image by a factor of 2.
+%     \item The U-Net was made up of a series of transposed convolutional layers that upsampled the image by a factor of 2.
+%     \item The U-Net was trained on a large dataset of images and their corresponding segmentation masks.
+%     \item The U-Net was able to learn to segment images by training on the dataset.
+%     \item The U-Net was able to produce segmentation masks that were close to the ground truth masks.
+%     \item The U-Net was able to generalise to new images and produce accurate segmentation masks.
+% \end{enumerate}
 
 
 \begin{figure}[h]
@@ -1518,6 +1519,8 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 %   \label{fig:enter-label}
 % \end{figure}
 
+\newpage
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/clean.png}
@@ -1533,7 +1536,7 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 
 % \begin{wrapfigure}{l}{1\textwidth}
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \begin{subfigure}{0.48\textwidth}
   \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map.png}
@@ -1552,12 +1555,8 @@ The resulting denoised images are shown in Figure \ref{fig:chest_xray}.
 
 \newpage
 
-\newpage
 
-Plotting the values for all the test images, we can see that the regularisation parameter map consistently outperforms the scalar $\lambda$.
-The box plots in Figure \ref{fig:box_plots} show the distribution of PSNR and SSIM values for the test images
-using the two methods.
-The regularisation parameter map consistently produces higher PSNR and SSIM values than the scalar $\lambda$.
+
 
 
 
@@ -1601,7 +1600,7 @@ The TV-reconstruction using the parameter-map $\mathbf{\Lambda}_{\Theta}$ improv
 
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_psnr_diff.png}
   \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_ssim_diff.png}
@@ -1614,24 +1613,27 @@ The TV-reconstruction using the parameter-map $\mathbf{\Lambda}_{\Theta}$ improv
   \label{fig:hist_diff}
 \end{figure}
 
+Plotting the values for all the test images, we can see that the regularisation parameter map consistently outperforms the scalar $\lambda$.
+The box plots in Figure \ref{fig:box_plots} show the distribution of PSNR and SSIM values for the test images
+using the two methods.
+The regularisation parameter map consistently produces higher PSNR and SSIM values than the scalar $\lambda$.
 
-
-More visualisations:
+% More visualisations:
 
 % - Histograms of the PSNR and SSIM differences (see Figure 9 of Dualization paper)
 
-- Show Lambda map: use a different colormap with legend showing the range of the values (0.00 to 0.05) (page 29 of the paper)
+% - Show Lambda map: use a different colormap with legend showing the range of the values (0.00 to 0.05) (page 29 of the paper)
 
 % - Table of PSNR and SSIM values for each image: Table 4 in paper
 
 % - Scale the box plots like figure 13 in paper
 
-- (More experiments) Fix the sigma for test images
+- (More experiments) Test with the sigma 0.1 and 0.3 for test images and add: box plots, table rows, and difference histograms.
 
 
 
 
-The total variational denoising method was able to produce denoised images that were closer to the ground truth images.
+% The total variational denoising method was able to produce denoised images that were closer to the ground truth images.
 
 
 \section{Conclusion}
@@ -1650,7 +1652,11 @@ We experimented with the capabilities of the U-Net architecture to learn and app
 % Moving forward, optimizing the computational efficiency of this model will be crucial for broader application and scalability.
 
 % \subsection{Conclusion}
-In conclusion, while the experiment demonstrated potential improvements over traditional single-lambda denoising methods, the current computational demands make it impractical for real-world applications. Future research will focus on refining the efficiency of these neural network-enhanced denoising techniques to make them more viable for practical use.
+In conclusion, while the experiment demonstrated potential improvements over traditional single-lambda denoising methods, the current computational demands make it impractical for real-world applications. 
+
+\section{Future Work}
+
+Future research will focus on refining the efficiency of these neural network-enhanced denoising techniques to make them more viable for practical use.
 
 
 \newpage

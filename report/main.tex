@@ -638,7 +638,7 @@ The algorithm is
 \caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}$ (adapted from ...)}
 \begin{algorithmic}[1]
 \STATE \textbf{Input:} $L = \| [\nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
-\STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{TV}}$
+\STATE \textbf{Output:} reconstructed image $\mathbf{x}_{\text{denoised}}$
 % \STATE $\mathbf{y} = \mathbf{x}_0$
 \STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
 \STATE $\mathbf{p}_0 = 0$
@@ -650,9 +650,11 @@ The algorithm is
     \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
     \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
 \ENDFOR
-\STATE $\mathbf{x}_{\text{TV}} = \mathbf{x}_T$
+\STATE $\mathbf{x}_{\text{denoised}} = \mathbf{x}_T$
 \end{algorithmic}
 \end{algorithm}
+
+where $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[0, \boldsymbol{\Lambda}]$.
 
 % NOTE: $\mathbf{y}$ is the noisy image $\mathbf{x}_0$ ???
 

@@ -533,6 +533,8 @@ Note that, we can move $\lambda$ inside the norm, so the regularisation term can
 
 The regularisation parameter does not need to be a scalar.
 % Each pixel in the image can have its own regularisation parameter.
+Since regularisation is multiplied by the gradient, higher $\lambda$ values will penalize areas with many changes (typically areas with more details), while lower $\lambda$ values prioritize detail preservation over noise reduction.
+Using a single $\lambda$ value penalises all regions of the image equally, which is suboptimal. Instead, it would be better to assign higher penalties to smooth regions and lower penalties to detailed regions to preserve image details.
 We can swap the scalar $\lambda$ with a regularisation parameter map $\mathbf{\Lambda}$,
 
 \begin{equation}
@@ -729,18 +731,24 @@ The number of iterations $T$ is a hyperparameter that we can choose for the trai
 % Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
 
 
-The problem with TV method is that it is not clear how to choose the regularisation parameter $\lambda$.
-The U-Net can be used to find the regularisation parameter $\lambda$ more efficiently.
-After training with many examples, the U-Net can learn to predict the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
+% The problem with TV method is that it is not clear how to choose the regularisation parameter $\lambda$.
+The U-Net can be used to find the 
+% regularisation parameter $\lambda$ 
+regularisation parameter map $\mathbf{\Lambda}$
+more efficiently.
+% After training with many examples, the U-Net can learn to predict the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
 
 
-The challenge lies in finding or learning the regularisation parameter map $\mathbf{\Lambda}$. Using a single $\lambda$ value penalises all regions of the image equally, which is suboptimal. Instead, it would be better to assign higher penalties to smooth regions and lower penalties to detailed regions to preserve image details. However, this approach is not perfect, as it might leave noise in detailed areas.
+% The challenge lies in finding or learning the regularisation parameter map $\mathbf{\Lambda}$.  
+% However, this approach is not perfect, as it might leave noise in detailed areas.
 
-Since regularisation is multiplied by the gradient, higher $\lambda$ values will penalize areas with many changes (typically areas with more details), while lower $\lambda$ values prioritize detail preservation over noise reduction.
 
-The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, narrowing down the search space is challenging, as we potentially have $d^{(n^2)}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible.
 
-To address this, we can apply image segmentation. Effective image segmentation helps determine appropriate $\lambda$ values for different regions. A good network for learning image segmentation is U-Net \cite{ronneberger2015unet}.
+% The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, narrowing down the search space is challenging, as we potentially have $d^{(n^2)}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible.
+
+% To address this, we can apply image segmentation. 
+% Effective image segmentation helps determine appropriate $\lambda$ values for different regions. 
+% A good network for learning image segmentation is U-Net \cite{ronneberger2015unet}.
 
 % U-Net assists in learning these regularisation parameters due to its proficiency in image segmentation. 
 

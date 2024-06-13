@@ -856,6 +856,8 @@ Convolutional Neural Networks (CNNs) are a specific type of artificial neural ne
 Here we assume a 2D CNN architecture, where each layer is represented as one or more 2-dimensional matrices, rather than a vector as in a normal "vanilla" network.
 % They excel at tasks like image classification, object detection, and image segmentation. 
 
+% Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analyzing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
+
 % Here's a breakdown of the key concepts:
 
 % Core Idea:
@@ -863,6 +865,10 @@ Here we assume a 2D CNN architecture, where each layer is represented as one or 
 % CNNs are inspired by the structure and function of the visual cortex in the human brain. The visual cortex processes visual information hierarchically, extracting features from simple edges and shapes to complex objects.
 
 % CNNs achieve similar functionality through convolutional layers and pooling layers. These layers work together to progressively extract and refine features from the input data.
+
+\subsubsection*{Inspiration and Function}
+
+
 
 CNNs are inspired by 
 % the structure and function of 
@@ -875,6 +881,8 @@ CNNs try to mimic this
 through convolutional layers and pooling layers. 
 % These layers work together to progressively extract and refine features from the input data.
 
+% The design of CNNs draws inspiration from the human visual cortex, which processes visual stimuli by sequentially extracting features, ranging from simple edges and shapes to complex objects. CNNs replicate this hierarchical feature extraction using convolutional layers and pooling layers. 
+
 % Key Components:
 
     % Convolutional Layers: These layers apply a filter (also called a kernel) to the input data (often an image). The filter slides across the input, computing the dot product between its weights and the corresponding elements in the data. This creates a feature map that highlights specific features the filter is designed to detect.
@@ -885,42 +893,47 @@ through convolutional layers and pooling layers.
 
     % Fully-Connected Layers: In the later stages of a CNN, fully-connected layers are typically used, similar to regular neural networks. These layers perform classifications or predictions based on the extracted features.
 
+
+\subsubsection*{Convolutional Layers}
+
 Similar to a normal "vanilla" neural network layer, each element in a convolutional layer's output comes from a linear combination 
 % of ...
 followed by an activation function.
 The difference is the use of filters (also called kernels) instead of a single weight matrix.
 Each filter slides across the input, computing the dot product between its weights and the corresponding elements, then passes the output through an activation function.
+This is a convolution operation.
 For each input matrix, one filter produces one output matrix.
 We can have multiple filters in one layer.
 Each output matrix is called a feature map, since one filter can be thought of as a feature-extractor that is designed to highlight a specific feature. The number of feature maps is also called the number of channels.
 Implementation-wise, using filters instead of weight matrices reduces the ratio between the number of weights and the number of output values, hence cutting down on the number of trainable parameters for 
 a image task.
-I have described an example here: [].
+% I have described an example here: [].
 % the same amount of output. 
+
+
+% In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilization of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
+% A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasizes specific characteristics of the input. 
+% When multiple filters are employed in a layer, they produce multiple feature maps, with each map corresponding to a different channel. 
+% This design significantly reduces the proportion of trainable parameters relative to the number of output values, enhancing efficiency for image-related tasks.
+
+\subsubsection*{Pooling Layers}
+
+
 
 
 An additional type of layer is a pooling layer. Usually we use a max-pooling layer which outputs the maximum instead. This project also utilises max-pooling. The goal is to keep only the most signification values.
 
 These convolutional and pooling layers will form the building block for the U-Net architecture.
 
-Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analyzing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
 
-\subsubsection*{Inspiration and Function}
+% An essential component of CNNs is the pooling layer, typically implemented as a max-pooling layer. This layer simplifies the output by retaining only the maximum values from the defined regions in the feature map. The objective is to preserve the most significant features while reducing data dimensionality. In this project, max-pooling is a crucial technique used to enhance model performance.
 
-The design of CNNs draws inspiration from the human visual cortex, which processes visual stimuli by sequentially extracting features, ranging from simple edges and shapes to complex objects. CNNs replicate this hierarchical feature extraction using convolutional layers and pooling layers. 
+% The convolutional and pooling layers constitute the foundational blocks of the U-Net architecture.
 
-\subsubsection*{Convolutional Layers}
 
-In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilization of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
-A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasizes specific characteristics of the input. 
-When multiple filters are employed in a layer, they produce multiple feature maps, with each map corresponding to a different channel. 
-This design significantly reduces the proportion of trainable parameters relative to the number of output values, enhancing efficiency for image-related tasks.
 
-\subsubsection*{Pooling Layers}
 
-An essential component of CNNs is the pooling layer, typically implemented as a max-pooling layer. This layer simplifies the output by retaining only the maximum values from the defined regions in the feature map. The objective is to preserve the most significant features while reducing data dimensionality. In this project, max-pooling is a crucial technique used to enhance model performance.
 
-The convolutional and pooling layers constitute the foundational blocks of the U-Net architecture.
 
 \subsection{U-Net}
 

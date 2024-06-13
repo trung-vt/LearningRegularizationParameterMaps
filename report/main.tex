@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
 \usepackage{csquotes}
-\usepackage{xeCJK}
+% \usepackage{xeCJK}
 \usepackage{amssymb,tikz,pdftexcmds,xparse}
 \usepackage{url}
 \usepackage{titlesec}
@@ -146,7 +147,6 @@
 \title{MTH786P Project - Diabetes Prediction}
 \author{Thanh Trung Vu - 230849442}
 
-\usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{biblatex}
 \addbibresource{references.bib}
@@ -851,7 +851,7 @@ Convolutional Neural Network (CNN)
     \includegraphics[width=1\linewidth]{Le-Net 5.png}
     
     \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks \cite{726791}} 
-    \label{fig:enter-label}
+    \label{fig:lenet}
 \end{figure}
 
 
@@ -1658,7 +1658,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
   \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
   \caption{Chest X-ray example. The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.5$. The bottom row shows the denoised images using the TV method; the left image with PSNR = 29.945 was produced using the best scalar regularisation parameter $\lambda = 0.07$ , while the right image with PSNR = \textbf{31.248} was denoised using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
-  \label{fig:enter-label}
+  \label{fig:compare}
 \end{figure}
 
 % Each test image was also noised with Gaussian noise with a random value of $\sigma$ ranging from 0.1 to 0.5.
@@ -1679,14 +1679,11 @@ The clean and orignal versions as well as the resulting denoised images are show
 
 
 
-\begin{figure}[H]
-  \centering
-  % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
-  \includegraphics[width=0.6\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
-  
-      \caption{Grid search for the best scalar regularisation parameter $\lambda$ for the example test image. The highest PSNR of 29.945 dB was achieved by $\lambda = 0.07$.}
-  \label{fig:line_plots}
-\end{figure}
+Qualitatively, we can see that there is a good reduction in the stair-case effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
+
+% \newpage
+
+
 
 
 
@@ -1704,14 +1701,21 @@ The clean and orignal versions as well as the resulting denoised images are show
   \caption{$\log{(\mathbf{\Lambda}_{\Theta} + 0.05)}$ and histogram of the log values}
   \end{subfigure}
   \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
-  \label{fig:enter-label}
+  \label{fig:lambda_map}
 \end{figure}
 % \end{wrapfigure}{l}
 
 
 
 
-
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
+  \includegraphics[width=0.6\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
+  
+      \caption{Grid search for the best scalar regularisation parameter $\lambda$ for the example test image. The highest PSNR of 29.945 dB was achieved by $\lambda = 0.07$.}
+  \label{fig:line_plots}
+\end{figure}
 
 
 
@@ -1761,10 +1765,6 @@ The clean and orignal versions as well as the resulting denoised images are show
 
 
 
-Qualitatively, we can see that there is a good reduction in the stair-case effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
-
-% \newpage
-
 
 
 
@@ -1778,7 +1778,7 @@ Qualitatively, we can see that there is a good reduction in the stair-case effec
 %   \label{fig:enter-label}
 % \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[H]
   \centering
   % \includegraphics[width=1\linewidth]{images//chest_xray/output3.png}
   \includegraphics[width=0.5\linewidth]{images//chest_xray/box_plots_1.png}
@@ -1790,7 +1790,7 @@ Qualitatively, we can see that there is a good reduction in the stair-case effec
 % \usepackage{amsmath}
 % \usepackage{graphicx}
 
-\begin{table}[h!]
+\begin{table}[H]
 
 \centering
 \begin{tabular}{c|c c}

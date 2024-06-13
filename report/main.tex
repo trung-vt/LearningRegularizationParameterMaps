@@ -1183,7 +1183,7 @@ During testing we also set $T_{\text{test}}$ to 256.
 For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
 
 It is worth noting that, for the implementation of the U-Net, 
-we used the 3D implementations of the convolutional layers as well as the downsampling and upsmapling steps from the PyTorch library \cite{NEURIPS2019_9015}.
+we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library \cite{NEURIPS2019_9015}.
 The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
 The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
 

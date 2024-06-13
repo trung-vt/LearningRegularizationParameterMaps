@@ -1854,7 +1854,7 @@ The regularisation parameter map consistently produces higher PSNR and SSIM valu
 
 \section{Conclusion}
 
-
+Through experimentation with the Chest X-ray dataset, we showed that using U-Net produces a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ that improves the denoising of images using the total variational method compared to the traditional scalar $\lambda$.
 
 % This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.
 
@@ -1874,6 +1874,15 @@ The regularisation parameter map consistently produces higher PSNR and SSIM valu
 
 % Future research will focus on refining the efficiency of these neural network-enhanced denoising techniques to make them more viable for practical use.
 
+- Train models with different $T_{\text{train}}$ on the same dataset.
+
+- Train with a different dataset and compare the results.
+
+- Train with a different dataset and test on this dataset, and vice versa.
+
+- Train on colour images.
+
+- Extend to Total Generalised Variation (TGV) method.
 
 \newpage
 

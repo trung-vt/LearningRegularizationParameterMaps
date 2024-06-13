@@ -937,10 +937,15 @@ These convolutional and pooling layers will form the building block for the U-Ne
 
 \subsection{U-Net}
 
+% An Unrolled Neural Network (U-Net) \cite{ronneberger2015unet} is an extension of a CNN in that we add some so-called skip connections,
+% which is similar to the addition connection in a residual network.
+% Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
 
 
-An Unrolled Neural Network (U-Net) \cite{ronneberger2015unet} is an extension of a CNN in that we add some so-called skip connections,
-which is similar to the addition connection in a residual network.
+A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, 
+% akin to those in a residual network.
+similar to the addition connection in a residual network. 
+% These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
 Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
 
 % , in addition to normal pooling layers which condenses the input, we have  which expand the input.
@@ -967,29 +972,41 @@ Each skip connection basically concatenates the outputs of two different convolu
 
 
 
-An U-Net can be divided into two main parts, an Encoder and a Decoder. 
+% An U-Net can be divided into two main parts, an Encoder and a Decoder. 
 % Each part is basically a normal convolution network. The Encoder and Decoder are almost reversely symmetrical. 
+The U-Net architecture is divided into two principal components: an Encoder and a Decoder. 
 
-The Encoder is a typical CNN with a combination of convolutional layers and max-pooling layers. The layers are grouped into "blocks". Each encoding block has a few (usually two) convolutional layers followed by one max-pooling layer. In this project we also use blocks of two convolutional layers followed by one max-pooling layer.
+\subsubsection*{Encoder}
 
-Each successive Encoder block doubles the number of channels (feature maps) while decreasing the size of the feature map due to the pooling operation.
+
+The Encoder functions similarly to a standard CNN, utilizing a combination of convolutional layers and max-pooling layers organized into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while 
+% concurrently 
+reducing the feature map size due to the pooling.
+
+
+% The Encoder is a typical CNN with a combination of convolutional layers and max-pooling layers. The layers are grouped into "blocks". Each encoding block has a few (usually two) convolutional layers followed by one max-pooling layer. In this project we also use blocks of two convolutional layers followed by one max-pooling layer.
+
+% Each successive Encoder block doubles the number of channels (feature maps) while decreasing the size of the feature map due to the pooling operation.
+
+\subsubsection*{Decoder}
+
+% Conversely, the Decoder is structured around a series of blocks that progressively halve the number of channels while enlarging the feature map size, effectively "unrolling" the data. 
+% Unlike the Encoder blocks, each Decoder block concludes with an up-convolutional layer followed by a skip connection.
+% This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
 
 The Decoder is also a CNN with a series of blocks. Opposite to an encoding block which doubles the number of channels, each successive decoding block cuts the number of channels (feature maps) in half while increasing the size of the output feature map (hence the "unrolling").
-Instead of a max-pooling layer, each decoding block ends with a so-called up-convolutional layer and a skip connection. The up-convolutional layer is just a normal convolutional layer whose output is concatenated with the output of another convolutional layer in an Encoder block. 
+Instead of a max-pooling layer, each decoding block ends with a so-called up-convolutional layer and a skip connection. 
+% This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
+The up-convolutional layer is just a normal convolutional layer whose output is concatenated with the output of another convolutional layer in an Encoder block. 
 % This concatenation, which increases the size of feature maps instead of decreasing them like a normal CNN would, is where the "unrolling" in the U-Net's name comes from. 
 
 
 
 
-A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
+% A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
 
-\subsubsection*{Encoder}
 
-The U-Net architecture is divided into two principal components: an Encoder and a Decoder. The Encoder functions similarly to a standard CNN, utilizing a combination of convolutional layers and max-pooling layers organized into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while concurrently reducing the feature map size due to the pooling.
 
-\subsubsection*{Decoder}
-
-Conversely, the Decoder is structured around a series of blocks that progressively halve the number of channels while enlarging the feature map size, effectively "unrolling" the data. Unlike the Encoder blocks, each Decoder block concludes with an up-convolutional layer followed by a skip connection. This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
 
 
 % The U-Net was implemented using the following architecture:

@@ -850,6 +850,59 @@ Convolutional Neural Network (CNN)
     \label{fig:enter-label}
 \end{figure}
 
+
+
+Convolutional Neural Networks (CNNs) are a specific type of artificial neural network particularly well-suited for analyzing image data and other grid-like patterns. 
+Here we assume a 2D CNN architecture, where each layer is represented as one or more 2-dimensional matrices, rather than a vector as in a normal "vanilla" network.
+% They excel at tasks like image classification, object detection, and image segmentation. 
+
+% Here's a breakdown of the key concepts:
+
+% Core Idea:
+
+% CNNs are inspired by the structure and function of the visual cortex in the human brain. The visual cortex processes visual information hierarchically, extracting features from simple edges and shapes to complex objects.
+
+% CNNs achieve similar functionality through convolutional layers and pooling layers. These layers work together to progressively extract and refine features from the input data.
+
+CNNs are inspired by 
+% the structure and function of 
+the visual cortex in the human brain. 
+The visual cortex processes visual information, 
+% hierarchically, 
+extracting features one-by-one, from simple edges and shapes to complex objects.
+CNNs try to mimic this 
+% achieve similar functionality 
+through convolutional layers and pooling layers. 
+% These layers work together to progressively extract and refine features from the input data.
+
+% Key Components:
+
+    % Convolutional Layers: These layers apply a filter (also called a kernel) to the input data (often an image). The filter slides across the input, computing the dot product between its weights and the corresponding elements in the data. This creates a feature map that highlights specific features the filter is designed to detect.
+
+    % Pooling Layers: These layers downsample the data, reducing its dimensionality while preserving essential features.Pooling techniques like average pooling or max pooling select the most significant value from a local region of the feature map.
+
+    % Activation Functions: CNNs often use activation functions like ReLU (Rectified Linear Unit) after convolutional layers. These functions introduce non-linearity into the network, allowing it to learn complex relationships between features.
+
+    % Fully-Connected Layers: In the later stages of a CNN, fully-connected layers are typically used, similar to regular neural networks. These layers perform classifications or predictions based on the extracted features.
+
+Similar to a normal "vanilla" neural network layer, each element in a convolutional layer's output comes from a linear combination 
+% of ...
+followed by an activation function.
+The difference is the use of filters (also called kernels) instead of a single weight matrix.
+Each filter slides across the input, computing the dot product between its weights and the corresponding elements, then passes the output through an activation function.
+For each input matrix, one filter produces one output matrix.
+We can have multiple filters in one layer.
+Each output matrix is called a feature map, since one filter can be thought of as a feature-extractor that is designed to highlight a specific feature. The number of feature maps is also called the number of channels.
+Implementation-wise, using filters instead of weight matrices reduces the ratio between the number of weights and the number of output values, hence cutting down on the number of trainable parameters for 
+a image task.
+I have described an example here: [].
+% the same amount of output. 
+
+
+An additional type of layer is a pooling layer. Usually we use a max-pooling layer which outputs the maximum instead. This project also utilises max-pooling. The goal is to keep only the most signification values.
+
+These convolutional and pooling layers will form the building block for the U-Net architecture.
+
 Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analyzing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
 
 \subsubsection*{Inspiration and Function}
@@ -870,6 +923,48 @@ An essential component of CNNs is the pooling layer, typically implemented as a 
 The convolutional and pooling layers constitute the foundational blocks of the U-Net architecture.
 
 \subsection{U-Net}
+
+
+
+An Unrolled Neural Network (U-Net) \cite{ronneberger2015unet} is an extension of a CNN in that we add some so-called skip connections,
+which is similar to the addition connection in a residual network.
+Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
+
+% , in addition to normal pooling layers which condenses the input, we have  which expand the input.
+
+% It has a contracting path (encoder) and an expanding path (decoder) with skip connections in between. 
+% This structure is specifically designed for image segmentation, where the network needs to not only extract features but also localize them precisely within the image.
+
+% U-Net are used often in many segmentation tasks, and in recent years have made their ways onto image generation tasks as well.
+
+% \url{https://en.wikipedia.org/wiki/U-Net}: The U-Net architecture stems from the so-called “fully convolutional network” proposed by Long, Shelhamer, and Darrell in 2014. \url{https://arxiv.org/abs/1411.4038}
+
+
+
+% The network is based on a fully convolutional neural network[2] whose architecture was modified and extended to work with fewer training images and to yield more precise segmentation.
+
+% The architecture of an unrolled neural network (UNET) is similar to that of an auto-encoder in that it can be viewed as having two parts that are almost opposite-symmetrical.
+
+% Whereas an auto-encoder uses a encoding part and a decoding part, the UNET consists of a contracting path (left side) and an expansive path (right side). 
+
+
+% The contracting path follows the typical architecture of a convolutional network. 
+
+% It consists of the repeated application of two 3x3 convolutions (unpadded convolutions), each followed by a rectified linear unit (ReLU) and a 2x2 max pooling operation with stride 2 for downsampling. 
+
+
+
+An U-Net can be divided into two main parts, an Encoder and a Decoder. 
+% Each part is basically a normal convolution network. The Encoder and Decoder are almost reversely symmetrical. 
+
+The Encoder is a typical CNN with a combination of convolutional layers and max-pooling layers. The layers are grouped into "blocks". Each encoding block has a few (usually two) convolutional layers followed by one max-pooling layer. In this project we also use blocks of two convolutional layers followed by one max-pooling layer.
+
+Each successive Encoder block doubles the number of channels (feature maps) while decreasing the size of the feature map due to the pooling operation.
+
+The Decoder is also a CNN with a series of blocks. Opposite to an encoding block which doubles the number of channels, each successive decoding block cuts the number of channels (feature maps) in half while increasing the size of the output feature map (hence the "unrolling").
+Instead of a max-pooling layer, each decoding block ends with a so-called up-convolutional layer and a skip connection. The up-convolutional layer is just a normal convolutional layer whose output is concatenated with the output of another convolutional layer in an Encoder block. 
+% This concatenation, which increases the size of feature maps instead of decreasing them like a normal CNN would, is where the "unrolling" in the U-Net's name comes from. 
+
 
 
 
@@ -1698,19 +1793,19 @@ The regularisation parameter map consistently produces higher PSNR and SSIM valu
 
 
 
-This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.
+% This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.
 
-\subsection{Experimentation and Findings}
+% \subsection{Experimentation and Findings}
 
-We experimented with the capabilities of the U-Net architecture to learn and apply regularisation parameters dynamically across different image segments using the PDHG algorithm. Traditional denoising techniques typically rely on a single lambda value for regularisation, which often does not cater to the varying needs across an image. Our approach attempts to transcend this limitation by approximating an optimal lambda map through the U-Net, enhancing the PDHG's performance. This methodology, while computationally intensive, illustrates the potential benefits of segment-specific regularisation in image denoising.
+% We experimented with the capabilities of the U-Net architecture to learn and apply regularisation parameters dynamically across different image segments using the PDHG algorithm. Traditional denoising techniques typically rely on a single lambda value for regularisation, which often does not cater to the varying needs across an image. Our approach attempts to transcend this limitation by approximating an optimal lambda map through the U-Net, enhancing the PDHG's performance. This methodology, while computationally intensive, illustrates the potential benefits of segment-specific regularisation in image denoising.
 
 % \subsection{Real-World Implications and Limitations}
 
 % Because of the considerable computation time, this limited our ability to extend the experiment across different sets of images. 
 % Moving forward, optimizing the computational efficiency of this model will be crucial for broader application and scalability.
 
-% \subsection{Conclusion}
-In conclusion, while the experiment demonstrated potential improvements over traditional single-lambda denoising methods, the current computational demands make it impractical for real-world applications. 
+% % \subsection{Conclusion}
+% In conclusion, while the experiment demonstrated potential improvements over traditional single-lambda denoising methods, the current computational demands make it impractical for real-world applications. 
 
 \section{Future Work}
 

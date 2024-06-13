@@ -229,13 +229,13 @@
 
 \section{Introduction}
 
-- Rewrite parts written by ChatGPT, or written specifically for mini project but not relevant anymore
+% - Rewrite parts written by ChatGPT, or written specifically for mini project but not relevant anymore
 
-- Check consistent notations
+% - Check consistent notations
 
-- Redraw U-Net diagram
+% - Redraw U-Net diagram
 
-- Arrange figures in correct locations
+% - Arrange figures in correct locations
 
 % \subsection{Background}
 
@@ -337,7 +337,7 @@ One notable aspect of using U-Net in this problem is that, instead of acting as 
 
 % The U-Net is able to produce high-quality denoised images that are close to the ground truth images \cite{ronneberger2015unet}.
 
-Here we combine the traditional TV method with the U-Net to produce a more efficient method for image denoising.
+% Here we combine the traditional TV method with the U-Net to produce a more efficient method for image denoising.
 
 
 
@@ -509,7 +509,8 @@ and norm-1 of the horizontal gradient is calculated as:
 %   \| \nabla \mathbf{x} \|_1 = \sum_{i,j} |\mathbf{x}_{i,j} - \mathbf{x}_{i+1,j}| + |\mathbf{x}_{i,j} - \mathbf{x}_{i,j+1}|
 % \end{equation}
 
-where $\mathbf{x}_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $\mathbf{x}$. Note that $\mathbf{x}_{i,j}$ can be a scalar for a black-and-white image or a vector of 3 values for a colour image.
+where $\mathbf{x}_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $\mathbf{x}$. 
+% Note that $\mathbf{x}_{i,j}$ can be a scalar for a black-and-white image or a vector of 3 values for a colour image.
 
 Note that, we can move $\lambda$ inside the norm, so the regularisation term can be written as:
 
@@ -763,10 +764,13 @@ more efficiently.
 
 For this project, our model comprises two primary components:
 \begin{enumerate}
-    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image $\mathbf{x}_0$.
+    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image 
+    % $\mathbf{x}_0$
+    $\mathbf{x}_{\text{noisy}}$
     \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver 
     % (refer to Appendix), 
-    which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}$. 
+    % which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}
+    % $. 
     % This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. 
     % The symbol $\Theta$ represents the set of trainable parameters within the network.
 \end{enumerate}
@@ -798,7 +802,7 @@ The general architecture is depicted in shown in Figure 1,
   \draw[inference] (unet) -- (lambda);
   \draw[inference] (lambda) -- (pdhg);
   \draw[inference] (pdhg) -- (final_output);
-  \draw[inference] (input) -- ++(0, -0.5) -- (pdhg);
+  \draw[inference] (input) -- ++(0, -1.4) -- (pdhg);
   
   \draw[->] (final_output) -- (loss_function);
   \draw[->] (ground_truth) -| (loss_function);
@@ -1103,7 +1107,7 @@ The up-convolutional layer is just a normal convolutional layer whose output is 
 % \end{figure}
 
 
-\begin{figure}{ht}
+\begin{figure}[ht]
   \includegraphics[width=1\linewidth]{../../PlotNeuralNet/unet-true-voice-32/unet-visualisation-true-voice-32.pdf}
 \caption{Our $\text{NET}_{\Theta}$ Architecture}
 \label{fig:my_unet}
@@ -1168,7 +1172,7 @@ Each side of a feature map has zero-padding of size 1 to maintain the size of th
 Keeping the number of size of the feature map constant after each convolution has the advantage of making the implementation of the skip connections simpler by not having to crop the output of the encoding blocks to match the size of the input of the decoding blocks.
 
 Each encoding block begins with a max pooling layer with $2 \times 2$ kernels and a step size of 2.
-Prior to the max pooling, a zeo-padding of size 1 is added in order to exactly halve the length of each side of the output.
+Prior to the max pooling, a zero-padding of size 1 is added in order to exactly halve the length of each side of the output.
 On the other hand, all upsampling steps are done with linear interpolation with a scale factor of 2 which doubles the length of each side of the feature map.
 In the end, the total number of trainable parameters of the set $\Theta$ is 1,796,034.
 
@@ -1818,7 +1822,7 @@ The regularisation parameter map consistently produces higher PSNR and SSIM valu
 
 % - Scale the box plots like figure 13 in paper
 
-- (More experiments) Test with the sigma 0.1 and 0.3 for test images and add: box plots, table rows, and difference histograms.
+% - (More experiments) Test with the sigma 0.1 and 0.3 for test images and add: box plots, table rows, and difference histograms.
 
 
 

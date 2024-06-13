@@ -1647,7 +1647,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 % \end{figure}
 
 
-
+\newpage
 
 \section{Results}
 % Each test image was also noised with Gaussian noise with a random value of $\sigma$ ranging from 0.1 to 0.5.
@@ -1661,10 +1661,21 @@ For each test image, we also did a grid search with 81 equally spaced values bet
 % For each test image, we run a grid search to find the best scalar $\lambda$.
 
 As an example, we present the results for one of the test images.
-The results of the grid search is shown in the line plots in figure 4.
+The results of the grid search is shown in the line plots in figure 5.
 For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
 The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
-The clean and orignal versions as well as the resulting denoised images are shown in Figure 5.
+The clean and orignal versions as well as the resulting denoised images are shown in Figure 4.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/clean.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
+  \caption{Chest X-ray example. The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.5$. The bottom row shows the denoised images using the TV method; the left image with PSNR = 29.945 was produced using the best scalar regularisation parameter $\lambda = 0.07$ , while the right image with PSNR = \textbf{31.248} was denoised using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
+  \label{fig:enter-label}
+\end{figure}
+
 
 \begin{figure}[H]
   \centering
@@ -1712,18 +1723,9 @@ The clean and orignal versions as well as the resulting denoised images are show
 
 % \newpage
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/clean.png}
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
-  \caption{Chest X-ray example. The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.5$. The bottom row shows the denoised images using the TV method; the left image with PSNR = 29.945 was produced using the best scalar regularisation parameter $\lambda = 0.07$ , while the right image with PSNR = \textbf{31.248} was denoised using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
-  \label{fig:enter-label}
-\end{figure}
 
 
-\newpage
+% \newpage
 
 
 

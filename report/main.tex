@@ -247,20 +247,20 @@ We will also describe the implementation of the method and an improvement using 
 % We will then present the results of the method on a few different datasets.
 
 
-Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
-% The paper \cite{kofler2023learning} that this project is based on discusses
-In particular, it combines U-Net with a traditional image-denoising algorithm called the Primal Dual Hybrid Gradient (PDHG) algorithm \cite{kofler2023learning}.
-% to solve the image denoising task. 
-% While the specifics of the algorithm are outside the scope of this project, 
-% the main idea is to use U-Net to learn the required input, so-called the regularisation parameters, of a specific image for the PDHG algorithm. 
-Specifically, a PDHG solver is appended to the end of the U-Net, treating the solver as the final layer of the entire network to create an end-to-end unsupervised model.
-% To denoise images, the PDHG algorithm requires defining some regularisation parameters as part of the cost function. 
+% Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
+% % The paper \cite{kofler2023learning} that this project is based on discusses
+% In particular, it combines U-Net with a traditional image-denoising algorithm called the Primal Dual Hybrid Gradient (PDHG) algorithm \cite{kofler2023learning}.
+% % to solve the image denoising task. 
+% % While the specifics of the algorithm are outside the scope of this project, 
+% % the main idea is to use U-Net to learn the required input, so-called the regularisation parameters, of a specific image for the PDHG algorithm. 
+% Specifically, a PDHG solver is appended to the end of the U-Net, treating the solver as the final layer of the entire network to create an end-to-end unsupervised model.
+% % To denoise images, the PDHG algorithm requires defining some regularisation parameters as part of the cost function. 
 
-% By treating PDHG as the final layer, this approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network.
+% % By treating PDHG as the final layer, this approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network.
 
-One notable aspect of using U-Net in this problem is that, instead of acting as a black box and outputting a denoised version of each input image, it outputs a parameter map used in another algorithm, demonstrating the flexibility of neural networks.
-% This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
-% This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
+% One notable aspect of using U-Net in this problem is that, instead of acting as a black box and outputting a denoised version of each input image, it outputs a parameter map used in another algorithm, demonstrating the flexibility of neural networks.
+% % This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
+% % This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
 
 % Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
 
@@ -1647,7 +1647,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 % \end{figure}
 
 
-\newpage
+% \newpage
 
 \section{Results}
 
@@ -1660,6 +1660,23 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
   \caption{Chest X-ray example. The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.5$. The bottom row shows the denoised images using the TV method; the left image with PSNR = 29.945 was produced using the best scalar regularisation parameter $\lambda = 0.07$ , while the right image with PSNR = \textbf{31.248} was denoised using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
   \label{fig:enter-label}
 \end{figure}
+
+% Each test image was also noised with Gaussian noise with a random value of $\sigma$ ranging from 0.1 to 0.5.
+
+As previously mentioned, we used 100 images with label "normal" from the test set provided in the Chest X-ray dataset for testing.
+Each test image was noised with a Gaussian noise of mean 0 and standard deviation $\sigma = 0.5$.
+For each test image, we also did a grid search with 81 equally spaced values between 0 and 0.8 in order to find the best scalar $\lambda$ for the total variational denoising method, which we used as a baseline to show the effectiveness of our method.
+
+% We compare the results using the regularisation parameter map generated by
+% our method with the results using a scalar $\lambda$ for the total variational denoising method.
+% For each test image, we run a grid search to find the best scalar $\lambda$.
+
+As an example, we present the results for one of the test images.
+The results of the grid search is shown in the line plots in figure 5.
+For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
+The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
+The clean and orignal versions as well as the resulting denoised images are shown in Figure 4.
+
 
 
 \begin{figure}[H]
@@ -1695,21 +1712,6 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 
 
 
-% Each test image was also noised with Gaussian noise with a random value of $\sigma$ ranging from 0.1 to 0.5.
-
-As previously mentioned, we used 100 images with label "normal" from the test set provided in the Chest X-ray dataset for testing.
-Each test image was noised with a Gaussian noise of mean 0 and standard deviation $\sigma = 0.5$.
-For each test image, we also did a grid search with 81 equally spaced values between 0 and 0.8 in order to find the best scalar $\lambda$ for the total variational denoising method, which we used as a baseline to show the effectiveness of our method.
-
-% We compare the results using the regularisation parameter map generated by
-% our method with the results using a scalar $\lambda$ for the total variational denoising method.
-% For each test image, we run a grid search to find the best scalar $\lambda$.
-
-As an example, we present the results for one of the test images.
-The results of the grid search is shown in the line plots in figure 5.
-For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
-The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
-The clean and orignal versions as well as the resulting denoised images are shown in Figure 4.
 
 
 

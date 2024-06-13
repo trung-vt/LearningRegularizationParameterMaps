@@ -1141,7 +1141,7 @@ All images are black-and-white and are in the JPEG format.
 The X-rays images have various resolutions.
 
 At the time of download, the original dataset had already been split into a training set, a validation set, and a test set.
-We picked 800 images for the training dataset for training and 100 images from the test set for testing. The validation set consists of only 8 images which were all used for validation.
+We picked 200 images for the training dataset for training and 100 images from the test set for testing. The validation set consists of only 8 images which were all used for validation.
 We used only images which were classified as normal.
 
 For consitent input, we cropped the images to squares and then resized them to $256 \times 256$.
@@ -1180,7 +1180,7 @@ For the activation function, we used the Leaky ReLU with a negative slope of 0.0
 For the primal dual solver, we set the up-bound parameter to 0 and $T_{\text{train}}$ to 256.
 During testing we also set $T_{\text{test}}$ to 256.
 
-For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs.
+For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
 
 It is worth noting that, for the implementation of the U-Net, 
 we used the 3D implementations of the convolutional layers as well as the downsampling and upsmapling steps from the PyTorch library \cite{NEURIPS2019_9015}.

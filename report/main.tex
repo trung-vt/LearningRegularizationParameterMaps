@@ -692,7 +692,8 @@ The algorithm is
 
 where $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
 
-The choice of $L$ is taken from \cite{Sidky_2012} \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
+The choice of $L$ is taken from \cite{Sidky_2012}.
+% \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
 The number of iterations $T$ is a hyperparameter that we can choose for the training process.
 
 (TODO: Understand what $L$ is. Do we need to include $\theta = 1$? Can we write $\bar{\mathbf{x}}_{k+1} = 2 \mathbf{x}_{k+1} - \mathbf{x}_k$? In the code, initially $\mathbf{p}_0 = \mathbf{x}_0$?)

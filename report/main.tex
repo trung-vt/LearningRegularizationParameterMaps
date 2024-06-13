@@ -1650,6 +1650,51 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 \newpage
 
 \section{Results}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/clean.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
+  \caption{Chest X-ray example. The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.5$. The bottom row shows the denoised images using the TV method; the left image with PSNR = 29.945 was produced using the best scalar regularisation parameter $\lambda = 0.07$ , while the right image with PSNR = \textbf{31.248} was denoised using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
+  \label{fig:enter-label}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
+  \includegraphics[width=0.6\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
+  
+      \caption{Grid search for the best scalar regularisation parameter $\lambda$ for the example test image. The highest PSNR of 29.945 dB was achieved by $\lambda = 0.07$.}
+  \label{fig:line_plots}
+\end{figure}
+
+
+
+% \begin{wrapfigure}{l}{1\textwidth}
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram.png}\
+  \caption{$\mathbf{\Lambda}_{\Theta}$ map and histogram of the values}
+  \end{subfigure}
+  \begin{subfigure}{0.48\textwidth}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_log.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram_log.png}
+  \caption{$\log{(\mathbf{\Lambda}_{\Theta} + 0.05)}$ and histogram of the log values}
+  \end{subfigure}
+  \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
+  \label{fig:enter-label}
+\end{figure}
+% \end{wrapfigure}{l}
+
+
+
+
+
 % Each test image was also noised with Gaussian noise with a random value of $\sigma$ ranging from 0.1 to 0.5.
 
 As previously mentioned, we used 100 images with label "normal" from the test set provided in the Chest X-ray dataset for testing.
@@ -1666,25 +1711,8 @@ For this particular test image, the highest value of PSNR of 29.945 dB was achie
 The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
 The clean and orignal versions as well as the resulting denoised images are shown in Figure 4.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/clean.png}
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
-  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
-  \caption{Chest X-ray example. The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.5$. The bottom row shows the denoised images using the TV method; the left image with PSNR = 29.945 was produced using the best scalar regularisation parameter $\lambda = 0.07$ , while the right image with PSNR = \textbf{31.248} was denoised using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
-  \label{fig:enter-label}
-\end{figure}
 
 
-\begin{figure}[H]
-  \centering
-  % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
-  \includegraphics[width=0.66\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
-  
-      \caption{Grid search for the best scalar regularisation parameter $\lambda$ for the example test image. The highest PSNR of 29.945 dB was achieved by $\lambda = 0.07$.}
-  \label{fig:line_plots}
-\end{figure}
 
 % \begin{figure}[ht]
 %   \includegraphics[width=1\linewidth]{images//chest_xray/chest_xray-denoised_compare.png}
@@ -1729,23 +1757,7 @@ The clean and orignal versions as well as the resulting denoised images are show
 
 
 
-% \begin{wrapfigure}{l}{1\textwidth}
-\begin{figure}[ht]
-  \centering
-  \begin{subfigure}{0.48\textwidth}
-  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map.png}
-  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram.png}\
-  \caption{$\mathbf{\Lambda}_{\Theta}$ map and histogram of the values}
-  \end{subfigure}
-  \begin{subfigure}{0.48\textwidth}
-  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_log.png}
-  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram_log.png}
-  \caption{$\log{(\mathbf{\Lambda}_{\Theta} + 0.05)}$ and histogram of the log values}
-  \end{subfigure}
-  \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
-  \label{fig:enter-label}
-\end{figure}
-% \end{wrapfigure}{l}
+
 
 Qualitatively, we can see that there is a good reduction in the stair-case effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
 

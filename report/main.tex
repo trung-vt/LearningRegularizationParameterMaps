@@ -167,7 +167,9 @@
 
 % \maketitle
 \begin{center}
-{\large \textbf{Graduation Project - Total Variational Image Denoising with U-Net}}
+% {\large \textbf{Graduation Project}
+% {\large \textbf{Total Variation Image Denoising with U-Net}}
+{\large \textbf{Deep-Learning Regularisation Parameter-Map with U-Net for Total Variation Image Denoising on Chest X-ray Images}}
 
 {\large \textbf{Thanh Trung Vu - 230849442}}
 \end{center}
@@ -241,9 +243,28 @@
 
 % \begin{abstract}
 
+This project is largely based on existing research on learning regularisation parameter maps for variational image reconstruction using deep neural networks and algorithm unrolling \cite{kofler2023learning}.
+In this dissertation, we 
+focus on the problem of image denoising.
+We define solving the denoising problem as solving the total variation (TV) problem and give a mathematical formulation of variational image denoising. 
+We then discuss the primal dual algorithm for solving the TV denoising problem, and the importance of choosing the regularisation parameter.
+This led to the idea of using a deep learning method called U-Net to help us find a regularisation parameter map which can improve the denoising performance of the primal dual algorithm.
+We combine a U-Net architecture with the primal dual algorithm to create an end-to-end unsupervised model for image denoising that can achieve said improvement while staying completely interpretable. 
+We implement the proposed combined model and evaluate it on the Chest X-ray dataset.
+The results show that the combined model consistently outperforms the traditional method of using a single regularisation parameter.
 
-In this dissertation we will describe the theory and application of the total variational (TV) method to image denoising. 
-We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
+
+\subsection{Related Work}
+
+
+\subsection{Contribution}
+
+- Adapt the existing code of the dynamic image denoising project in \cite{kofler2023learning} to static image denoising. Train and evaluate the model using a new dataset - Chest X-ray dataset.
+
+- Present the theory of the total variational denoising method and the experimental set-up in detail so that a fellow student can understand the method and implement it themselves.
+
+
+% We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
 % We will then present the results of the method on a few different datasets.
 
 
@@ -325,84 +346,80 @@ We will also describe the implementation of the method and an improvement using 
 
 % The TV method is able to denoise images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise, and is able to produce high-quality denoised images \cite{rudin1992nonlinear}.
 
-% Before the advance of neural networks, image denoising was done by hand-crafted methods such as the total variational (TV) method \cite{rudin1992nonlinear}.
-
-% Since the arrival of neural networks, the U-Net has been the most popular method for image denoising.
-
-% The U-Net is a type of neural network that is commonly used for image segmentation.
-% The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
-% The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
-
-% The U-Net is able to learn to denoise images by training on a large dataset of noisy images and their corresponding clean images \cite{ronneberger2015unet}.
-
-% The U-Net is able to produce high-quality denoised images that are close to the ground truth images \cite{ronneberger2015unet}.
 
 % Here we combine the traditional TV method with the U-Net to produce a more efficient method for image denoising.
 
 
+\section{Mathematical Formulation}
 
 
+\subsection{Total Variation Denoising}
 
-\subsection{Total Variational Denoising}
+% The total variation (TV) method is a method for image denoising that is based on the principle of minimising the total variation of the image.
+% The total variation of an image is a measure of the amount of variation in the intensity of the image.
+% The TV approach works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
 
-The total variational (TV) method is a method for image denoising that is based on the principle of minimising the total variation of the image.
-The total variation of an image is a measure of the amount of variation in the intensity of the image.
-The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
-
-The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
-By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image.
+% The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
+% By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image.
 
 % For a image $I \in \mathbb{R}^{w \times h}$,  $w, h \in \mathbb{N}$, we can represent the matrix $I$ with a vector $\mathbf{x} \in \mathbb{R}^n$ where $n = w \times h$.
 
-Denoising problems can be described as 
+Given an object to be imaged $\mathbf{x}_{\text{true}} \in \mathbb{R}^{m \times n}$, we can represent a noisy image $\mathbf{z} \in \mathbb{R}^{m \times n}$ as:
+
+% Denoising problems can be described as 
 
 \begin{equation}
   \mathbf{z} = \mathbf{x}_{\text{true}} + \mathbf{e}
 \end{equation}
   
-where $\mathbf{x}_{\text{true}} \in \mathbb{R}^{m \times n}$ is 
-the object to be imaged, 
+where 
+% $\mathbf{x}_{\text{true}} \in \mathbb{R}^{m \times n}$ is 
+% the object to be imaged, 
 % the "true"/"clean" image,
 % denoised image
-$\mathbf{e} \in \mathbb{R}^{m \times n}$ denotes some random noise component, and $\mathbf{z} \in \mathbb{R}^{m \times n}$ represents 
-the measured data.
+$\mathbf{e} \in \mathbb{R}^{m \times n}$ denotes some random noise component.
+% , and $\mathbf{z} \in \mathbb{R}^{m \times n}$ represents 
+% the measured data.
 % the noisy image.
-The goal is to recover $\mathbf{x}_{\text{true}}$ or at least a good enough reconstruction given $\mathbf{z}$.
+Our goal is to find $\mathbf{x}_{\text{denoised}} \in \mathbb{R}^{m \times n}$ which represents a good reconstruction of the true image.
+% recover $\mathbf{x}_{\text{true}}$ or at least a good enough reconstruction given $\mathbf{z}$.
 
-A prominent approach is to formulate the reconstruction as a minimisation problem:
+A common approach is to formulate the reconstruction as a minimisation problem:
 
 % The total variational denoising method works by finding the image that minimises the following objective function:
 
 \begin{equation}
   % \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}(\mathbf{x})
-  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}(\mathbf{x})
+  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}_{\lambda}(\mathbf{x})
 \end{equation}
 
-where $d(\cdot, \cdot)$ is a data fidelity term and $\mathcal{R}(\cdot)$ is a regularisation term.
+where $d(\cdot, \cdot)$ is a data discrepancy term 
+which represents the closeness between the given noisy image and the reconstruction, 
+and $\mathcal{R}_{\lambda}(\cdot)$ is a regularisation term.
+The idea is that a small discrepancy value indicates that important details of the image are preserved, while a small regularisation value indicates that the impact of noise on smooth regions of the image is removed.
 
-
-Here we will look at Gaussian noise. The data fidelity term appropriate for Gaussian noise is the square of the $\ell_2$ norm:
+Here we will model the noise as Gaussian noise, for which a good discrepancy measure is the $\ell_2$ norm
 
 \begin{equation}
   d(\mathbf{x}, \mathbf{z}) = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2
 \end{equation}
 
-The regularisation term $\mathcal{R}(\cdot)$ is the total variation of the image, which is a measure of the amount of variation in the intensity of the image. The total variation of an image can be calculated using the following formula:
+For our variational denoising problem, the regularisation term $\mathcal{R}_{\lambda}(\cdot)$ is the total variation of the image, which can be expressed as a scaled $\ell_1$ norm
 
 \begin{equation}
-  \mathcal{R}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
+  \mathcal{R}_{\lambda}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
 \end{equation}
 
-where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $\mathbf{x}$ and the noisy image $\mathbf{z}$.
+where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter.
 
+The discrepancy term and the regularisation term are often in conflict with each other. Sorely minimising the discrepancy term will keep all the noise intact, producing no denosing effect. On the other hand, minimising the regularisation term alone often results in a blurry image and loss of all important details. The regularisation parameter $\lambda$ controls the trade-off between the two. Therefore, choosing the right value of the regularisation parameter is crucial for the success of the denoising process.
 
-
-$\nabla$ denotes a finite-differences operator.
+We will soon look at an alternative regularisation term formulation $\mathcal{R}_{\mathbf{\Lambda}}(\mathbf{x})$ which uses a set of regularisation parameters instead of a single scalar value $\lambda$, providing more flexibility in the denoising process. Before that, we first define the image gradient operator $\nabla$, also known as the finite-difference operator.
 % \cite{finite_difference_op}.
-Finite difference operators include, forward difference operator,
+Finite difference operators include forward difference operator,
 backward difference operator, shift operator, central difference operator and mean operator.
 % (\url{https://en.wikipedia.org/wiki/Total_variation_denoising#2D_signal_images})
-Let us focus on the forward difference operator. In particular, in the discrete case, given a matrix $\mathbf{x}$, $\nabla \mathbf{x}$ is two matrices, one for the vertical gradient $\nabla_{x} \mathbf{x}$ and one for the horizontal gradient $\nabla_{y} \mathbf{x}$.
+Let us focus on the forward difference operator. In particular, in the discrete case, given a matrix $\mathbf{x}$, $\nabla \mathbf{x}$ consists of two matrices, one for the vertical gradient $\nabla_{x} \mathbf{x}$ and one for the horizontal gradient $\nabla_{y} \mathbf{x}$.
 
 % This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and double-central (Sobel?). 
 
@@ -415,7 +432,7 @@ Let us focus on the forward difference operator. In particular, in the discrete 
 
 
 
-For the forward gradient, the vertical gradient is calculated as:
+For the forward gradient, the vertical gradient is calculated as
 
 \begin{equation}
   \begin{aligned}
@@ -436,7 +453,7 @@ For the forward gradient, the vertical gradient is calculated as:
   \end{aligned}
 \end{equation}
 
-and the horizontal gradient is calculated as:
+and the horizontal gradient is calculated as
 
 \begin{equation}
   \begin{aligned}
@@ -473,7 +490,8 @@ and the horizontal gradient is calculated as:
 % be the gradient of the image $\mathbf{x}$.
 % $\nabla \mathbf{x}$ is a vector of partial derivatives of $\mathbf{x}$ with respect to each variable. Each component of $\nabla \mathbf{x}$ is the partial derivative of the corresponding component of $\mathbf{x}$ with respect to the corresponding variable.
 
-We calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. 
+The $\ell_1$ norm of the image gradient $\nabla \mathbf{x}$ is the sum of the $\ell_1$ norms of the two gradient components
+%  calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. 
 
 \begin{equation}
   \| \nabla \mathbf{x} \|_1 = \| \nabla_x \mathbf{x} \|_1 + \| \nabla_y \mathbf{x} \|_1
@@ -486,13 +504,15 @@ We calculate the gradient in the horizontal and vertical directions separately, 
 
 % It is more convenient to use the notation $I$ to represent the image as a matrix so we can define the gradient.
 
-For the forward gradient, the norm-1 of the vertical gradient is calculated as:
+% For the forward gradient, the norm-1 of the vertical gradient is calculated as:
+where
 
 \begin{equation}
   \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |\mathbf{x}_{1, j} - \mathbf{x}_{m,j}|
 \end{equation}
 
-and norm-1 of the horizontal gradient is calculated as:
+% and norm-1 of the horizontal gradient is calculated as:
+and
 
 \begin{equation}
   \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |\mathbf{x}_{i, 1} - \mathbf{x}_{i,n}|
@@ -512,10 +532,10 @@ and norm-1 of the horizontal gradient is calculated as:
 where $\mathbf{x}_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $\mathbf{x}$. 
 % Note that $\mathbf{x}_{i,j}$ can be a scalar for a black-and-white image or a vector of 3 values for a colour image.
 
-Note that, we can move $\lambda$ inside the norm, so the regularisation term can be written as:
+Returning to our current formulation of the regularisation term $\mathcal{R}_{\lambda}(\mathbf{x})$, we can rearrange the regularisation parameter $\lambda$ as follows
 
 \begin{equation}
-    \mathcal{R}(\mathbf{x}) 
+    \mathcal{R}_{\lambda}(\mathbf{x}) 
     = \lambda \| \nabla \mathbf{x} \|_1 \\
     = \| \lambda \nabla \mathbf{x} \|_1 \\
     = \| \lambda \nabla_x \mathbf{x} \|_1 + \| \lambda \nabla_y \mathbf{x} \|_1
@@ -532,11 +552,17 @@ Note that, we can move $\lambda$ inside the norm, so the regularisation term can
 %   \end{aligned}
 % \end{equation}
 
-The regularisation parameter does not need to be a scalar.
+% The regularisation parameter does not need to be a scalar.
 % Each pixel in the image can have its own regularisation parameter.
-Since regularisation is multiplied by the gradient, higher $\lambda$ values will penalize areas with many changes (typically areas with more details), while lower $\lambda$ values prioritize detail preservation over noise reduction.
-Using a single $\lambda$ value penalises all regions of the image equally, which is suboptimal. Instead, it would be better to assign higher penalties to smooth regions and lower penalties to detailed regions to preserve image details.
-We can swap the scalar $\lambda$ with a regularisation parameter map $\mathbf{\Lambda}$,
+Since the gradient is multiplied by the regularisation parameter, high $\lambda$ values lead to reconstructions that lower the discrepancy value, which may lead to over-smoothing areas where there are important details. Conversely, low values of $\lambda$ 
+may lead to reconstructions that preserve important details but do not remove noise effectively in smooth areas.
+% could  may lead will penalize areas with high variation, typically areas with more details, while lower $\lambda$ values prioritize detail preservation over noise reduction.
+Using a single $\lambda$ value affects all regions of the image equally.
+% , which is suboptimal. 
+% It would be better to
+A more flexible approach is to
+apply stronger regularisation to smooth regions and weak regularisation to detailed regions to preserve image details.
+We can do this by swapping the scalar $\lambda$ with a regularisation parameter map $\mathbf{\Lambda}$,
 
 \begin{equation}
   \mathbf{\Lambda} = \begin{bmatrix}
@@ -563,7 +589,7 @@ This gives us a new regularisation term that can be written as
 % $\lambda$, but can be a diagonal matrix $\mathbf{\Lambda} \in \mathbb{R}^{n}$.
 
 \begin{equation}
-  \mathcal{R}(\mathbf{x}) = \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
+  \mathcal{R}_{\mathbf{\Lambda}}(\mathbf{x}) = \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
   = \| \mathbf{\Lambda}^{(xy)} \circ \nabla_x \mathbf{x} \|_1 + \| \mathbf{\Lambda}^{(xy)} \circ \nabla_y \mathbf{x} \|_1
 \end{equation}
 
@@ -593,85 +619,18 @@ if we use a scalar $\lambda$ regularisation parameter, or
 
 if we use a regularisation parameter map $\mathbf{\Lambda}$ of regularisation parameters.
 
-In this dissertation, we will use
-U-Net to help us find the regularisation parameter map $\mathbf{\Lambda}$ 
-% that the later form of the regularisation term.
-% The U-Net will be used to find the regularisation parameter map $\mathbf{\Lambda}$ 
-given any (noisy) image. 
-We will compare the results to the best-case scenario where we use a scalar regularisation parameter $\lambda$.
-
-% Question: Idealy, if we pass in a clean image to U-Net then all the regularisation parameters should be zero, right?
-
-
-% The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
-% The total variation of an image is defined as the sum of the absolute differences between the intensity values of neighbouring pixels.
-
-
-% where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
-
-\subsection{U-Net}
-
-The U-Net is a type of neural network that is commonly used for image segmentation \cite{ronneberger2015unet}.
-The U-Net is an encoder-decoder network that is designed to take an image as input and produce a segmentation mask as output.
-The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
-The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
-
-
-In our case, we will optimise a U-Net model to find the regularisation parameter map 
-% $\Lambda_{\Theta}$ 
-$\Lambda$ 
-that produces the best denoised image for any particular noisy image.
-
-
-\subsection{Related Work}
-
-
-\subsection{Contribution}
-
-- Adapt the existing code of the dynamic image denoising project in \cite{kofler2023learning} to static image denoising. Train and evaluate the model using a new dataset - Chest X-ray dataset.
-
-- Present the theory of the total variational denoising method and the experimental set-up in detail so that a fellow student can understand the method and implement it themselves.
 
 
 
-% The U-Net is a type of neural network that is commonly used for image segmentation.
-% The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
-% The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
-
-% \begin{enumerate}
-%     \item The noisy image was passed through a U-Net to produce an initial denoised image.
-%     \item The total variation of the denoised image was calculated using the formula above.
-%     \item The regularisation parameter $\lambda$ was found by minimising the following objective function:
-    
-%     \[
-%     \min_{\lambda} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
-%     \]
-    
-%     \item The denoised image was then found by minimising the following objective function:
-    
-%     \[
-%     \min_{I} \lambda TV(I) + \frac{1}{2} ||I - I_{\text{noisy}}||^2
-%     \]
-% \end{enumerate}
-
-
-
-
-\section{Method and Implementation}
-
-
-
-\subsection{Primal Dual Hybrid Gradient (PDHG)}
+\subsection{Primal Dual Method}
 
 To solve equation
-(14) 
+(16),
 % \ref{eq:1}, 
-we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG). 
-
-The algorithm is
+we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) algorithm: 
 
 \begin{algorithm}[H]
-\caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}$ (adapted from ...)}
+\caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning})}
 \begin{algorithmic}[1]
 \STATE \textbf{Input:} $L = \| [\mathbf{I}, \nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
 \STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
@@ -691,6 +650,7 @@ The algorithm is
 \end{algorithm}
 
 where $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
+Note that this algorithm can also be applied to the single scalar $\lambda$ case by simply setting all values of $\mathbf{\Lambda}$ to $\lambda$.
 
 The choice of $L$ is taken from \cite{Sidky_2012}.
 % \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
@@ -713,8 +673,6 @@ The number of iterations $T$ is a hyperparameter that we can choose for the trai
 % \subsection{Objective}
 
 
-% % Traditionally, the Total Variation (TV) method has been used to improve image reconstruction \cite{kofler2023learning}. 
-% % For this method to work effectively, we need to learn the optimal regularisation parameters.
 % One of the most widely applied image denoising methods is the so-called Total Variation (TV) regularisation \cite{kofler2023learning}.
 
 % Formally, given the loss function
@@ -725,14 +683,6 @@ The number of iterations $T$ is a hyperparameter that we can choose for the trai
 % $$ \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} L(\mathbf{z}, \mathbf{x}) $$
 % where $\mathbf{z}$ is the input, presumably noisy, image and $\mathbf{x}$ represent the "clean" image we are looking for. We treat images as vectors, $\mathbf{x}, \mathbf{z} \in \mathbb{R}^{n^2}$, where $n$ is the height of the image, assuming the image is square. In this project, we use $n = 512$.
 
-%  The $\text{TV}$ term can be expressed as either a scalar $\lambda$:
-% $$
-% \text{TV}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1, \quad \lambda \in \mathbb{R}
-% $$
-% or as a matrix $\mathbf{\Lambda}$:
-% $$
-% \text{TV}(\mathbf{x}) = \| \mathbf{\Lambda} \nabla \mathbf{x} \|_1, \quad \mathbf{\Lambda} \in \mathbb{R}^{n^2}
-% $$
 
 % Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
 
@@ -748,8 +698,12 @@ Narrowing down the search space is challenging, as we potentially have $d^{m n}$
 regularisation parameter map $\mathbf{\Lambda}$
 more efficiently.
 % However, this approach is not perfect, as it might leave noise in detailed areas.
-
-
+The search can be done more efficiently by employing neural network models that are designed for image processing. In this disseration we will use the U-Net model, which is a specific design of a convolutional neural network.
+% U-Net to help us find the regularisation parameter map $\mathbf{\Lambda}$ 
+% that the later form of the regularisation term.
+% The U-Net will be used to find the regularisation parameter map $\mathbf{\Lambda}$ 
+% given any noisy image. 
+% We will compare the results to the best-case scenario if we were to use a scalar regularisation parameter $\lambda$.
 
 % The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, 
 
@@ -759,95 +713,24 @@ more efficiently.
 
 % U-Net assists in learning these regularisation parameters due to its proficiency in image segmentation. 
 
-
-\subsection{Full Architecture}
-
+% Question: Idealy, if we pass in a clean image to U-Net then all the regularisation parameters should be zero, right?
 
 
-
-For this project, our model comprises two primary components:
-\begin{enumerate}
-    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image 
-    % $\mathbf{x}_0$
-    $\mathbf{x}_{\text{noisy}}$
-    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver 
-    % (refer to Appendix), 
-    % which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}
-    % $. 
-    % This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. 
-    % The symbol $\Theta$ represents the set of trainable parameters within the network.
-\end{enumerate}
-
-We refer to the set of trainable parameters in the U-Net as $\Theta$, and the output of the U-Net as $\mathbf{\Lambda}_{\Theta}$.
-
-The general architecture is depicted in shown in Figure 1,
-
-\begin{figure}[ht]
-  \centering
-\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
-
-  % Define styles for the different layers
-  \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
-  \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
-  \tikzstyle{inference} = [->, ultra thick, red]
-  \tikzstyle{normal} = [->, ultra thick, black]
-
-  \node (input) [output] {$\mathbf{x}_{\text{noisy}}$};
-  \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
-  \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
-  \node (pdhg) [function, below=of lambda] {PDHG Solver};
-  \node (final_output) [output, right=of pdhg] {$\mathbf{x}_{\text{denoised}}$};   
-  \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
-  \node (ground_truth) [output, above=of noise_generator] {$\mathbf{x_{\text{true}}}$};
-  \node (loss_function) [function, right=of final_output] {$\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x}_{\text{denoised}})$};
-
-  \draw[inference] (input) -- (unet);
-  \draw[inference] (unet) -- (lambda);
-  \draw[inference] (lambda) -- (pdhg);
-  \draw[inference] (pdhg) -- (final_output);
-  \draw[inference] (input) -- ++(0, -1.4) -- (pdhg);
-  
-  \draw[->] (final_output) -- (loss_function);
-  \draw[->] (ground_truth) -| (loss_function);
-  \draw[->] (ground_truth) -- (noise_generator);
-  \draw[->] (noise_generator) -- (input);
-  \draw[->] (loss_function) -- ++(0, -1) -| (unet);
-
-\end{tikzpicture}
-
-\caption{The general architecture 
-% \caption{Training 
-% of PDHG Net 
-% \cite{kofler2023learning}
-}
-
-\label{fig:training}
-\end{figure}
-
-where
-\begin{itemize}
-    \item $\mathbf{x_{\text{true}}}$ represents the clean image, serving as the ground truth.
-    \item $\mathbf{x_{\text{noisy}}}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
-    \item $\mathbf{\Lambda}_{\Theta}$ is the regularisation parameters map which is the final output from the U-Net. 
-    % Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
-\end{itemize}
-
-We can treat the PDHG solver as the final hidden layer in our network. 
-The result of the loss function $\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x_{\text{denoised}}})$ 
-is then used for backpropagation to train the parameters $\Theta$.
-
-% For our implementation, we consider $256 \times 256$.
+% The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
+% The total variation of an image is defined as the sum of the absolute differences between the intensity values of neighbouring pixels.
 
 
+% where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
 
-As previously mentioned, the specific architecture for $\text{NET}_{\Theta}$ is the U-Net, a special type of convolutional neural network architecture.
+\section{Neural Network Architecture}
+
 
 % Let us first delve into the foundational concept of a convolutional neural network, which underpins the U-Net architecture.
 
 
 
 \subsection{
-Convolutional Neural Network (CNN) 
+Convolutional Neural Network (CNN)
 }
 
 \begin{figure}[ht]
@@ -944,16 +827,30 @@ These convolutional and pooling layers will form the building block for the U-Ne
 
 \subsection{U-Net}
 
+The U-Net is a type of neural network that is commonly used for image segmentation \cite{ronneberger2015unet}.
+The U-Net is an encoder-decoder network that is designed to take an image as input and produce a segmentation mask as output.
+The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
+The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
+
+
+In our case, we will optimise a U-Net model to find the regularisation parameter map 
+% $\Lambda_{\Theta}$ 
+$\Lambda$ 
+that produces the best denoised image for any particular noisy image.
+
+
+% As previously mentioned, the specific architecture for $\text{NET}_{\Theta}$ is the U-Net, a special type of convolutional neural network architecture.
+
 % An Unrolled Neural Network (U-Net) \cite{ronneberger2015unet} is an extension of a CNN in that we add some so-called skip connections,
 % which is similar to the addition connection in a residual network.
 % Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
 
 
-A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, 
+% A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, 
 % akin to those in a residual network.
-similar to the addition connection in a residual network. 
+% similar to the addition connection in a residual network. 
 % These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
-Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
+% Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
 
 % , in addition to normal pooling layers which condenses the input, we have  which expand the input.
 
@@ -1013,6 +910,84 @@ The up-convolutional layer is just a normal convolutional layer whose output is 
 % A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
 
 
+
+\subsection{Full Architecture}
+
+
+
+
+For this project, our model comprises two primary components:
+\begin{enumerate}
+    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image 
+    % $\mathbf{x}_0$
+    $\mathbf{x}_{\text{noisy}}$
+    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver 
+    % (refer to Appendix), 
+    % which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}
+    % $. 
+    % This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. 
+    % The symbol $\Theta$ represents the set of trainable parameters within the network.
+\end{enumerate}
+
+We refer to the set of trainable parameters in the U-Net as $\Theta$, and the output of the U-Net as $\mathbf{\Lambda}_{\Theta}$.
+
+The general architecture is depicted in shown in Figure 1,
+
+\begin{figure}[ht]
+  \centering
+\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
+
+  % Define styles for the different layers
+  \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
+  \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
+  \tikzstyle{inference} = [->, ultra thick, red]
+  \tikzstyle{normal} = [->, ultra thick, black]
+
+  \node (input) [output] {$\mathbf{x}_{\text{noisy}}$};
+  \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
+  \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
+  \node (pdhg) [function, below=of lambda] {PDHG Solver};
+  \node (final_output) [output, right=of pdhg] {$\mathbf{x}_{\text{denoised}}$};   
+  \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
+  \node (ground_truth) [output, above=of noise_generator] {$\mathbf{x_{\text{true}}}$};
+  \node (loss_function) [function, right=of final_output] {$\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x}_{\text{denoised}})$};
+
+  \draw[inference] (input) -- (unet);
+  \draw[inference] (unet) -- (lambda);
+  \draw[inference] (lambda) -- (pdhg);
+  \draw[inference] (pdhg) -- (final_output);
+  \draw[inference] (input) -- ++(0, -1.4) -- (pdhg);
+  
+  \draw[->] (final_output) -- (loss_function);
+  \draw[->] (ground_truth) -| (loss_function);
+  \draw[->] (ground_truth) -- (noise_generator);
+  \draw[->] (noise_generator) -- (input);
+  \draw[->] (loss_function) -- ++(0, -1) -| (unet);
+
+\end{tikzpicture}
+
+\caption{The general architecture 
+% \caption{Training 
+% of PDHG Net 
+% \cite{kofler2023learning}
+}
+
+\label{fig:training}
+\end{figure}
+
+where
+\begin{itemize}
+    \item $\mathbf{x_{\text{true}}}$ represents the clean image, serving as the ground truth.
+    \item $\mathbf{x_{\text{noisy}}}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
+    \item $\mathbf{\Lambda}_{\Theta}$ is the regularisation parameters map which is the final output from the U-Net. 
+    % Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
+\end{itemize}
+
+We can treat the PDHG solver as the final hidden layer in our network. 
+The result of the loss function $\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x_{\text{denoised}}})$ 
+is then used for backpropagation to train the parameters $\Theta$.
+
+% For our implementation, we consider $256 \times 256$.
 
 
 
@@ -1666,28 +1641,6 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
   \label{fig:compare}
 \end{figure}
 
-% Each test image was also noised with Gaussian noise with a random value of $\sigma$ ranging from 0.1 to 0.5.
-
-As previously mentioned, we used 100 images with label "normal" from the test set provided in the Chest X-ray dataset for testing.
-Each test image was noised with a Gaussian noise of mean 0 and standard deviation $\sigma = 0.5$.
-For each test image, we also did a grid search with 81 equally spaced values between 0 and 0.8 in order to find the best scalar $\lambda$ for the total variational denoising method, which we used as a baseline to show the effectiveness of our method.
-
-% We compare the results using the regularisation parameter map generated by
-% our method with the results using a scalar $\lambda$ for the total variational denoising method.
-% For each test image, we run a grid search to find the best scalar $\lambda$.
-
-As an example, we present the results for one of the test images.
-The results of the grid search is shown in the line plots in figure 5.
-For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
-The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
-The clean and orignal versions as well as the resulting denoised images are shown in Figure 4.
-
-
-
-Qualitatively, we can see that there is a good reduction in the stair-case effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
-
-% \newpage
-
 
 
 
@@ -1706,10 +1659,24 @@ Qualitatively, we can see that there is a good reduction in the stair-case effec
   \caption{$\log{(\mathbf{\Lambda}_{\Theta} + 0.05)}$ and histogram of the log values}
   \end{subfigure}
   \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
-  \label{fig:lambda_map}
+  \label{fig:lambda-map}
 \end{figure}
 % \end{wrapfigure}{l}
 
+As previously mentioned, we used 100 images with label "normal" from the test set provided in the Chest X-ray dataset for testing.
+Each test image was noised with a Gaussian noise of mean 0 and standard deviation $\sigma = 0.5$.
+For each test image, we also did a grid search with 81 equally spaced values between 0 and 0.8 in order to find the best scalar $\lambda$ for the total variational denoising method, which we used as a baseline to show the effectiveness of our method.
+
+As an example, we present the results for one of the test images.
+The results of the grid search is shown in the line plots in figure 
+6.
+% \ref{fig:line-plots}.
+For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
+The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
+The clean and orignal versions as well as the resulting denoised images are shown in figure 
+% \ref{fig:compare}.
+4.
+Qualitatively, we can see that there is a good reduction in the stair-case effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
 
 
 
@@ -1719,8 +1686,21 @@ Qualitatively, we can see that there is a good reduction in the stair-case effec
   \includegraphics[width=0.6\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
   
       \caption{Grid search for the best scalar regularisation parameter $\lambda$ for the example test image. The highest PSNR of 29.945 dB was achieved by $\lambda = 0.07$.}
-  \label{fig:line_plots}
+  \label{fig:line-plots}
 \end{figure}
+
+
+Figure
+% \ref{fig:lambda-map}
+5
+shows the resulting regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ for this example test image.
+We can see that the map is made up of a range of values, many of which are less than 0.07, the best scalar regularisation parameter found using the grid search.
+This shows that at many parts, such as the borders of the body, the details are better preserved and the lines are sharper.
+On the other hand, there are also many values larger than 0.07, which shows that there are parts that are denoised more heavily.
+Ideally, these would be parts that were originally smooth.
+This would help to reduce the stair-case effect in the denoised image, which we can see more prevalent in the denoised image using the scalar $\lambda$.
+
+% While most values are in the low end of the spectrum, the histogram of the values shows that there are some higher values as well.
 
 
 
@@ -1760,22 +1740,6 @@ Qualitatively, we can see that there is a good reduction in the stair-case effec
 %   \label{fig:enter-label}
 % \end{figure}
 
-% \newpage
-
-
-
-% \newpage
-
-
-
-
-
-
-
-
-
-
-
 % \begin{figure}[ht]
 %   \centering
 %       \includegraphics[width=1\linewidth]{images//chest_xray/outputa.png}
@@ -1791,12 +1755,7 @@ Qualitatively, we can see that there is a good reduction in the stair-case effec
   \label{fig:box_plots}
 \end{figure}
 
-% \documentclass{article}
-% \usepackage{amsmath}
-% \usepackage{graphicx}
-
 \begin{table}[H]
-
 \centering
 \begin{tabular}{c|c c}
 % \hline
@@ -1828,13 +1787,14 @@ The TV-reconstruction using the parameter-map $\mathbf{\Lambda}_{\Theta}$ improv
   \label{fig:hist_diff}
 \end{figure}
 
-Plotting the values for all the test images, we can see that the regularisation parameter map consistently outperforms the scalar $\lambda$.
+Plotting the results for all the test images, we can see that the regularisation parameter map consistently outperforms the scalar $\lambda$.
 The box plots in Figure 
 % \ref{fig:box_plots} 
 7
 show the distribution of PSNR and SSIM values for the test images
 using the two methods.
-The regularisation parameter map consistently produces higher PSNR and SSIM values than the scalar $\lambda$.
+Figure 8 shows the histograms of the differences in PSNR and SSIM values between the two methods.
+We can see that the difference is positive in all cases, which shows that the regularisation parameter map consistently produces higher PSNR and SSIM values than the scalar $\lambda$.
 
 % More visualisations:
 

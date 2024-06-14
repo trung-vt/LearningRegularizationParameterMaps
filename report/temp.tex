@@ -1,0 +1,92 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{csquotes}
+\usepackage{amssymb,tikz,pdftexcmds,xparse}
+\usepackage{url}
+\usepackage{titlesec}
+\usepackage{biblatex}
+\addbibresource{references.bib}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usetikzlibrary{shapes, arrows.meta, positioning}
+
+\titlespacing*{\section}
+{0pt}{10pt}{4pt}
+\titlespacing*{\subsection}
+{0pt}{8pt}{3pt}
+\titlespacing*{\subsubsection}
+{0pt}{12pt}{1pt}
+
+\tikzset{box/.style={
+    minimum size=0.225cm,
+    inner sep=0pt,
+    draw,
+  },  
+  insert mark/.style={
+    append after command={%
+         node[inner sep=0pt,#1]
+           at (\tikzlastnode.center){$\checkmark$}
+     }     
+  },
+  insert bad mark/.style={
+    append after command={%
+         [shorten <=\pgflinewidth,shorten >=\pgflinewidth]
+         (\tikzlastnode.north west)edge[#1](\tikzlastnode.south east)
+         (\tikzlastnode.south west)edge[#1](\tikzlastnode.north east)
+     }     
+  },
+}
+
+\makeatletter
+\NewDocumentCommand{\tikzcheckmark}{O{} m}{%
+  \ifnum\pdf@strcmp{#2}{mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,insert mark={#1},#1]{};%
+  \fi%
+  \ifnum\pdf@strcmp{#2}{bad mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,insert bad mark={#1},#1]{};%
+  \fi%
+  \ifnum\pdf@strcmp{#2}{no mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,#1]{};%
+  \fi%
+}
+\makeatother
+
+\makeatletter
+\renewcommand{\maketitle}{
+  {\LARGE \@title \par}
+  {\large \@author \par}
+}
+\makeatother
+
+\usepackage[english]{babel}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{MTH786P Project - Diabetes Prediction}
+\author{Thanh Trung Vu - 230849442}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+This project is largely based on existing research on learning regularisation parameter maps for variational image reconstruction using deep neural networks and algorithm unrolling \cite{kofler2023learning}.
+In this dissertation, we 
+focus on the problem of image denoising.
+We define solving the denoising problem as solving the total variation (TV) problem and give a mathematical formulation of variational image denoising. 
+We then discuss the primal dual algorithm for solving the TV denoising problem, and the importance of choosing the regularisation parameter.
+This led to the idea of using a deep learning method called U-Net to help us find a regularisation parameter map which can improve the denoising performance of the primal dual algorithm.
+We combine a U-Net architecture with the primal dual algorithm to create an end-to-end unsupervised model for image denoising that can achieve said improvement while staying completely interpretable. 
+We implement the proposed combined model and evaluate it on the Chest X-ray dataset.
+The results show that the combined model consistently outperforms the traditional method of using a single regularisation parameter.
+
+\printbibliography
+
+\end{document}

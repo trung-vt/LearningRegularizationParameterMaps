@@ -5,7 +5,8 @@
 \usepackage{amssymb,tikz,pdftexcmds,xparse}
 \usepackage{url}
 \usepackage{titlesec}
-
+\usepackage{biblatex}
+\addbibresource{references.bib}
 \usepackage{indentfirst}
 \usepackage{amsmath}
 \usepackage{enumitem}
@@ -15,7 +16,7 @@
 \usepackage{graphicx}   % for trimming images
 \usepackage{tikz}
 \usepackage{subcaption} % for subfigures
-\usepackage{wrapfig}
+% \usepackage{wrapfig}
 \usetikzlibrary{shapes, arrows.meta, positioning}
 
 % Adjust spacing for section
@@ -148,8 +149,7 @@
 \author{Thanh Trung Vu - 230849442}
 
 \usepackage[english]{babel}
-\usepackage{biblatex}
-\addbibresource{references.bib}
+
 
 \begin{document}
 
@@ -652,7 +652,7 @@ we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) alg
 where $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
 Note that this algorithm can also be applied to the single scalar $\lambda$ case by simply setting all values of $\mathbf{\Lambda}$ to $\lambda$.
 
-The choice of $L$ is taken from \cite{Sidky_2012}.
+The choice of $L$ is taken from \cite{Sidky2012}.
 % \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
 The number of iterations $T$ is a hyperparameter that we can choose for the training process.
 
@@ -1163,7 +1163,7 @@ During testing we also set $T_{\text{test}}$ to 256.
 For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
 
 It is worth noting that, for the implementation of the U-Net, 
-we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library \cite{NEURIPS2019_9015}.
+we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library \cite{PyTorch}.
 The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
 The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
 
@@ -1669,13 +1669,13 @@ For each test image, we also did a grid search with 81 equally spaced values bet
 
 As an example, we present the results for one of the test images.
 The results of the grid search is shown in the line plots in figure 
-6.
-% \ref{fig:line-plots}.
+% 6.
+\ref{fig:line-plots}.
 For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
 The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
 The clean and orignal versions as well as the resulting denoised images are shown in figure 
-% \ref{fig:compare}.
-4.
+\ref{fig:compare}.
+% 4.
 Qualitatively, we can see that there is a good reduction in the stair-case effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
 
 
@@ -1691,8 +1691,8 @@ Qualitatively, we can see that there is a good reduction in the stair-case effec
 
 
 Figure
-% \ref{fig:lambda-map}
-5
+\ref{fig:lambda-map}
+% 5
 shows the resulting regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ for this example test image.
 We can see that the map is made up of a range of values, many of which are less than 0.07, the best scalar regularisation parameter found using the grid search.
 This shows that at many parts, such as the borders of the body, the details are better preserved and the lines are sharper.

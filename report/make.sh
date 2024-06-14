@@ -27,5 +27,5 @@ mv ${filename}.lo* *.aux ${filename}.ilg ${filename}.ind ${filename}.toc junk/
 mv ${filename}.bbl ${filename}.blg ${filename}.out *.asc junk/
 mv *.snm *.fls *.run.xml *.nav *.dvi *.fdb_latexmk *.vrb junk/
 mv *-blx.bib junk/
-mv ${filename}.pdf ${name}-cv.pdf # rename to cv
+# mv ${filename}.pdf ${name}-cv.pdf # rename to cv
 

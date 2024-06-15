@@ -76,14 +76,15 @@
 % Redefining maketitle
 \makeatletter
 \renewcommand{\maketitle}{
-  % \begin{center}
-    {\LARGE \@title \par}      % Title in large font
+  \begin{center}
+    % {\LARGE \@title \par}      % Title in large font
+    {\Large \@title \par}      % Title in large font
     % \vspace{2mm}               % Space between title and author
     % {\large \@subtitle \par}      % Subtitle in large (but smaller than title) font
     % \vspace{2mm}               % Space between title and author
     {\large \@author \par}     % Author in large (but smaller than title) font
     % Date is removed, so no command for date here
-  % \end{center}
+  \end{center}
   % \vspace{5mm}                 % Space after the title block
 }
 \makeatother
@@ -145,13 +146,18 @@
   tabsize=2
 }
 
-\title{MTH786P Project - Diabetes Prediction}
+% \title{MTH786P Project - Diabetes Prediction}
+% \author{Thanh Trung Vu - 230849442}
+% \begin{center}
+
+\title{Deep-Learning Regularisation Parameter-Map with U-Net for Total Variation Image Denoising on Chest X-ray Images}
+
 \author{Thanh Trung Vu - 230849442}
 
-\usepackage[english]{babel}
-
-
 \begin{document}
+
+
+\maketitle
 
 \setlength\parskip{0.5em plus 0.1em minus 0.2em}
 
@@ -165,14 +171,11 @@
 
 % \vspace{-30pt}
 
-% \maketitle
-\begin{center}
 % {\large \textbf{Graduation Project}
 % {\large \textbf{Total Variation Image Denoising with U-Net}}
-{\large \textbf{Deep-Learning Regularisation Parameter-Map with U-Net for Total Variation Image Denoising on Chest X-ray Images}}
+% {\large \textbf{Deep-Learning Regularisation Parameter-Map with U-Net for Total Variation Image Denoising on Chest X-ray Images}}
 
-{\large \textbf{Thanh Trung Vu - 230849442}}
-\end{center}
+
 
 % \vspace{-12pt}
 
@@ -243,7 +246,10 @@
 
 % \begin{abstract}
 
-This project is largely based on existing research on learning regularisation parameter maps for variational image reconstruction using deep neural networks and algorithm unrolling \cite{kofler2023learning}.
+This project is largely based on existing research 
+on the learning of 
+% involving the learning of
+regularisation parameter maps for variational image reconstruction using deep neural networks and algorithm unrolling \cite{kofler2023learning}.
 In this dissertation, we 
 focus on the problem of image denoising.
 We define solving the denoising problem as solving the total variation (TV) problem and give a mathematical formulation of variational image denoising. 
@@ -261,7 +267,7 @@ The results show that the combined model consistently outperforms the traditiona
 
 - Adapt the existing code of the dynamic image denoising project in \cite{kofler2023learning} to static image denoising. Train and evaluate the model using a new dataset - Chest X-ray dataset.
 
-- Present the theory of the total variational denoising method and the experimental set-up in detail so that a fellow student can understand the method and implement it themselves.
+- Present the theory of the total variation denoising method and the experimental set-up in detail so that a fellow student can understand the method and implement it themselves.
 
 
 % We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
@@ -412,7 +418,7 @@ For our variational denoising problem, the regularisation term $\mathcal{R}_{\la
 
 where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter.
 
-The discrepancy term and the regularisation term are often in conflict with each other. Sorely minimising the discrepancy term will keep all the noise intact, producing no denosing effect. On the other hand, minimising the regularisation term alone often results in a blurry image and loss of all important details. The regularisation parameter $\lambda$ controls the trade-off between the two. Therefore, choosing the right value of the regularisation parameter is crucial for the success of the denoising process.
+The discrepancy term and the regularisation term are often in conflict with each other. Sorely minimising the discrepancy term will keep all the noise intact, producing no denoising effect. On the other hand, minimising the regularisation term alone often results in a blurry image and loss of all important details. The regularisation parameter $\lambda$ controls the trade-off between the two. Therefore, choosing the right value of the regularisation parameter is crucial for the success of the denoising process.
 
 We will soon look at an alternative regularisation term formulation $\mathcal{R}_{\mathbf{\Lambda}}(\mathbf{x})$ which uses a set of regularisation parameters instead of a single scalar value $\lambda$, providing more flexibility in the denoising process. Before that, we first define the image gradient operator $\nabla$, also known as the finite-difference operator.
 % \cite{finite_difference_op}.
@@ -556,7 +562,7 @@ Returning to our current formulation of the regularisation term $\mathcal{R}_{\l
 % Each pixel in the image can have its own regularisation parameter.
 Since the gradient is multiplied by the regularisation parameter, high $\lambda$ values lead to reconstructions that lower the discrepancy value, which may lead to over-smoothing areas where there are important details. Conversely, low values of $\lambda$ 
 may lead to reconstructions that preserve important details but do not remove noise effectively in smooth areas.
-% could  may lead will penalize areas with high variation, typically areas with more details, while lower $\lambda$ values prioritize detail preservation over noise reduction.
+% could  may lead will penalise areas with high variation, typically areas with more details, while lower $\lambda$ values prioritise detail preservation over noise reduction.
 Using a single $\lambda$ value affects all regions of the image equally.
 % , which is suboptimal. 
 % It would be better to
@@ -613,7 +619,7 @@ using the following formula:
 
 if we use a scalar $\lambda$ regularisation parameter, or
 
-\begin{equation} \label{eq:1}
+\begin{equation} \label{eq:minimisation_problem_lambda_map}
   \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
 \end{equation}
 
@@ -624,13 +630,12 @@ if we use a regularisation parameter map $\mathbf{\Lambda}$ of regularisation pa
 
 \subsection{Primal Dual Method}
 
-To solve equation
-(16),
+To solve equation \ref{eq:minimisation_problem_lambda_map},
 % \ref{eq:1}, 
 we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) algorithm: 
 
 \begin{algorithm}[H]
-\caption{PDHG algorithm for image denoising with fixed regularization parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning})}
+\caption{PDHG algorithm for image denoising with fixed regularisation parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning})}
 \begin{algorithmic}[1]
 \STATE \textbf{Input:} $L = \| [\mathbf{I}, \nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
 \STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
@@ -698,7 +703,7 @@ Narrowing down the search space is challenging, as we potentially have $d^{m n}$
 regularisation parameter map $\mathbf{\Lambda}$
 more efficiently.
 % However, this approach is not perfect, as it might leave noise in detailed areas.
-The search can be done more efficiently by employing neural network models that are designed for image processing. In this disseration we will use the U-Net model, which is a specific design of a convolutional neural network.
+The search can be done more efficiently by employing neural network models that are designed for image processing. In this dissertation we will use the U-Net model, which is a specific design of a convolutional neural network.
 % U-Net to help us find the regularisation parameter map $\mathbf{\Lambda}$ 
 % that the later form of the regularisation term.
 % The U-Net will be used to find the regularisation parameter map $\mathbf{\Lambda}$ 
@@ -742,11 +747,11 @@ Convolutional Neural Network (CNN)
 
 
 
-Convolutional Neural Networks (CNNs) are a specific type of artificial neural network particularly well-suited for analyzing image data and other grid-like patterns. 
+Convolutional Neural Networks (CNNs) are a specific type of artificial neural network particularly well-suited for analysing image data and other grid-like patterns. 
 Here we assume a 2D CNN architecture, where each layer is represented as one or more 2-dimensional matrices, rather than a vector as in a normal "vanilla" network.
 % They excel at tasks like image classification, object detection, and image segmentation. 
 
-% Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analyzing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
+% Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analysing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
 
 % Here's a breakdown of the key concepts:
 
@@ -801,8 +806,8 @@ a image task.
 % the same amount of output. 
 
 
-% In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilization of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
-% A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasizes specific characteristics of the input. 
+% In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilisation of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
+% A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasises specific characteristics of the input. 
 % When multiple filters are employed in a layer, they produce multiple feature maps, with each map corresponding to a different channel. 
 % This design significantly reduces the proportion of trainable parameters relative to the number of output values, enhancing efficiency for image-related tasks.
 
@@ -811,7 +816,7 @@ a image task.
 
 
 
-An additional type of layer is a pooling layer. Usually we use a max-pooling layer which outputs the maximum instead. This project also utilises max-pooling. The goal is to keep only the most signification values.
+An additional type of layer is a pooling layer. Usually we use a max-pooling layer which outputs the maximum instead. This project also utilises max-pooling. The goal is to keep only the most significant values.
 
 These convolutional and pooling layers will form the building block for the U-Net architecture.
 
@@ -855,7 +860,7 @@ that produces the best denoised image for any particular noisy image.
 % , in addition to normal pooling layers which condenses the input, we have  which expand the input.
 
 % It has a contracting path (encoder) and an expanding path (decoder) with skip connections in between. 
-% This structure is specifically designed for image segmentation, where the network needs to not only extract features but also localize them precisely within the image.
+% This structure is specifically designed for image segmentation, where the network needs to not only extract features but also localise them precisely within the image.
 
 % U-Net are used often in many segmentation tasks, and in recent years have made their ways onto image generation tasks as well.
 
@@ -883,7 +888,7 @@ The U-Net architecture is divided into two principal components: an Encoder and 
 \subsubsection*{Encoder}
 
 
-The Encoder functions similarly to a standard CNN, utilizing a combination of convolutional layers and max-pooling layers organized into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while 
+The Encoder functions similarly to a standard CNN, utilising a combination of convolutional layers and max-pooling layers organised into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while 
 % concurrently 
 reducing the feature map size due to the pooling.
 
@@ -923,7 +928,7 @@ For this project, our model comprises two primary components:
     $\mathbf{x}_{\text{noisy}}$
     \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver 
     % (refer to Appendix), 
-    % which utilizes both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}
+    % which utilises both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}
     % $. 
     % This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. 
     % The symbol $\Theta$ represents the set of trainable parameters within the network.
@@ -1124,7 +1129,7 @@ At the time of download, the original dataset had already been split into a trai
 We picked 200 images for the training dataset for training and 100 images from the test set for testing. The validation set consists of only 8 images which were all used for validation.
 We used only images which were classified as normal.
 
-For consitent input, we cropped the images to squares and then resized them to $256 \times 256$.
+For consistent input, we cropped the images to squares and then resized them to $256 \times 256$.
 For each image we generated a random value of $\sigma$ uniformly in the range from 0.1 to 0.5, and noised the image with Gaussian noise with mean 0 and the corresponding standard deviation $\sigma$.
 
 % \subsection{SIDD Dataset}
@@ -1303,7 +1308,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 
 % % \subsection{Objective and Setup}
 
-% The primary aim of this project is to explore the potential of achieving the optimal regularisation parameter map, $\mathbf{\Lambda}$, for a particular image. To this end, the training was conducted on a single image, using a grid search to determine the best single regularisation parameter, $\lambda$. The chosen $\lambda = 0.05$ yielded a PSNR (Peak Signal-to-Noise Ratio) of 35.64 dB, considered to be within the good range (30-40 dB). Our model, utilizing the regularisation map $\mathbf{\Lambda}$, improved the PSNR to 37.84 dB compared to the 24.13 dB of the noisy original, demonstrating the efficacy of the model-specific parameter map.
+% The primary aim of this project is to explore the potential of achieving the optimal regularisation parameter map, $\mathbf{\Lambda}$, for a particular image. To this end, the training was conducted on a single image, using a grid search to determine the best single regularisation parameter, $\lambda$. The chosen $\lambda = 0.05$ yielded a PSNR (Peak Signal-to-Noise Ratio) of 35.64 dB, considered to be within the good range (30-40 dB). Our model, utilising the regularisation map $\mathbf{\Lambda}$, improved the PSNR to 37.84 dB compared to the 24.13 dB of the noisy original, demonstrating the efficacy of the model-specific parameter map.
 
 % \subsection{Data Preparation and Model Configuration}
 
@@ -1311,7 +1316,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 
 % \subsection{Training Details}
 
-% The Mean Squared Error (MSE) loss function was chosen due to its effectiveness in Gaussian noise contexts. The Adam optimiser was utilized for its adaptive learning rate capabilities, set at 0.0001. LeakyReLU activation function with $\alpha = 0.01$ was used across all hidden layers to ensure non-linearity without significant information loss at zero activations. 
+% The Mean Squared Error (MSE) loss function was chosen due to its effectiveness in Gaussian noise contexts. The Adam optimiser was utilised for its adaptive learning rate capabilities, set at 0.0001. LeakyReLU activation function with $\alpha = 0.01$ was used across all hidden layers to ensure non-linearity without significant information loss at zero activations. 
 
 % The PDHG (Primal Dual Hybrid Gradient) solver, an integral part of the model, was run for 128 iterations per epoch. While increasing the number of iterations might improve results, time constraints limited our exploration.
 
@@ -1327,7 +1332,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 
 % \subsection{Inference and Efficiency}
 
-% The inference time for our model was about 1 second per 512$\times$512 patch. For a full HD (1920$\times$1080) image, denoising required processing 12 patches, taking less than half a minute in total. This demonstrates that while our method is slower than traditional single-parameter denoising methods, it offers a systematic approach to optimizing regularisation without prior knowledge of the best $\lambda$.
+% The inference time for our model was about 1 second per 512$\times$512 patch. For a full HD (1920$\times$1080) image, denoising required processing 12 patches, taking less than half a minute in total. This demonstrates that while our method is slower than traditional single-parameter denoising methods, it offers a systematic approach to optimising regularisation without prior knowledge of the best $\lambda$.
 
 % \begin{figure}[ht]
 %     \centering
@@ -1353,7 +1358,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 %     \caption{Comparison of output using single $\lambda$ and $\mathbf{\Lambda}$ map}
 
 
-% % \end{center}
+% \end{center}
 % \end{figure}
 
 % \begin{figure}[ht]
@@ -1367,7 +1372,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 
 % \subsection{Analysis of the $\mathbf{\Lambda}$ Map}
 
-% The $\mathbf{\Lambda}$ map generated by our model provides a visual representation of how the PDHG solver is directed to handle different regions of the image. In areas where the original image was predominantly white, such as on a box, the $\mathbf{\Lambda}$ map exhibits higher regularisation values, indicated by whiter pixels. This implies that the PDHG solver is instructed to penalize high gradients in these regions, effectively smoothing them out.
+% The $\mathbf{\Lambda}$ map generated by our model provides a visual representation of how the PDHG solver is directed to handle different regions of the image. In areas where the original image was predominantly white, such as on a box, the $\mathbf{\Lambda}$ map exhibits higher regularisation values, indicated by whiter pixels. This implies that the PDHG solver is instructed to penalise high gradients in these regions, effectively smoothing them out.
 
 % Conversely, areas with intricate details, such as text on the box, display lower regularisation values, represented by darker pixels on the $\mathbf{\Lambda}$ map. This indicates that the solver is tuned to preserve finer details in these areas, maintaining clarity and sharpness.
 
@@ -1658,7 +1663,7 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
   \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram_log.png}
   \caption{$\log{(\mathbf{\Lambda}_{\Theta} + 0.05)}$ and histogram of the log values}
   \end{subfigure}
-  \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example. Since the values are too close to one another in the lower spectrum, the bottom row shows the log of the map and the histogram of the log values for better separation.}
+  \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example, shown as an image on a different colour map, followed by the histogram showing the distribution of the values in the map. The pixel colour represents the magnitude of the regularisation parameter at a particular point. On the left, we show the colours that correspond to the actual values of lambda. As we can see from the histogram, most values stick closely to one another in the lower spectrum, making the image very dark. An additional visualisation is shown on the right, with the colours corresponding to the logarithm of the values with an offset of 0.05 to avoid taking the log of zero. This spread the values out to show more colours for visualisation purposes.}
   \label{fig:lambda-map}
 \end{figure}
 % \end{wrapfigure}{l}
@@ -1673,11 +1678,11 @@ The results of the grid search is shown in the line plots in figure
 \ref{fig:line-plots}.
 For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
 The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
-The clean and orignal versions as well as the resulting denoised images are shown in figure 
+The clean and original versions as well as the resulting denoised images are shown in figure 
 \ref{fig:compare}.
 % 4.
-Qualitatively, we can see that there is a good reduction in the stair-case effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
-
+% Qualitatively, we can see that there is a good reduction in the staircase effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
+Qualitatively, we observe a significant reduction in the staircase effect in the denoised image when using the regularisation parameter map $\mathbf{\Lambda}_\Theta$, compared to using the scalar $\lambda$.
 
 
 \begin{figure}[H]
@@ -1698,7 +1703,7 @@ We can see that the map is made up of a range of values, many of which are less 
 This shows that at many parts, such as the borders of the body, the details are better preserved and the lines are sharper.
 On the other hand, there are also many values larger than 0.07, which shows that there are parts that are denoised more heavily.
 Ideally, these would be parts that were originally smooth.
-This would help to reduce the stair-case effect in the denoised image, which we can see more prevalent in the denoised image using the scalar $\lambda$.
+This would help to reduce the staircase effect in the denoised image, which we can see more prevalent in the denoised image using the scalar $\lambda$.
 
 % While most values are in the low end of the spectrum, the histogram of the values shows that there are some higher values as well.
 
@@ -1750,34 +1755,49 @@ This would help to reduce the stair-case effect in the denoised image, which we 
 \begin{figure}[H]
   \centering
   % \includegraphics[width=1\linewidth]{images//chest_xray/output3.png}
-  \includegraphics[width=0.5\linewidth]{images//chest_xray/box_plots_1.png}
+  \includegraphics[width=0.5\linewidth]{images//chest_xray/box_plots1.png}
   \caption{Test results summary}
   \label{fig:box_plots}
 \end{figure}
 
 \begin{table}[H]
 \centering
+
 \begin{tabular}{c|c c}
 % \hline
  & \textbf{PDHG -} $\lambda$ & \textbf{PDHG -} $\mathbf{\Lambda}_{\Theta}$ \\
 \hline
-\textbf{SSIM} & $0.87 \pm 0.04$ & $\mathbf{0.90} \pm 0.03$ \\
-\textbf{PSNR} & $33.43 \pm 2.16$ & $\mathbf{34.73} \pm 2.02$ \\
+\textbf{SSIM} & $0.82 \pm 0.03$ & $\mathbf{0.86} \pm 0.02$ \\
+\textbf{PSNR} & $31.28 \pm 1.39$ & $\mathbf{32.79} \pm 1.34$ \\
 % \hline
 \end{tabular}
+
+% \begin{tabular}{lcc}
+% \toprule
+% & Scalar $\lambda$ & $\Lambda$ map \\
+% \midrule
+% PSNR & 31.28 $\pm$ 1.39 & 32.79 $\pm$ 1.34 \\
+% SSIM & 0.82 $\pm$ 0.03 & 0.86 $\pm$ 0.02 \\
+% \bottomrule
+% \end{tabular}
+% \caption{Performance comparison between Scalar $\lambda$ and $\Lambda$ map.}
+
 
 \caption{Mean and standard deviation of the measures SSIM and PSNR obtained over the test set for the chest x-ray dataset example. 
 The TV-reconstruction using the parameter-map $\mathbf{\Lambda}_{\Theta}$ improves both measures.
 }
 
-\label{table:1}
+\label{table:summary}
 
 \end{table}
 
+
+
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_psnr_diff.png}
-  \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_ssim_diff.png}
+  % \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_psnr_diff.png}
+  % \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_ssim_diff.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/histograms.png}
   \caption{Histograms of the PSNR and SSIM differences between using $\lambda$ scalar and using $\mathbf{\Lambda}_{\Theta}$ map for
   reconstructions of noisy versions of the test images. 
   The $\mathbf{\Lambda}_{\Theta}$ map method consistently outperforms the scalar $\lambda$ method.
@@ -1789,16 +1809,19 @@ The TV-reconstruction using the parameter-map $\mathbf{\Lambda}_{\Theta}$ improv
 
 Plotting the results for all the test images, we can see that the regularisation parameter map consistently outperforms the scalar $\lambda$.
 The box plots in Figure 
-% \ref{fig:box_plots} 
-7
+\ref{fig:box_plots} 
+% 7
 show the distribution of PSNR and SSIM values for the test images
 using the two methods.
-Figure 8 shows the histograms of the differences in PSNR and SSIM values between the two methods.
-We can see that the difference is positive in all cases, which shows that the regularisation parameter map consistently produces higher PSNR and SSIM values than the scalar $\lambda$.
+Figure 
+\ref{fig:hist_diff}
+% 8 
+shows the histograms of the differences in PSNR and SSIM values between the two methods.
+We can see that the differences are positive in all cases, which shows that the regularisation parameter map consistently produces higher PSNR and SSIM values than the scalar $\lambda$.
 
 % More visualisations:
 
-% - Histograms of the PSNR and SSIM differences (see Figure 9 of Dualization paper)
+% - Histograms of the PSNR and SSIM differences (see Figure 9 of Dualisation paper)
 
 % - Show Lambda map: use a different colormap with legend showing the range of the values (0.00 to 0.05) (page 29 of the paper)
 
@@ -1816,7 +1839,9 @@ We can see that the difference is positive in all cases, which shows that the re
 
 \section{Conclusion}
 
-Through experimentation with the Chest X-ray dataset, we showed that using U-Net produces a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ that improves the denoising of images using the total variational method compared to the traditional scalar $\lambda$.
+% Through experimentation with the Chest X-ray dataset, we showed that using U-Net produces a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ that improves the denoising of images using the total variational method compared to the traditional scalar $\lambda$.
+
+Through experiments with the Chest X-ray dataset, we demonstrated that using U-Net to produce a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ enhances the denoising performance of the total variation method compared to the traditional scalar $\lambda$.
 
 % This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.
 
@@ -1827,7 +1852,7 @@ Through experimentation with the Chest X-ray dataset, we showed that using U-Net
 % \subsection{Real-World Implications and Limitations}
 
 % Because of the considerable computation time, this limited our ability to extend the experiment across different sets of images. 
-% Moving forward, optimizing the computational efficiency of this model will be crucial for broader application and scalability.
+% Moving forward, optimising the computational efficiency of this model will be crucial for broader application and scalability.
 
 % % \subsection{Conclusion}
 % In conclusion, while the experiment demonstrated potential improvements over traditional single-lambda denoising methods, the current computational demands make it impractical for real-world applications. 

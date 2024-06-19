@@ -234,21 +234,8 @@
 
 \section{Introduction}
 
-% - Rewrite parts written by ChatGPT, or written specifically for mini project but not relevant anymore
-
-% - Check consistent notations
-
-% - Redraw U-Net diagram
-
-% - Arrange figures in correct locations
-
-% \subsection{Background}
-
-% \begin{abstract}
-
 This project is largely based on existing research 
 on the learning of 
-% involving the learning of
 regularisation parameter maps for variational image reconstruction using deep neural networks and algorithm unrolling \cite{kofler2023learning}.
 In this dissertation, we 
 focus on the problem of image denoising.
@@ -270,132 +257,27 @@ The results show that the combined model consistently outperforms the traditiona
 - Present the theory of the total variation denoising method and the experimental set-up in detail so that a fellow student can understand the method and implement it themselves.
 
 
-% We will also describe the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently. 
-% We will then present the results of the method on a few different datasets.
-
-
-% Image processing, and image denoising in particular, has seen significant advancements since the U-Net was first applied in 2015. This project aims to build upon these advancements by implementing and experimenting with a U-Net-based model for image denoising.
-% % The paper \cite{kofler2023learning} that this project is based on discusses
-% In particular, it combines U-Net with a traditional image-denoising algorithm called the Primal Dual Hybrid Gradient (PDHG) algorithm \cite{kofler2023learning}.
-% % to solve the image denoising task. 
-% % While the specifics of the algorithm are outside the scope of this project, 
-% % the main idea is to use U-Net to learn the required input, so-called the regularisation parameters, of a specific image for the PDHG algorithm. 
-% Specifically, a PDHG solver is appended to the end of the U-Net, treating the solver as the final layer of the entire network to create an end-to-end unsupervised model.
-% % To denoise images, the PDHG algorithm requires defining some regularisation parameters as part of the cost function. 
-
-% % By treating PDHG as the final layer, this approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network.
-
-% One notable aspect of using U-Net in this problem is that, instead of acting as a black box and outputting a denoised version of each input image, it outputs a parameter map used in another algorithm, demonstrating the flexibility of neural networks.
-% % This has two main advantages. Firstly, by learning the features that can be fed into a well-understood classic algorithm, 
-% % This approach demonstrates the flexibility of neural networks and helps reduce the black-box nature of the network. 
-
-% Additionally, this approach helps solving the boundary problem when combining multiple patches of an image. Due to insufficient GPU memory, high-definition images must be downscaled or divided into patches for training, and combining patches in a black-box approach is challenging due to boundary issues. However, this approach combines patches of the regularisation parameter map, which can then be passed whole to the PDHG algorithm. The output of the PDHG algorithm typically does not show patch boundaries, resulting in smoother images.
-
-
-% \end{abstract}
-
-
-% \section{Overview}
-
-% \section{Mathematical preliminaries}
-
-
-% \subsubsection{What is image denoising?}
-
-% \subsubsection{Why is image denoising important?}
-
-
-% This project is largely based on the research paper "Learning regularisation Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling" \cite{kofler2023learning} and utilises part of the Smartphone Image Denoising Dataset (SIDD) \cite{SIDD_2018_CVPR}.
-
- 
-% I find image processing in general and image denoising in particular very interesting.
-
-% The primary goal of this mini-project is to learn about a specific type of neural network called the U-Net, a convolutional network architecture
-% designed for segmentation of images \cite{ronneberger2015unet}, and apply it to the problem of image denoising. 
-
-% In the rest of this report, I will explain the task of learning a regularisation parameter map using U-Net, describe the U-Net architecture in this problem, discuss the modelling and training process, and finally present some preliminary results. 
-
-
-
-
-
-
-
-% In this project, the model is trained and evaluated using the peak signal-to-noise ratio (PSNR) metric, and preliminary results are analysed to validate the approach. Additionally, the project adapts the code from the original paper, which was used for dynamic image denoising, to apply to static image denoising. This adaptation involved a complete rewriting, simplifying the code from over 200 lines to under 80 lines, making it more understandable and easier to modify. This simplification enabled further modifications, such as adding more layers to the network.
-
-% Although much of the logic described in this project is implemented in an open-source project \cite{kofler2023learning}, getting started can be challenging. Therefore, a self-contained notebook with code and instructions to obtain the data was prepared to help fellow students experiment more easily. This notebook can run on Google Colab \cite{colab} and Kaggle \cite{kaggle}, providing an accessible platform for experimentation. Additionally, part of this report could serve as documentation for the open-source project, enhancing it with additional visualisations and explanations not provided in the original project. These additions aim to help readers of the paper gain a better understanding of the approach.
-
-
-
-% \subsection{Denoising problems}
-
-% The history of image denoising: 
-
-% Image denoising began in the 1960s with the development of the Wiener filter, which is a linear filter that minimises the mean squared error between the denoised image and the original image.
-% The Wiener filter works by finding the image that minimises the following objective function:
-
-% \[
-% \min_{I} \frac{1}{2} ||I - I_{\text{noisy}}||^2
-% \]
-
-% where $I$ is the denoised image, $I_{\text{noisy}}$ is the noisy image, and $||\cdot||$ is the mean squared error between two images.
-
-% The Wiener filter is a linear filter that works well for images that are corrupted by Gaussian noise.
-% However, the Wiener filter does not work well for images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise.
-
-% Before the advance of Neural networks, the total variational (TV) method was one of the most popular methods for image denoising.
-% Total variational (TV) method is one of the most popular methods for image denoising.
-% The TV method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
-
-% The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
-% By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image \cite{RUDIN1992259}.
-
-% The TV method is able to denoise images that are corrupted by non-Gaussian noise, such as salt-and-pepper noise, and is able to produce high-quality denoised images \cite{rudin1992nonlinear}.
-
-
-% Here we combine the traditional TV method with the U-Net to produce a more efficient method for image denoising.
-
-
 \section{Mathematical Formulation}
 
 
 \subsection{Total Variation Denoising}
 
-% The total variation (TV) method is a method for image denoising that is based on the principle of minimising the total variation of the image.
-% The total variation of an image is a measure of the amount of variation in the intensity of the image.
-% The TV approach works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
-
-% The TV method is based on the idea that images that are smooth have a small total variation, while images that are noisy have a large total variation.
-% By minimising the total variation of the image, the TV method is able to remove the noise from the image and produce a smoother image.
-
-% For a image $I \in \mathbb{R}^{w \times h}$,  $w, h \in \mathbb{N}$, we can represent the matrix $I$ with a vector $\mathbf{x} \in \mathbb{R}^n$ where $n = w \times h$.
 
 Given an object to be imaged $\mathbf{x}_{\text{true}} \in \mathbb{R}^{m \times n}$, we can represent a noisy image $\mathbf{z} \in \mathbb{R}^{m \times n}$ as:
 
-% Denoising problems can be described as 
 
 \begin{equation}
   \mathbf{z} = \mathbf{x}_{\text{true}} + \mathbf{e}
 \end{equation}
   
 where 
-% $\mathbf{x}_{\text{true}} \in \mathbb{R}^{m \times n}$ is 
-% the object to be imaged, 
-% the "true"/"clean" image,
-% denoised image
 $\mathbf{e} \in \mathbb{R}^{m \times n}$ denotes some random noise component.
-% , and $\mathbf{z} \in \mathbb{R}^{m \times n}$ represents 
-% the measured data.
-% the noisy image.
 Our goal is to find $\mathbf{x}_{\text{denoised}} \in \mathbb{R}^{m \times n}$ which represents a good reconstruction of the true image.
-% recover $\mathbf{x}_{\text{true}}$ or at least a good enough reconstruction given $\mathbf{z}$.
 
 A common approach is to formulate the reconstruction as a minimisation problem:
 
-% The total variational denoising method works by finding the image that minimises the following objective function:
 
 \begin{equation}
-  % \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}(\mathbf{x})
   \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}_{\lambda}(\mathbf{x})
 \end{equation}
 
@@ -427,7 +309,6 @@ backward difference operator, shift operator, central difference operator and me
 % (\url{https://en.wikipedia.org/wiki/Total_variation_denoising#2D_signal_images})
 Let us focus on the forward difference operator. In particular, in the discrete case, given a matrix $\mathbf{x}$, $\nabla \mathbf{x}$ consists of two matrices, one for the vertical gradient $\nabla_{x} \mathbf{x}$ and one for the horizontal gradient $\nabla_{y} \mathbf{x}$.
 
-% This is the discrete case, and $\nabla \mathbf{x}$ can be the calculated in four different ways: forward, backward, central, and double-central (Sobel?). 
 
 \begin{equation}
   \nabla \mathbf{x} = \begin{bmatrix}
@@ -482,61 +363,27 @@ and the horizontal gradient is calculated as
 
 
 
-% \begin{equation}
-%   \nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x}, \frac{\partial \mathbf{x}}{\partial y} \right)
-% \end{equation}
-
-
-% Let
-
-% \begin{equation}
-% \nabla \mathbf{x} = \left( \frac{\partial \mathbf{x}}{\partial x_1}, \frac{\partial \mathbf{x}}{\partial x_2}, \ldots, \frac{\partial \mathbf{x}}{\partial x_n} \right)
-% \end{equation}
-
-% be the gradient of the image $\mathbf{x}$.
-% $\nabla \mathbf{x}$ is a vector of partial derivatives of $\mathbf{x}$ with respect to each variable. Each component of $\nabla \mathbf{x}$ is the partial derivative of the corresponding component of $\mathbf{x}$ with respect to the corresponding variable.
 
 The $\ell_1$ norm of the image gradient $\nabla \mathbf{x}$ is the sum of the $\ell_1$ norms of the two gradient components
-%  calculate the gradient in the horizontal and vertical directions separately, and then combine them to get the total variation of the image. 
 
 \begin{equation}
   \| \nabla \mathbf{x} \|_1 = \| \nabla_x \mathbf{x} \|_1 + \| \nabla_y \mathbf{x} \|_1
 \end{equation}
 
-% \begin{equation}
-%   TV(\mathbf{x}) = \|\nabla \mathbf{x}\|_1 = \sum_{z \in \mathcal{I}} \|\nabla \mathbf{x}(z)\|_1 := \sum_{z \in \mathcal{I}} \left( |\nabla_x \mathbf{x}(z)| + |\nabla_y \mathbf{x}(z)| \right),
-% \end{equation}
-
-
-% It is more convenient to use the notation $I$ to represent the image as a matrix so we can define the gradient.
-
-% For the forward gradient, the norm-1 of the vertical gradient is calculated as:
 where
 
 \begin{equation}
   \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |\mathbf{x}_{1, j} - \mathbf{x}_{m,j}|
 \end{equation}
 
-% and norm-1 of the horizontal gradient is calculated as:
 and
 
 \begin{equation}
   \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |\mathbf{x}_{i, 1} - \mathbf{x}_{i,n}|
 \end{equation}
 
-% \begin{equation}
-%   \| \nabla \mathbf{x} \|_1 = \text{TV}(I) = \sum_{i,j} |I_{i,j} - I_{i+1,j}| + |I_{i,j} - I_{i,j+1}|
-% \end{equation}
-
-% where $I_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $I$. 
-% % (Note: $I$ looks like the identity matrix. Is there a better notation?)
-
-% \begin{equation}
-%   \| \nabla \mathbf{x} \|_1 = \sum_{i,j} |\mathbf{x}_{i,j} - \mathbf{x}_{i+1,j}| + |\mathbf{x}_{i,j} - \mathbf{x}_{i,j+1}|
-% \end{equation}
 
 where $\mathbf{x}_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $\mathbf{x}$. 
-% Note that $\mathbf{x}_{i,j}$ can be a scalar for a black-and-white image or a vector of 3 values for a colour image.
 
 Returning to our current formulation of the regularisation term $\mathcal{R}_{\lambda}(\mathbf{x})$, we can rearrange the regularisation parameter $\lambda$ as follows
 
@@ -547,25 +394,9 @@ Returning to our current formulation of the regularisation term $\mathcal{R}_{\l
     = \| \lambda \nabla_x \mathbf{x} \|_1 + \| \lambda \nabla_y \mathbf{x} \|_1
 \end{equation}
 
-% % Write a aligned equation
-% \begin{equation}
-%   \begin{aligned}
-%     \mathcal{R}(\mathbf{x}) 
-%     &= \lambda \| \nabla \mathbf{x} \|_1 \\
-%     &= \| \lambda \nabla \mathbf{x} \|_1 \\
-%     &= \text{TV}(\lambda I) \\
-%     &= \sum_{i,j} |\lambda I_{i,j} - \lambda I_{i+1,j}| + |\lambda I_{i,j} - \lambda I_{i,j+1}|
-%   \end{aligned}
-% \end{equation}
-
-% The regularisation parameter does not need to be a scalar.
-% Each pixel in the image can have its own regularisation parameter.
 Since the gradient is multiplied by the regularisation parameter, high $\lambda$ values lead to reconstructions that lower the discrepancy value, which may lead to over-smoothing areas where there are important details. Conversely, low values of $\lambda$ 
 may lead to reconstructions that preserve important details but do not remove noise effectively in smooth areas.
-% could  may lead will penalise areas with high variation, typically areas with more details, while lower $\lambda$ values prioritise detail preservation over noise reduction.
 Using a single $\lambda$ value affects all regions of the image equally.
-% , which is suboptimal. 
-% It would be better to
 A more flexible approach is to
 apply stronger regularisation to smooth regions and weak regularisation to detailed regions to preserve image details.
 We can do this by swapping the scalar $\lambda$ with a regularisation parameter map $\mathbf{\Lambda}$,
@@ -587,12 +418,6 @@ Here we will assume $\mathbf{\Lambda}^{(x)} = \mathbf{\Lambda}^{(y)}$ and denote
 \end{equation}
 
 This gives us a new regularisation term that can be written as
-% $\in \mathbb{R}^{m \times n}$, 
-% where each element of $\mathbf{\Lambda}$ is a regularisation parameter for the corresponding pixel in the image $\mathbf{x}$.
-
-
-
-% $\lambda$, but can be a diagonal matrix $\mathbf{\Lambda} \in \mathbb{R}^{n}$.
 
 \begin{equation}
   \mathcal{R}_{\mathbf{\Lambda}}(\mathbf{x}) = \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
@@ -600,7 +425,6 @@ This gives us a new regularisation term that can be written as
 \end{equation}
 
 where $\circ$ denotes the Hadamard or element-wise product.
-% We will refer to $\mathbf{\Lambda}$ as the regularisation parameter map.
 
 
 

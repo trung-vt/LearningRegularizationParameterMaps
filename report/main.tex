@@ -499,57 +499,92 @@ The number of iterations $T$ is a hyperparameter that we can choose for the trai
 
 % HOWEVER, note that in the code, $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma  \times (\bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
 
-% \subsection{Objective}
 
 
-% One of the most widely applied image denoising methods is the so-called Total Variation (TV) regularisation \cite{kofler2023learning}.
+To derive the corresponding dual problem of the given nonlinear primal problem:
 
-% Formally, given the loss function
-% \vspace{-3pt}
-% $$ L(\mathbf{z}, \mathbf{x}) = \frac{1}{2} \| \mathbf{x} - \mathbf{z} \|_2^2 + \text{TV}(\mathbf{x}), $$
+\begin{equation}
+\min_{x \in X} F(Kx) + G(x),
+\end{equation}
 
-% our objective is to find $\hat{\mathbf{x}}$ such that
-% $$ \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} L(\mathbf{z}, \mathbf{x}) $$
-% where $\mathbf{z}$ is the input, presumably noisy, image and $\mathbf{x}$ represent the "clean" image we are looking for. We treat images as vectors, $\mathbf{x}, \mathbf{z} \in \mathbb{R}^{n^2}$, where $n$ is the height of the image, assuming the image is square. In this project, we use $n = 512$.
+we can use the convex optimization framework, particularly the Fenchel duality approach. Here’s the process to derive the dual problem:
 
+Primal Problem:
+\begin{equation}
+\min_{x \in X} F(Kx) + G(x)
+\end{equation}
 
-% Here, $\nabla \mathbf{x}$ represents the spatial gradient, i.e., the difference between adjacent pixels. We use the forward gradient, which calculates the difference between the current pixel and the pixels in the next row and next column.
+\section*{Step-by-Step Dual Derivation}
 
+\begin{enumerate}
+  \item \textbf{Introduce a new variable} \( y \) to replace \( Kx \):
+  \begin{equation}
+  \min_{x \in X, y = Kx} F(y) + G(x)
+  \end{equation}
 
-% The problem with TV method is that it is not clear how to choose the regularisation parameter $\lambda$.
+  \item \textbf{Write the Lagrangian}:
+  \begin{equation}
+  \mathcal{L}(x, y, \lambda) = F(y) + G(x) + \lambda^T (y - Kx)
+  \end{equation}
+  where \( \lambda \) is the Lagrange multiplier (dual variable).
 
-% After training with many examples, the U-Net can learn to predict the regularisation parameter $\lambda$ that produces the best denoised image for any particular noisy image.
+  \item \textbf{Form the Dual Function} by minimizing the Lagrangian over \( x \) and \( y \):
+  \begin{equation}
+  g(\lambda) = \inf_{x \in X, y} \mathcal{L}(x, y, \lambda)
+  \end{equation}
+
+  \item \textbf{Separate the minimization} over \( y \) and \( x \):
+  \begin{equation}
+  g(\lambda) = \inf_{y} \left[ F(y) + \lambda^T y \right] + \inf_{x \in X} \left[ G(x) - \lambda^T Kx \right]
+  \end{equation}
+
+  \item \textbf{Identify the Fenchel conjugates} of \( F \) and \( G \):
+  \begin{equation}
+  F^*(\lambda) = \sup_{y} \left[ \lambda^T y - F(y) \right]
+  \end{equation}
+
+  \begin{equation}
+  G^*(\lambda) = \sup_{x \in X} \left[ \lambda^T Kx - G(x) \right]
+  \end{equation}
+
+  \item \textbf{Express the dual function} using these conjugates:
+  \begin{equation}
+  g(\lambda) = -F^*(-\lambda) - G^*(K^T \lambda)
+  \end{equation}
+
+  \item \textbf{Form the Dual Problem}:
+  \begin{equation}
+  \max_{\lambda} g(\lambda) = \max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+  \end{equation}
+\end{enumerate}
+
+Dual Problem:
+
+\begin{equation}
+\max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+\end{equation}
+
+In summary, the corresponding dual problem of the given nonlinear primal problem is:
+
+\begin{equation}
+\max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+\end{equation}
+
+where \( F^*(-\lambda) \) and \( G^*(K^T \lambda) \) are the Fenchel conjugates of \( F \) and \( G \) respectively.
+
 
 
 The challenge lies in finding the regularisation parameter map $\mathbf{\Lambda}$.  
 Narrowing down the search space is challenging, as we potentially have $d^{m n}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible. The U-Net can be used to find the 
-% regularisation parameter $\lambda$ 
 regularisation parameter map $\mathbf{\Lambda}$
 more efficiently.
-% However, this approach is not perfect, as it might leave noise in detailed areas.
-The search can be done more efficiently by employing neural network models that are designed for image processing. In this dissertation we will use the U-Net model, which is a specific design of a convolutional neural network.
-% U-Net to help us find the regularisation parameter map $\mathbf{\Lambda}$ 
-% that the later form of the regularisation term.
-% The U-Net will be used to find the regularisation parameter map $\mathbf{\Lambda}$ 
-% given any noisy image. 
-% We will compare the results to the best-case scenario if we were to use a scalar regularisation parameter $\lambda$.
-
-% The performance of Primal-Dual Hybrid Gradient (PDHG) methods can be improved by assigning suitable regularisation parameters to regions based on their characteristics. However, 
-
-% To address this, we can apply image segmentation. 
-% Effective image segmentation helps determine appropriate $\lambda$ values for different regions. 
-% A good network for learning image segmentation is U-Net \cite{ronneberger2015unet}.
+The search can be done more efficiently by employing neural network models that are designed for image processing. 
+In this dissertation we will use the U-Net model, which is a specific design of a convolutional neural network.
 
 % U-Net assists in learning these regularisation parameters due to its proficiency in image segmentation. 
 
 % Question: Idealy, if we pass in a clean image to U-Net then all the regularisation parameters should be zero, right?
 
-
-% The total variational denoising method works by finding the image that has the smallest total variation and is closest to the noisy image in terms of the mean squared error.
-% The total variation of an image is defined as the sum of the absolute differences between the intensity values of neighbouring pixels.
-
-
-% where $\lambda$ is a regularisation parameter that controls the trade-off between the total variation of the image and the mean squared error between the denoised image $I$ and the noisy image $I_{\text{noisy}}$.
 
 \section{Neural Network Architecture}
 

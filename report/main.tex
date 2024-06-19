@@ -461,7 +461,7 @@ we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) alg
 \begin{algorithm}[H]
 \caption{PDHG algorithm for image denoising with fixed regularisation parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning})}
 \begin{algorithmic}[1]
-\STATE \textbf{Input:} $L = \| [\mathbf{I}, \nabla]^\text{T} \|$, $\tau = 1/L$, $\sigma = 1/L$, $\theta = 1$, noisy image $\mathbf{x}_0$
+\STATE \textbf{Input:} $L = \| [\mathbf{I}, \nabla]^\text{T} \|$, $\tau \lesssim 1/L$, $\sigma \lesssim 1/L$, $\theta \lesssim 1$, noisy image $\mathbf{x}_0$
 \STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
 % \STATE $\mathbf{y} = \mathbf{x}_0$
 \STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
@@ -478,7 +478,11 @@ we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) alg
 \end{algorithmic}
 \end{algorithm}
 
-where $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
+where 
+$\lesssim$ means
+"slightly less than",
+% less than but almost equal to 
+$\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
 Note that this algorithm can also be applied to the single scalar $\lambda$ case by simply setting all values of $\mathbf{\Lambda}$ to $\lambda$.
 
 The choice of $L$ is taken from \cite{Sidky2012}.

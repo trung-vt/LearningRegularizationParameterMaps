@@ -186,3 +186,6 @@ chest_xray/results/
 *.fls
 *.out
 *.bcf
+
+
+.DS_Store

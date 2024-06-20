@@ -62,23 +62,37 @@ def get_variable_noise(sigma_min, sigma_max, manual_seed=None):
     return sigma_min + torch.rand(1) * (sigma_max - sigma_min)
 
 
-def add_noise(xf: torch.tensor, sigma, manual_seed=None) -> torch.tensor:
+def add_noise(x_original: torch.tensor, sigma, manual_seed=None) -> torch.tensor:
+    """
+    Add data independent Gaussian noise to the image.
+    The noise follows a normal distribution with mean 0 and standard deviation sigma.
+    If manual_seed is not None, set the random seed to manual_seed for reproducibility.
+    
+    Parameters
+    ----------
+    
+    """
     if manual_seed is not None: torch.manual_seed(manual_seed)
         
-    std = torch.std(xf)
-    mu = torch.mean(xf)
+    # std = torch.std(x_original)
+    # mu = torch.mean(x_original)
 
-    x_centred = (xf  - mu) / std
+    # x_centred = (x_original  - mu) / std
     
-    z = torch.randn(xf.shape, dtype = xf.dtype)
+    z = torch.randn(x_original.shape, dtype = x_original.dtype) # Standard normal (0, 1)
     
-    y = z * sigma
+    noise = z * sigma # Normal (0, sigma^2) --> noise (data independent)
 
-    x_centred += y
+    # x_centred += noise
 
-    xnoise = std * x_centred + mu
-    # xnoise = xf + x_centred
+    # xnoise = std * x_centred + mu # add data dependent noise to the original image???
+    # xnoise = xf + std * y         # equivalent to above
+    
+    x_noisy = x_original + noise # add (data independent) noise to the original image
+    
+    x_noisy = torch.clamp(x_noisy, 0, 1) # clip to [0, 1]
 
-    del std, mu, x_centred
+    # del std, mu, x_centred
+    del z, noise
 
-    return xnoise
+    return x_noisy

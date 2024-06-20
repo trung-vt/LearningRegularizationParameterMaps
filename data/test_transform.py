@@ -32,11 +32,20 @@ class TestTransformMethods(unittest.TestCase):
         img_noisy = torch.clamp(img_noisy, 0, 255)
         img_noisy = img_noisy.squeeze().numpy().astype(np.uint8)
         print(f"img_noisy = \n{img_noisy}\n")
+        
+        # ???
+        # assert np.allclose(img_noisy, np.array([
+        #     [ 1,  2,  3],
+        #     [ 4,  3,  5],
+        #     [ 9,  7,  9],
+        # ])), f"Expected img_noisy = [[ 1,  2,  3], [ 4, 2, 5], [12, 6, 10]], but got {img_noisy}"
+        
+        # Data independent noise
         assert np.allclose(img_noisy, np.array([
-            [ 1,  2,  3],
-            [ 4,  3,  5],
-            [ 9,  7,  9],
-        ])), f"Expected img_noisy = [[ 1,  2,  3], [ 4, 2, 5], [12, 6, 10]], but got {img_noisy}"
+            [ 38,  16,  29],
+            [ 29,   0,   0],
+            [255,   0,  60],
+        ])), f"Expected img_noisy = [[ 38,  16,  29], [ 29, 0, 0], [255, 0, 60]], but got {img_noisy}"
         
     def test_add_noise_0(self):
         manual_seed = 42
@@ -64,11 +73,10 @@ class TestTransformMethods(unittest.TestCase):
         img_noisy = img_noisy.squeeze().numpy().astype(np.uint8)
         print(f"img_noisy = \n{img_noisy}\n")
         assert np.allclose(img_noisy, np.array([
-            [ 1,  2,  3],
-            [ 4,  3,  5],
-            [ 9,  7,  9],
-        ])), f"Expected img_noisy = [[ 1,  2,  3], [ 4, 2, 5], [12, 6, 10]], but got {img_noisy}"
-        
+            [ 37,  14,  26],
+            [ 25,   0,   0],
+            [248,   0,  51],
+        ])), f"Expected img_noisy = [[ 37,  14,  26], [ 25, 0, 0], [248, 0, 51]], but got {img_noisy}"
         
         
 def test_convert_greyscale():

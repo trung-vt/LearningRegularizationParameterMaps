@@ -66,6 +66,7 @@ class TurtleDataGenerator:
         #         future.result()  # This will raise exceptions if any occurred
         
         print(f"Multiprocessing {len(subfolders)} subfolders in {self.num_threads} threads")
+        # https://stackoverflow.com/questions/2846653/how-do-i-use-threading-in-python
         pool = ThreadPool(self.num_threads)
         results = pool.map(self.process_subfolder, subfolders)
         

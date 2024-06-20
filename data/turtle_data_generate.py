@@ -134,8 +134,8 @@ class TurtleDataGenerator:
                 img_greyscale.save(output_image_path_greyscale)
             for i, img_noisy in enumerate(images_noisy):
                 output_image_path_noisy = f'{output_subfolder_greyscale_noisy[i]}/{image}'
-                img_noisy.save(output_image_path_noisy)
-                # if not os.path.exists(output_image_path_noisy):
-                #     img_noisy.save(output_image_path_noisy)
+                # img_noisy.save(output_image_path_noisy)
+                if not os.path.exists(output_image_path_noisy):
+                    img_noisy.save(output_image_path_noisy)
         
         self.count += 1

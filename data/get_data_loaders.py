@@ -1,8 +1,8 @@
 import torch
 
-def get_data_loaders(config, get_datasets):
+def get_data_loaders(config, datasets):
 
-    dataset_train, dataset_valid, dataset_test = get_datasets(config)
+    dataset_train, dataset_valid, dataset_test = datasets
     batch_size = config["batch_size"]
     device = config["device"]
     random_seed = config["random_seed"]

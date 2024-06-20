@@ -3,10 +3,11 @@ from torch.utils.data import Dataset
 import numpy as np
 
 from data.transform import crop_and_resize, add_noise
+from data.chest_xray_load_images import load_images_chest_xray
 
-# Code taken from https://www.github.com/koflera/LearningRegularizationParameterMaps
+# Code adapted from https://www.github.com/koflera/LearningRegularizationParameterMaps
 
-class DynamicImageStaticDenoisingDataset(Dataset):
+class ChestXrayDataset(Dataset):
 	
 	def __init__(
 		self, 

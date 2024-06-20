@@ -96,3 +96,12 @@ def add_noise(x_original: torch.tensor, sigma, manual_seed=None) -> torch.tensor
     del z, noise
 
     return x_noisy
+
+
+# def add_noise_PIL(image: Image, sigma, manual_seed=None) -> Image:
+#     image_tensor = torch.tensor(np.asarray(image), dtype=torch.float) / 255
+#     image_noisy_tensor = add_noise(image_tensor, sigma, manual_seed)
+#     image_noisy_tensor *= 255
+#     image_noisy_tensor = torch.clamp(image_noisy_tensor, 0, 255)
+#     image_noisy = Image.fromarray(image_noisy_tensor.numpy().astype(np.uint8))
+#     return image_noisy

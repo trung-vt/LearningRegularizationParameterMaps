@@ -40,7 +40,12 @@ class StaticImagePrimalDualNN(nn.Module):
 
         super(StaticImagePrimalDualNN, self).__init__()
         self.device = device
-        self.pdhg = PDHG()
+        self.op_norm_AHA = torch.sqrt(torch.tensor(1.0))
+        self.op_norm_GHG = torch.sqrt(torch.tensor(12.0)) # TODO: Why sqrt(12.0)???
+        self.pdhg = PDHG(
+            op_norm_AHA=self.op_norm_AHA,
+            op_norm_GHG=self.op_norm_GHG, 
+        )
 
         # gradient operators and clipping function
         dim = 3  # TODO: What does this 3 mean?? Does this include the time dimension?
@@ -57,6 +62,8 @@ class StaticImagePrimalDualNN(nn.Module):
         else:
             raise ValueError(f"Unknown mode: {mode}")
 
+        # number of terations
+        self.T = T
         self.mode = mode
 
         # distinguish between training and test phase;

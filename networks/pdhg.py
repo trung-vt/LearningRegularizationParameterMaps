@@ -7,13 +7,17 @@ from .prox_ops import ClipAct
 # Code taken from https://www.github.com/koflera/LearningRegularizationParameterMaps
 
 class PDHG(nn.Module):
-    def __init__(self, dim=3):
+    def __init__(
+            self, dim=3,
+            op_norm_AHA=torch.sqrt(torch.tensor(1.0)),
+            op_norm_GHG=torch.sqrt(torch.tensor(12.0)), # TODO: Why sqrt(12.0)???
+        ):
         super(PDHG, self).__init__()
         self.GradOps = GradOperators(dim, mode="forward", padmode="circular")
 
         # operator norms
-        self.op_norm_AHA = torch.sqrt(torch.tensor(1.0))
-        self.op_norm_GHG = torch.sqrt(torch.tensor(12.0)) # TODO: Why sqrt(12.0)???
+        self.op_norm_AHA = op_norm_AHA
+        self.op_norm_GHG = op_norm_GHG
         # operator norm of K = [A, \nabla]
         # https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf,
         # see page 3083. NOTE: This does not explain the choice of 12.0 for the operator norm of GHG

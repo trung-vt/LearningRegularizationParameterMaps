@@ -69,10 +69,15 @@ def add_noise(xf: torch.tensor, sigma, manual_seed=None) -> torch.tensor:
     mu = torch.mean(xf)
 
     x_centred = (xf  - mu) / std
+    
+    z = torch.randn(xf.shape, dtype = xf.dtype)
+    
+    y = z * sigma
 
-    x_centred += sigma * torch.randn(xf.shape, dtype = xf.dtype)
+    x_centred += y
 
     xnoise = std * x_centred + mu
+    # xnoise = xf + x_centred
 
     del std, mu, x_centred
 

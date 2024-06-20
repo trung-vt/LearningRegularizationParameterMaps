@@ -57,11 +57,14 @@ def convert_to_tensor_4D(image_numpy):
     return xf
 
 
-def get_variable_noise(sigma_min, sigma_max):
+def get_variable_noise(sigma_min, sigma_max, manual_seed=None):
+    if manual_seed is not None: torch.manual_seed(manual_seed)
     return sigma_min + torch.rand(1) * (sigma_max - sigma_min)
 
 
-def add_noise(xf: torch.tensor, sigma) -> torch.tensor:
+def add_noise(xf: torch.tensor, sigma, manual_seed=None) -> torch.tensor:
+    if manual_seed is not None: torch.manual_seed(manual_seed)
+        
     std = torch.std(xf)
     mu = torch.mean(xf)
 

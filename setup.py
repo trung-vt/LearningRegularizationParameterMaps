@@ -6,7 +6,7 @@ setup(
    description='Learn regularisation parameter map for image reconstruction using deep learning.',
    author='trung-vt',
    author_email='trung.vuthanh24@gmail.com',
-   packages=['networks', 'data'],
+   packages=['networks', 'data', 'metrics', 'scripts'],
 #    packages=['learning_regularisation_parameter_map'], #same as name
 #    install_requires=['wheel', 'bar', 'greek'], #external packages as dependencies
    install_requires=['wheel', 'torch'], #external packages as dependencies

@@ -44,10 +44,10 @@ class EncodeBlock3d(nn.Module):
         assert downsampling_kernel == (len, len, 1), f"Expected a flat square kernel like {(len, len, 1)}, got {downsampling_kernel}"
         stride = (2, 2, 1) # Stride 2x2 to halve each side 
         padding = ((len-1)//2, (len-1)//2, 0) # Padding (len-1) // 2 to exactly halve each side 
-        if downsampling_mode == "max":
+        if downsampling_mode == "max_pool":
             self.pool = nn.MaxPool3d(
                 kernel_size=downsampling_kernel, stride=stride, padding=padding)
-        elif downsampling_mode == "avg":
+        elif downsampling_mode == "avg_pool":
             self.pool = nn.AvgPool3d(
                 kernel_size=downsampling_kernel, stride=stride, padding=padding)
         else:

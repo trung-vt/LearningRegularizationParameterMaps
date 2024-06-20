@@ -62,6 +62,9 @@ class GradOperators(torch.nn.Module):
             y = torch.view_as_complex(y.moveaxis(0, -1).contiguous())
         else:
             y = y.reshape(*x.shape[0 : -self.dim], self.dim, *x.shape[-self.dim :])
+
+        del x, xr, xp # Explicitly free up (GPU) memory to be safe
+
         return y
 
     def apply_GH(self, x):
@@ -80,9 +83,11 @@ class GradOperators(torch.nn.Module):
             y = torch.view_as_complex(y.moveaxis(0, -1).contiguous())
         else:
             y = y.reshape(*x.shape[: -self.dim - 1], *x.shape[-self.dim :])
+
+        del x, xr, xp # Explicitly free up (GPU) memory to be safe
+
         return y
     
-  
     def apply_GHG(self, x):
         if x.is_complex():
             xr = torch.view_as_real(x).moveaxis(-1, 0)
@@ -98,6 +103,9 @@ class GradOperators(torch.nn.Module):
             y = torch.view_as_complex(y.moveaxis(0, -1).contiguous())
         else:
             y = y.reshape(*x.shape)
+
+        del x, xr, xp, tmp # Explicitly free up (GPU) memory to be safe
+
         return y
 
     def forward(self, x, direction=1):
@@ -107,7 +115,6 @@ class GradOperators(torch.nn.Module):
             return self.apply_GH(x)
         else:
             return self.apply_GHG(x)
-
 
     @property
     def normGHG(self):

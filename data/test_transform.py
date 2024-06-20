@@ -1,8 +1,10 @@
 import unittest
 import numpy as np
 import torch
-from data.transform import crop_and_resize, convert_to_grayscale, convert_to_numpy, convert_to_tensor_4D, get_variable_noise, add_noise
 from PIL import Image
+import matplotlib.pyplot as plt
+
+from data.transform import crop_and_resize, convert_to_grayscale, convert_to_numpy, convert_to_tensor_4D, get_variable_noise, add_noise
 
 class TestTransformMethods(unittest.TestCase):
     def test_add_noise(self):
@@ -32,3 +34,25 @@ class TestTransformMethods(unittest.TestCase):
             [ 4,  3,  5],
             [ 9,  7,  9],
         ])), f"Expected img_noisy = [[ 1,  2,  3], [ 4, 2, 5], [12, 6, 10]], but got {img_noisy}"
+        
+        
+def test_convert_greyscale():
+    from data.chest_xray_load_images import load_images_chest_xray
+    CHEST_XRAY_BASE_DATA_PATH = "../data/chest_xray"
+    # for img in load_images_SIDD(["0065"], False):
+    for img in load_images_chest_xray(f"{CHEST_XRAY_BASE_DATA_PATH}/train/NORMAL", [0]):
+        img = convert_to_grayscale(img)
+        plt.imshow(img, cmap='gray') # cmap='gray' for proper display in black and white. It does not convert the image to grayscale.
+        
+        
+def test_crop_to_square_and_resize():
+    from data.chest_xray_load_images import load_images_chest_xray
+    CHEST_XRAY_BASE_DATA_PATH = "../data/chest_xray"
+    # for img in load_images_SIDD(["0083"], False):
+    for img in load_images_chest_xray(f"{CHEST_XRAY_BASE_DATA_PATH}/train/NORMAL", [0]):
+        plt.imshow(img, cmap='gray')
+        plt.show();
+        img = crop_and_resize(img, 120)
+        print(img.size)
+        plt.imshow(img, cmap='gray') # cmap='gray' for proper display in black and white. It does not convert the image to grayscale.
+        plt.show();

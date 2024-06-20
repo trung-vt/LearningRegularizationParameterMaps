@@ -2,62 +2,62 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .grad_ops import GradOperators
-from .prox_ops import ClipAct
-
+from .pdhg import PDHG
 
 class StaticImagePrimalDualNN(nn.Module):
     def __init__(
         self,
         T=128,
-        unet_cnn_block=None,
+        cnn_block=None,
         mode="lambda_cnn",
         up_bound=0,
         phase="training",
+        device="cuda",
     ):
+        """
+        StaticImagePrimalDualNN
+        
+        Parameters
+        ----------
+        T : int
+            Number of iterations.
+
+        cnn_block : nn.Module
+            CNN block to estimate the lambda regularization map.
+
+        mode : str
+            Mode. Default is "lambda_cnn".
+
+        up_bound : int
+            Upper bound. Default is 0.
+
+        phase : str    
+            Phase. "training" or "testing". Default is "training".
+
+        device : str
+            Device. Default is "cuda".
+        """
+
         super(StaticImagePrimalDualNN, self).__init__()
+        self.device = device
+        self.pdhg = PDHG()
 
         # gradient operators and clipping function
-        # dim = 3  # TODO: What does this 3 mean?? Does this include the time dimension?
-        dim = 2 # TODO: Will this limit to 2 spatial dimensions?
-        self.GradOps = GradOperators(dim, mode="forward", padmode="circular")
+        dim = 3  # TODO: What does this 3 mean?? Does this include the time dimension?
+        # dim = 2 # TODO: Will this limit to 2 spatial dimensions?
 
-        # operator norms
-        self.op_norm_AHA = torch.sqrt(torch.tensor(1.0))
-        self.op_norm_GHG = torch.sqrt(torch.tensor(12.0))
-        # operator norm of K = [A, \nabla]
-        # https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf,
-        # see page 3083
-        self.L = torch.sqrt(self.op_norm_AHA**2 + self.op_norm_GHG**2)
 
-        # function for projecting
-        self.ClipAct = ClipAct()
 
         if mode == "lambda_cnn":
             # the CNN-block to estimate the lambda regularization map
             # must be a CNN yielding a two-channeld output, i.e.
             # one map for lambda_cnn_xy and one map for lambda_cnn_t
-            self.unet_cnn = unet_cnn_block
+            self.cnn = cnn_block    # NOTE: This is actually the UNET!!! (At least in this project)
             self.up_bound = torch.tensor(up_bound)
         else:
             raise ValueError(f"Unknown mode: {mode}")
 
-        # number of terations
-        self.T = T
         self.mode = mode
-
-        # constants depending on the operators
-        self.tau = nn.Parameter(
-            torch.tensor(10.0), requires_grad=True
-        )  # starting value approximately  1/L
-        self.sigma = nn.Parameter(
-            torch.tensor(10.0), requires_grad=True
-        )  # starting value approximately  1/L
-
-        # theta should be in \in [0,1]
-        self.theta = nn.Parameter(
-            torch.tensor(10.0), requires_grad=True
-        )  # starting value approximately  1
 
         # distinguish between training and test phase;
         # during training, the input is padded using "reflect" padding, because
@@ -73,7 +73,10 @@ class StaticImagePrimalDualNN(nn.Module):
         # seems to be important in order not to create "holes" in the
         # lambda_maps in t-direction
         npad_xy = 4
-        npad_t = 8
+        # npad_t = 8
+        npad_t = 0 # TODO: Time dimension should not be necessary for single image input.
+        # I changed the npad_t to 0 so that I can run on single image input without change the 3D type config. It seems that the number of frames must be greater than npad_t?
+
         pad = (npad_t, npad_t, npad_xy, npad_xy, npad_xy, npad_xy)
 
         if self.phase == "training":
@@ -87,7 +90,7 @@ class StaticImagePrimalDualNN(nn.Module):
             x = F.pad(x, pad_circ, mode="circular")
 
         # estimate parameter map
-        lambda_cnn = self.unet_cnn(x) # NOTE: The cnn is actually the UNET block!!! (At least in this project)
+        lambda_cnn = self.cnn(x) # NOTE: The cnn is actually the UNET block!!! (At least in this project)
 
         # crop
         neg_pad = tuple([-pad[k] for k in range(len(pad))])
@@ -103,56 +106,28 @@ class StaticImagePrimalDualNN(nn.Module):
         else:
             lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
 
+        del x, npad_xy, npad_t, pad, neg_pad # Explicitly free up (GPU) memory to be safe
+
         return lambda_cnn
 
-    def forward(self, x, lambda_map=None):
-        # initial reconstruction
-        # mb, _, Nx, Ny, Nt = x.shape
-        mb, _, Nx, Ny = x.shape   # TODO: Nt is no longer needed for static image denoising
-        device = x.device
 
-        # starting values
-        xbar = x.clone()
-        x0 = x.clone()
-        xnoisy = x.clone()
-
-        # dual variable
-        p = x.clone()
-        q = torch.zeros(
-            mb, 
-            # 3, # TODO: What does this 3 mean?? Does this include the time dimension?
-            2, # TODO: Will this limit to 2 spatial xy dimensions?
-            Nx, Ny, 
-            # Nt,  # TODO: No more time dimension for static image denoising!!!
-            dtype=x.dtype).to(device)
-
-        # sigma, tau, theta
-        sigma = (1 / self.L) * torch.sigmoid(self.sigma)  # \in (0,1/L)
-        tau = (1 / self.L) * torch.sigmoid(self.tau)  # \in (0,1/L)
-        theta = torch.sigmoid(self.theta)  # \in (0,1)
-
-        if self.mode == "lambda_cnn":
-            if lambda_map is None:
-                # estimate lambda reg from the image
-                lambda_reg = self.get_lambda_cnn(x)
-            else:
-                lambda_reg = lambda_map
+    def forward(
+            self, x, lambda_map=None, 
+            # lambda_reg_container=None,
+    ):
+        if lambda_map is None:
+            # estimate lambda reg from the image
+            lambda_reg = self.get_lambda_cnn(x)
         else:
-            raise ValueError(f"Unknown mode: {self.mode}")
+            lambda_reg = lambda_map
 
-        # Algorithm 2 - Unrolled PDHG algorithm (page 18)
-        # TODO: In the paper, L is one of the inputs but not used anywhere in the pseudo code???
-        for kT in range(self.T):
-            # update p
-            p =  (p + sigma * (xbar - xnoisy) ) / (1. + sigma)
-            # update q
-            q = self.ClipAct(q + sigma * self.GradOps.apply_G(xbar), lambda_reg)
+        # if lambda_reg_container is not None:
+        #     assert type(lambda_reg_container) == list, f"lambda_reg_container should be a list, not {type(lambda_reg_container)}"
+        #     lambda_reg_container.append(lambda_reg) # For comparison
 
-            x1 = x0 - tau * p - tau * self.GradOps.apply_GH(q)
+        x.to(self.device)
+        x1 = self.pdhg(x, lambda_reg, self.T)
 
-            if kT != self.T - 1:
-                # update xbar
-                xbar = x1 + theta * (x1 - x0)
-                x0 = x1
+        del lambda_reg, x # Explicitly free up (GPU) memory to be safe
 
         return x1

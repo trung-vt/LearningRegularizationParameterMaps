@@ -452,8 +452,16 @@ where
 % less than but almost equal to 
 $\text{sigmoid}(y) = 1 / (1 + \exp(-y))$ is the sigmoid function,
 $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
-Here $\text{sigmoid}(10) = 0.9999546$ is used to maintain the condition $L^2 \sigma \tau < 1$ and $\theta < 1$ to ensure convergence of the algorithm. 
-Note that this algorithm can also be applied to the single scalar $\lambda$ case by simply setting all values of $\mathbf{\Lambda}$ to $\lambda$.
+
+It has been proven that, if $L^2 \sigma \tau < 1$ then the PDHG algorithm converges to the solution of the primal dual problem \cite{chambolle_pock_2011}.
+However, in practice, the algorithm always converges even if $L^2 \sigma \tau = 1$ \cite{sidky_2012}.
+Nevertheless, here $\text{sigmoid}(10) = 0.9999546$ is used to scale the parameters to satisfy the condition $L^2 \sigma \tau < 1$ as well as $\theta < 1$, ensuring convergence.
+Since $\sigma$ and $\tau$ are the step sizes, choosing them to be as large as possible will help speed up the convergence of the algorithm.
+
+Note that the choice of $L = \sqrt{13}$ is somewhat arbitrary.
+We can experiment with different values of $L$ in the future.
+
+This algorithm can also be applied to the single scalar $\lambda$ case by simply setting all values of $\mathbf{\Lambda}$ to $\lambda$.
 
 % The choice of $L$ is taken from \cite{Sidky2012}.
 % \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
@@ -477,11 +485,6 @@ However, beyond a certain point, the performance improvement is marginal.
 \textit{
 (TODO: Understand what $L$ is. Do we need to include $\theta = 1$? Can we write $\bar{\mathbf{x}}_{k+1} = 2 \mathbf{x}_{k+1} - \mathbf{x}_k$? In the code, initially $\mathbf{p}_0 = \mathbf{x}_0$?)
 }
-
-In the Chambolle and Pock (\url{DOI 10.1007/s10851-010-0251-1}) paper, it is proved that if $L^2 \sigma \tau < 1$ then the PDHG algorithm converges to the solution of the primal dual problem.
-However, in \url{https://arxiv.org/abs/1111.5632} it was shown that in practice, the algorithm always converges even if $L^2 \sigma \tau \eq 1$.
-Since $\sigma$ and $\tau$ are step sizes, choosing them to be large can speed up the convergence of the algorithm.
-Still, to be safe, in our implementation we multiply with sigmoid(10) which is about 0.9999546 so that the condition is always satisfied.
 
 
 % (For comparison with the original version in \cite{kofler2023learning}:

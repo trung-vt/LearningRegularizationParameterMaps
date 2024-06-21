@@ -93,7 +93,18 @@
 
 % Set page size and margins
 % Replace `letterpaper' with `a4paper' for UK/EU standard size
-\usepackage[letterpaper,top=2cm,bottom=2cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
+\usepackage[
+  letterpaper,
+  % top=2cm,
+  % bottom=2cm,
+  % left=2cm,
+  % right=2cm,
+  top=3cm,
+  bottom=3cm,
+  left=3cm,
+  right=3cm,
+  marginparwidth=1.75cm
+]{geometry}
 
 % Useful packages
 \usepackage{amsmath}
@@ -849,20 +860,6 @@ We can treat the PDHG solver as the final hidden layer in our network.
 The result of the loss function $\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x_{\text{denoised}}})$ 
 is then used for backpropagation to train the parameters $\Theta$.
 
-% For our implementation, we consider $256 \times 256$.
-
-
-
-% The U-Net was implemented using the following architecture:
-
-% \begin{enumerate}
-%     \item The U-Net was made up of a series of convolutional layers that downsampled the image by a factor of 2.
-%     \item The U-Net was made up of a series of transposed convolutional layers that upsampled the image by a factor of 2.
-%     \item The U-Net was trained on a large dataset of images and their corresponding segmentation masks.
-%     \item The U-Net was able to learn to segment images by training on the dataset.
-%     \item The U-Net was able to produce segmentation masks that were close to the ground truth masks.
-%     \item The U-Net was able to generalise to new images and produce accurate segmentation masks.
-% \end{enumerate}
 
 
 % \begin{figure}[ht]
@@ -954,11 +951,6 @@ is then used for backpropagation to train the parameters $\Theta$.
 \label{fig:my_unet}
 \end{figure}
 
-% In our model, the Encoder consists of three encoding blocks. 
-% First we increase the number of channels to 32.
-% The first block the double the number of channels to 
-% 64 feature maps. 
-% The second and third blocks increase the number of channels further to 128 and 256, respectively.
 
 % Conversely, the Decoder incorporates two decoding blocks, one fewer than the Encoder. This configuration deviates from some common implementations where the number of encoding and decoding blocks are equal, and a "bottle-neck" comprising two additional convolutional layers is placed between them. In our model, we treat the final block of the Encoder as this bottle-neck. The first decoding block in the Decoder reduces the number of channels back to 32, and the second further reduces them to 16.
 
@@ -968,14 +960,13 @@ is then used for backpropagation to train the parameters $\Theta$.
 % The final stage in our architecture employs a convolutional layer to convert the 16-channel output from the last decoding block into a 2-channel output, thus producing two matrices as the ultimate output of our model.
 
 
-
 \section{Experimental Set-Up}
 
 % We used two datasets for the experiments: the Chest X-ray dataset and the SIDD dataset.
 
 % \subsection{Chest X-ray Dataset}
 
-We used the Chest X-Ray Images (Pneumonia) dataset which was downloaded from \cite{kermany2018large}.
+We used the Chest X-Ray Images (Pneumonia) dataset which was downloaded from \cite{kermany2018large} and the Turtle ID data set \cite{Adam_2024_WACV}.
 % \url{https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia}. 
 This is a dataset for binary classification of normal and pneumonia chest X-ray images. 
 The dataset consists of 5,863 X-Ray images (JPEG) and 2 categories (Pneumonia/Normal).
@@ -987,7 +978,17 @@ We picked 200 images for the training dataset for training and 100 images from t
 We used only images which were classified as normal.
 
 For consistent input, we cropped the images to squares and then resized them to $256 \times 256$.
-For each image we generated a random value of $\sigma$ uniformly in the range from 0.1 to 0.5, and noised the image with Gaussian noise with mean 0 and the corresponding standard deviation $\sigma$.
+The images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively.
+The pixel values are originally integers in the range from 0 to 255, so we normalised to the range from 0 to 1 by dividing by 255.
+During training, for each image, we generated a random value of $\sigma$ uniformly in the range from 0 to 0.3, and noised the image with Gaussian noise with mean 0 and the corresponding standard deviation $\sigma$.
+In particular, we use the common data-independent Gaussian noise addition
+\begin{equation}
+    \mathbf{x}_{\text{noisy}} = \mathbf{x}_{\text{true}} + \sigma \mathbf{n}
+\end{equation}
+where the noise $\mathbf{n}$ is drawn from a standard Gaussian distribution with mean 0 and standard deviation 1.
+Examples of noisy images with different $\sigma$ values:
+
+TODO: Add noisy images with different $\sigma$ values.
 
 % \subsection{SIDD Dataset}
 
@@ -1028,30 +1029,6 @@ It is worth noting that, for the implementation of the U-Net,
 we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library \cite{PyTorch}.
 The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
 The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
-
-%     "in_channels": 1,
-%     "out_channels": 2,
-%     "init_filters": 32,
-%     "n_blocks": 3,
-%     "activation": "LeakyReLU",
-%     "downsampling_kernel": (2, 2, 1),
-%     "downsampling_mode": "max",
-%     "upsampling_kernel": (2, 2, 1),
-%     "upsampling_mode": "linear_interpolation",
-
-%     "optimizer": "Adam",
-%     "learning_rate": 1e-4,
-%     "loss_function": "MSELoss",
-
-%     "up_bound": 0,
-    
-%     "device": "cuda:0",
-
-%     "wandb_mode": "online",
-%     "save_epoch_wandb": 10_000,
-%     "save_epoch_local": 10,
-%     "save_dir": "tmp_2",
-
 
 
 
@@ -1324,157 +1301,6 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 % The testing data consisted of 1280 noisy image blocks different from the validation block but following the same format
 % as the validation data. Image metadata files were also provided for the 40 images from which the validation/testing
 % data was extracted.
-
-
-
-
-
-% \subsubsection{Other experiment B (ruby-dust-28)}:
-
-% \url{https://wandb.ai/wof/chest_xray/runs/0ntx5gs4}
-
-% \begin{minted}[frame=single,
-%                framesep=3mm,
-%                linenos=true,
-%                xleftmargin=21pt,
-%                fontsize=\small,
-%                tabsize=4]{Json}
-
-% {
-%   "T": {
-%     "value": 32
-%   },
-%   "epochs": {
-%     "value": 10000
-%   },
-%   "dataset": {
-%     "value": "../data/chest_xray"
-%   },
-%   "project": {
-%     "value": "chest_xray"
-%   },
-%   "n_blocks": {
-%     "value": 3
-%   },
-%   "up_bound": {
-%     "value": 0
-%   },
-%   "max_sigma": {
-%     "value": 0.5
-%   },
-%   "min_sigma": {
-%     "desc": null,
-%     "value": 0.5
-%   },
-%   "optimizer": {
-%     "desc": null,
-%     "value": "Adam"
-%   },
-%   "activation": {
-%     "desc": null,
-%     "value": "LeakyReLU"
-%   },
-%   "batch_size": {
-%     "desc": null,
-%     "value": 1
-%   },
-%   "wandb_mode": {
-%     "desc": null,
-%     "value": "online"
-%   },
-%   "in_channels": {
-%     "desc": null,
-%     "value": 1
-%   },
-%   "random_seed": {
-%     "desc": null,
-%     "value": 42
-%   },
-%   "architecture": {
-%     "desc": null,
-%     "value": "UNET-PDHG"
-%   },
-%   "init_filters": {
-%     "desc": null,
-%     "value": 32
-%   },
-%   "out_channels": {
-%     "desc": null,
-%     "value": 2
-%   },
-%   "learning_rate": {
-%     "desc": null,
-%     "value": 0.0001
-%   },
-%   "loss_function": {
-%     "desc": null,
-%     "value": "MSELoss"
-%   },
-%   "resize_square": {
-%     "desc": null,
-%     "value": 256
-%   },
-%   "val_data_path": {
-%     "desc": null,
-%     "value": "../data/chest_xray/val/NORMAL"
-%   },
-%   "test_data_path": {
-%     "desc": null,
-%     "value": "../data/chest_xray/test/NORMAL"
-%   },
-%   "train_data_path": {
-%     "desc": null,
-%     "value": "../data/chest_xray/train/NORMAL"
-%   },
-%   "upsampling_mode": {
-%     "desc": null,
-%     "value": "linear_interpolation"
-%   },
-%   "val_num_samples": {
-%     "desc": null,
-%     "value": 8
-%   },
-%   "save_epoch_local": {
-%     "desc": null,
-%     "value": 10
-%   },
-%   "save_epoch_wandb": {
-%     "desc": null,
-%     "value": 10000
-%   },
-%   "test_num_samples": {
-%     "desc": null,
-%     "value": 1
-%   },
-%   "downsampling_mode": {
-%     "desc": null,
-%     "value": "max"
-%   },
-%   "train_num_samples": {
-%     "desc": null,
-%     "value": 100
-%   },
-%   "upsampling_kernel": {
-%     "desc": null,
-%     "value": [
-%       2,
-%       2,
-%       1
-%     ]
-%   },
-%   "downsampling_kernel": {
-%     "desc": null,
-%     "value": [
-%       2,
-%       2,
-%       1
-%     ]
-%   }
-% }
-
-% \end{minted}
-
-
 
 
 

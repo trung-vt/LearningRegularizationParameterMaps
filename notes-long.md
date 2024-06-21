@@ -110,7 +110,6 @@
 % - implement function for nrmse
 % - use pytorch ignite for psnr and ssim faster
 
-% - IMPORTANT: Ask Kostas about the search space, most importantly how large is the training dataset size and image resolution!
 
 % I tried
 % - Setting 1: T=32, 100 train, sigma=0.5

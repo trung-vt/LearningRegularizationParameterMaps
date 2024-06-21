@@ -248,7 +248,7 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
 
     # for epoch in range(start_epoch, num_epochs):
     for epoch in tqdm(range(start_epoch, num_epochs)):
-
+        wandb.log({"epoch": epoch+1})
         # Model training
         pdhg.train(True)
         training_loss, training_psnr, training_ssim = train_epoch(pdhg, data_loader_train, optimizer, loss_function)
@@ -288,8 +288,8 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
             
             print(f"Epoch {epoch+1} - VALIDATION LOSS: {validation_loss} - VALIDATION PSNR: {validation_psnr} - VALIDATION SSIM: {validation_ssim}")
 
-        # if (epoch+1) % save_epoch_wandb == 0:
-        #     wandb.log_model(f"{model_states_dir}/{current_model_name}.pt", name=f"model_epoch_{epoch+1}")
+        if (epoch+1) % save_epoch_wandb == 0:
+            wandb.log_model(f"{model_states_dir}/{current_model_name}.pt", name=f"model_epoch_{epoch+1}")
             
         del validation_loss
         del validation_psnr

@@ -385,8 +385,7 @@ where $\circ$ denotes the Hadamard or element-wise product.
 
 
 
-Putting it all together, 
-% the total variation of an image 
+Putting it all together,
 the solution to the total variational denoising problem
 can be 
 % calculated
@@ -416,13 +415,25 @@ To solve equation \ref{eq:minimisation_problem_lambda_map},
 we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) algorithm: 
 
 \begin{algorithm}[H]
-\caption{PDHG algorithm for image denoising with fixed regularisation parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning})}
+\caption{PDHG algorithm for image denoising with fixed regularisation parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning} using the implementation \cite{dyn_img_pdhg_code})}
 \begin{algorithmic}[1]
-\STATE \textbf{Input:} $L = \| [\mathbf{I}, \nabla]^\text{T} \|$, $\tau \lesssim 1/L$, $\sigma \lesssim 1/L$, $\theta \lesssim 1$, noisy image $\mathbf{x}_0$
+
+\STATE \textbf{Input:} 
+% $L = \| [\mathbf{I}, \nabla]^\text{T} \|$, 
+$L = \sqrt{13}$, 
+% $\tau \lesssim 1/L$, 
+% $\sigma \lesssim 1/L$, 
+% $\theta \lesssim 1$, 
+$\tau = \text{sigmoid}(10) / L$, 
+$\sigma = \text{sigmoid}(10) / L$, 
+$\theta = \text{sigmoid}(10)$, 
+noisy image $\mathbf{x}_0$
+
 \STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
 % \STATE $\mathbf{y} = \mathbf{x}_0$
 \STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
-\STATE $\mathbf{p}_0 = \mathbf{0}$
+% \STATE $\mathbf{p}_0 = \mathbf{0}$
+\STATE $\mathbf{p}_0 = \mathbf{x}_0$
 \STATE $\mathbf{q}_0 = \mathbf{0}$
 \FOR{$k < T$}
     % \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
@@ -436,10 +447,12 @@ we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) alg
 \end{algorithm}
 
 where 
-$\lesssim$ means
-"slightly less than",
+% $\lesssim$ means
+% "slightly less than",
 % less than but almost equal to 
+$\text{sigmoid}(y) = 1 / (1 + \exp(-y))$ is the sigmoid function,
 $\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
+Here $\text{sigmoid}(10) = 0.9999546$ is used to maintain the condition $L^2 \sigma \tau < 1$ and $\theta < 1$ to ensure convergence of the algorithm. 
 Note that this algorithm can also be applied to the single scalar $\lambda$ case by simply setting all values of $\mathbf{\Lambda}$ to $\lambda$.
 
 % The choice of $L$ is taken from \cite{Sidky2012}.
@@ -1716,7 +1729,7 @@ Through experiments with the Chest X-ray dataset, we demonstrated that using U-N
 
 
 
-
+\Urlmuskip=0mu plus 1mu\relax
 \printbibliography
 
 

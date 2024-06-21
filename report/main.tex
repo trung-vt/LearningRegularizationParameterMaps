@@ -462,17 +462,17 @@ In our case we fix $T_{\text{train}} = 128$ for training.
 As shown in \cite{kofler2023learning}, the higher the number of iterations, the better the denoising performance of the algorithm. 
 However, beyond a certain point, the performance improvement is marginal.
 
-\textit{
-TODO:
+% \textit{
+% TODO:
 
-- The code initialises $p_0 = x_0$ instead of $p_0 = 0$.
+% - The code initialises $p_0 = x_0$ instead of $p_0 = 0$.
 
-- The code sets $L = \sqrt{13}$.
-To be precise, $L = \sqrt{A^2 + \nabla^2}$, and $A = \sqrt{1}$ and $\nabla = \sqrt{12}$.
+% - The code sets $L = \sqrt{13}$.
+% To be precise, $L = \sqrt{A^2 + \nabla^2}$, and $A = \sqrt{1}$ and $\nabla = \sqrt{12}$.
 
-- The paper \cite{kofler2023learning} page ... mentions that the values of $\sigma$ and $\tau$ were trained.
-The code does not show any training of $\sigma$ and $\tau$, although there is still a sigmoid function applied to them only once with a fixed value of 10.
-}
+% - The paper \cite{kofler2023learning} page ... mentions that the values of $\sigma$ and $\tau$ were trained.
+% The code does not show any training of $\sigma$ and $\tau$, although there is still a sigmoid function applied to them only once with a fixed value of 10.
+% }
 
 \textit{
 (TODO: Understand what $L$ is. Do we need to include $\theta = 1$? Can we write $\bar{\mathbf{x}}_{k+1} = 2 \mathbf{x}_{k+1} - \mathbf{x}_k$? In the code, initially $\mathbf{p}_0 = \mathbf{x}_0$?)

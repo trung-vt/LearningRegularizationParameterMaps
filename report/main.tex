@@ -430,8 +430,8 @@ we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) alg
 \begin{algorithmic}[1]
 
 \STATE \textbf{Input:} 
-% $L = \| [\mathbf{I}, \nabla]^\text{T} \|$, 
-$L = \sqrt{13}$, 
+$L = \| [\mathbf{I}, \nabla]^\text{T} \|_2 = 3$, 
+% $L = \sqrt{13}$, 
 % $\tau \lesssim 1/L$, 
 % $\sigma \lesssim 1/L$, 
 % $\theta \lesssim 1$, 
@@ -469,8 +469,16 @@ However, in practice, the algorithm always converges even if $L^2 \sigma \tau = 
 Nevertheless, here $\text{sigmoid}(10) = 0.9999546$ is used to scale the parameters to satisfy the condition $L^2 \sigma \tau < 1$ as well as $\theta < 1$, ensuring convergence.
 Since $\sigma$ and $\tau$ are the step sizes, choosing them to be as large as possible will help speed up the convergence of the algorithm.
 
-Note that the choice of $L = \sqrt{13}$ is somewhat arbitrary.
-We can experiment with different values of $L$ in the future.
+We can calculate the value $L = \| [\mathbf{I}, \nabla]^\text{T} \|_2 = 3$ using the formula
+
+\begin{equation*}
+    \| \mathbf{M} \|_2 = \sigma_{\text{max}}(\mathbf{M})
+\end{equation*}
+
+where  $\sigma_{\text{max}}(\mathbf{M})$ is the largest singular value of matrix $\mathbf{M}$.
+
+For a square 2D matrix with each side of length $2n$, the largest singular value is $3$.
+
 
 This algorithm can also be applied to the single scalar $\lambda$ case by simply setting all values of $\mathbf{\Lambda}$ to $\lambda$.
 

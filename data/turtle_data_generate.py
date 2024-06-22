@@ -15,6 +15,8 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 from data.transform import crop_and_resize, add_noise
 
+print(f"Using new version 2 of turtle_data_generate.py")
+
 class TurtleDataGenerator:
     def __init__(self, turtle_data_path='turtle_id_2022', size=256, dry_run=False, num_threads=4, sigmas=[0.1, 0.2, 0.3]):
         self.size = size
@@ -115,17 +117,17 @@ class TurtleDataGenerator:
         img_color = crop_and_resize(img, self.size)
         img_greyscale = img_color.convert('L')
         
-        # # images_noisy = [add_noise_PIL(img_greyscale, sigma) for sigma in self.sigmas]
-        # images_noisy = [torch.tensor(img_greyscale, dtype=torch.float) / 255 for sigma in self.sigmas]
-        # images_noisy = [add_noise(x, sigma) for x, sigma in zip(images_noisy, self.sigmas)]
-        # images_noisy = [Image.fromarray((x * 255).numpy().astype(np.uint8)) for x in images_noisy]
-        # images_noisy = [img, img_color, img_greyscale]
-        # images_noisy = [np.array(img_greyscale, dtype=np.float32) / 255 for sigma in self.sigmas]
-        # images_noisy = [img + np.random.normal(0, sigma, img.shape) for img, sigma in zip(images_noisy, self.sigmas)]
-        # images_noisy = [np.clip(x, 0, 1) for x in images_noisy]
+        # # # images_noisy = [add_noise_PIL(img_greyscale, sigma) for sigma in self.sigmas]
+        # # images_noisy = [torch.tensor(img_greyscale, dtype=torch.float) / 255 for sigma in self.sigmas]
+        # # images_noisy = [add_noise(x, sigma) for x, sigma in zip(images_noisy, self.sigmas)]
+        # # images_noisy = [Image.fromarray((x * 255).numpy().astype(np.uint8)) for x in images_noisy]
+        # # images_noisy = [img, img_color, img_greyscale]
+        # # images_noisy = [np.array(img_greyscale, dtype=np.float32) / 255 for sigma in self.sigmas]
+        # # images_noisy = [img + np.random.normal(0, sigma, img.shape) for img, sigma in zip(images_noisy, self.sigmas)]
+        # # images_noisy = [np.clip(x, 0, 1) for x in images_noisy]
+        # # images_noisy = [Image.fromarray((x * 255).astype(np.uint8)) for x in images_noisy]
+        # images_noisy = [random_noise(np.array(img_greyscale), mode='gaussian', var=sigma**2, clip=True) for sigma in self.sigmas]
         # images_noisy = [Image.fromarray((x * 255).astype(np.uint8)) for x in images_noisy]
-        images_noisy = [random_noise(np.array(img_greyscale), mode='gaussian', var=sigma**2, clip=True) for sigma in self.sigmas]
-        images_noisy = [Image.fromarray((x * 255).astype(np.uint8)) for x in images_noisy]
         
         if not self.dry_run:
             # if image already exists, skip
@@ -133,10 +135,13 @@ class TurtleDataGenerator:
                 img_color.save(output_image_path_color)
             if not os.path.exists(output_image_path_greyscale):
                 img_greyscale.save(output_image_path_greyscale)
-            for i, img_noisy in enumerate(images_noisy):
+            # for i, img_noisy in enumerate(images_noisy):
+            for i, sigma in enumerate(self.sigmas):
                 output_image_path_noisy = f'{output_subfolder_greyscale_noisy[i]}/{image}'
                 # img_noisy.save(output_image_path_noisy)
                 if not os.path.exists(output_image_path_noisy):
+                    img_noisy = random_noise(np.array(img_greyscale), mode='gaussian', var=sigma**2, clip=True)
+                    img_noisy = Image.fromarray((img_noisy * 255).astype(np.uint8))
                     img_noisy.save(output_image_path_noisy)
         
         self.count += 1

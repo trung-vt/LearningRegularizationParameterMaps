@@ -19,4 +19,6 @@ pytorch-ignite # faster PSNR and SSIM but results different from scikit-image
 # https://pytorch.org/ignite/generated/ignite.metrics.SSIM.html
 # https://pytorch-ignite.ai/tutorials/beginner/01-getting-started/
 
+pytorch-msssim # faster SSIM with the same results as scikit-image
+
 -e .  # local package installation

@@ -28,7 +28,7 @@ def get_datasets(config):
     size = config["resize_square"]
     num_threads = config["data_gen_num_threads"]
     sigmas = config["sigmas"]
-    # Convert string "[00.1, 0.15, 0.2, 0.25, 0.3]" to list [0.1, 0.15, 0.2, 0.25, 0.3]
+    # Convert string "[0.1, 0.15, 0.2, 0.25, 0.3]" to list [0.1, 0.15, 0.2, 0.25, 0.3]
     sigmas = [float(sigma) for sigma in sigmas[1:-1].split(", ")]
     
     data_generator = TurtleDataGenerator(
@@ -53,11 +53,11 @@ class TurtleDataset(torch.utils.data.Dataset):
         return img_4d
     
     def __init__(self, data_path, files, sigmas=[0.1, 0.15, 0.2, 0.25, 0.3], size=512, device="cuda"):
-        self.original = []
+        self.originals = []
         for file in files:
             original_4d = self.get_image(f"{data_path}/images_crop_resize_{size}_greyscale/{file}")
-            self.original.append(original_4d)
-        self.original = torch.stack(self.original, dim=0).to(device)
+            self.originals.append(original_4d)
+        self.originals = torch.stack(self.originals, dim=0).to(device)
             
         prefix = f"images_crop_resize_{size}_greyscale_noisy"
         self.images_pairs = []
@@ -74,4 +74,7 @@ class TurtleDataset(torch.utils.data.Dataset):
         return len(self.images_pairs)
     
     def __getitem__(self, idx):
-        return (self.images_pairs[idx][0], self.original[self.images_pairs[idx][1]])
+        noisy = self.images_pairs[idx][0]
+        clean_idx = self.images_pairs[idx][1]
+        clean = self.originals[clean_idx]
+        return (noisy, clean)

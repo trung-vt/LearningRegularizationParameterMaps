@@ -1005,6 +1005,29 @@ Examples of noisy images with different $\sigma$ values:
 
 TODO: Add noisy images with different $\sigma$ values.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_05/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_15/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_2/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_25/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_3/t008/PaXakrkxqN.JPG}
+    \caption{Example of the transformations and noisy versions of one color image.
+    First the image is cropped to a square and rescaled to 256 by 256.
+    Then it is converted to greyscale.
+    Finally, it is noised with Gaussian noise with different $\sigma$ values.
+    The noise levels are 0.05, 0.1, 0.15, 0.2, 0.25, and 0.3.
+    We can see that at $\sigma = 0.3$, the image is highly degraded which will prove denoising difficult.
+    }
+    \label{fig:example_turtle_images}
+
+\end{figure}
+  
+
 % \subsection{SIDD Dataset}
 
 % The original SIDD dataset consists of 320 images of various resolutions taken from the SIDD dataset \cite{sidd}.
@@ -1509,7 +1532,7 @@ Plotting the results for all the test images, we can see that the regularisation
 The box plots in Figure 
 \ref{fig:box_plots} 
 % 7
-show the distribution of PSNR and SSIM values for the test images
+show the distribution of PSNR and SSIM \cite{ssim} values for the test images
 using the two methods.
 Figure 
 \ref{fig:hist_diff}
@@ -1533,6 +1556,22 @@ We can see that the differences are positive in all cases, which shows that the 
 
 
 % The total variational denoising method was able to produce denoised images that were closer to the ground truth images.
+
+\section{Important Implementation Details}
+
+\subsection{Metrics}
+
+The SSIM metrics were calculated using the pytorch Ignite library \cite{pytorch-ignite} for speed.
+As far as I know, it is the fastest implementation of the SSIM metric.
+The SSIM metric was calculated using the default settings of the library, which uses a window size of 11 and a Gaussian filter of standard deviation 1.5.
+This is the common setting for other libraries as well, such as the scikit-image library \cite{scikit-image}.
+However, the results are a little different from the scikit-image.
+Furthermore, the results were obtained using the GPU which also differs from the CPU.
+It might be a good idea to use scikit-image instead as it is more widely used and tested.
+The downside is that it uses the CPU which is slower.
+
+My comparison: \url{...}
+
 
 
 \section{Conclusion}

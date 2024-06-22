@@ -1,12 +1,8 @@
-import torch
 import os
 from PIL import Image
 from skimage.util import random_noise
 import numpy as np
-from tqdm import tqdm
 from multiprocessing.dummy import Pool as ThreadPool
-import concurrent.futures
-# import multiprocessing # to count the number of CPU cores
 import logging
 
 # Configure logging to output to the console
@@ -26,23 +22,7 @@ class TurtleDataGenerator:
         self.output_path_greyscale = f'{turtle_data_path}/images_crop_resize_{size}_greyscale'
         self.sigmas = sigmas
         self.output_paths_noisy = [f"{turtle_data_path}/images_crop_resize_{size}_greyscale_noisy_{str(sigma).replace('.', '_')}" for sigma in sigmas]
-        
-        # # Determine the number of CPU cores
-        # num_cores = multiprocessing.cpu_count()
-        # print(f"Number of CPU cores: {num_cores}")
-        
-        # # Decide number of threads based on the nature of the tasks
-        # # For CPU-bound tasks
-        # num_threads = num_cores
-        # print(f"CPU-bound tasks, use few threads. num_threads = num_cores = {num_threads}")
-        
-        # # For I/O-bound tasks, you might want more threads
-        # # num_threads = min(len(data), num_cores * 2)
-        # # print(f"I/O-bound tasks, use many threads. num_threads = min(len(data), num_cores * 2) = {num_threads}")
-
         self.num_threads = num_threads
-        print(f"Using {num_threads} threads")
-        print("Using skimage.util.random_noise to add noise to images")
 
 
     # Function to process the list in chunks
@@ -55,23 +35,12 @@ class TurtleDataGenerator:
         self.count = 0
         subfolders = os.listdir(self.input_path)
         
-        # # Divide the list into chunks
-        # chunks = self.process_list_in_chunks(subfolders, self.num_threads)
-        
-        # # Use ThreadPoolExecutor to process chunks in parallel
-        # with concurrent.futures.ThreadPoolExecutor(max_workers=self.num_threads) as executor:
-        #     print(f"Processing {len(subfolders)} subfolders in {len(chunks)} chunks")
-        #     futures = [executor.submit(self.process_subfolders_chunk, chunk) for chunk in chunks]
-            
-        #     # Wait for all threads to complete and collect results
-        #     for future in concurrent.futures.as_completed(futures):
-        #         future.result()  # This will raise exceptions if any occurred
-        
         print(f"Multiprocessing {len(subfolders)} subfolders in {self.num_threads} threads")
         # https://stackoverflow.com/questions/2846653/how-do-i-use-threading-in-python
         pool = ThreadPool(self.num_threads)
         results = pool.map(self.process_subfolder, subfolders)
         
+        # import tqdm
         # for subfolder in tqdm(subfolders):
         #     self.process_subfolder(subfolder)
         
@@ -117,31 +86,17 @@ class TurtleDataGenerator:
         img_color = crop_and_resize(img, self.size)
         img_greyscale = img_color.convert('L')
         
-        # # # images_noisy = [add_noise_PIL(img_greyscale, sigma) for sigma in self.sigmas]
-        # # images_noisy = [torch.tensor(img_greyscale, dtype=torch.float) / 255 for sigma in self.sigmas]
-        # # images_noisy = [add_noise(x, sigma) for x, sigma in zip(images_noisy, self.sigmas)]
-        # # images_noisy = [Image.fromarray((x * 255).numpy().astype(np.uint8)) for x in images_noisy]
-        # # images_noisy = [img, img_color, img_greyscale]
-        # # images_noisy = [np.array(img_greyscale, dtype=np.float32) / 255 for sigma in self.sigmas]
-        # # images_noisy = [img + np.random.normal(0, sigma, img.shape) for img, sigma in zip(images_noisy, self.sigmas)]
-        # # images_noisy = [np.clip(x, 0, 1) for x in images_noisy]
-        # # images_noisy = [Image.fromarray((x * 255).astype(np.uint8)) for x in images_noisy]
-        # images_noisy = [random_noise(np.array(img_greyscale), mode='gaussian', var=sigma**2, clip=True) for sigma in self.sigmas]
-        # images_noisy = [Image.fromarray((x * 255).astype(np.uint8)) for x in images_noisy]
-        
         if not self.dry_run:
             # if image already exists, skip
             if not os.path.exists(output_image_path_color):
                 img_color.save(output_image_path_color)
             if not os.path.exists(output_image_path_greyscale):
                 img_greyscale.save(output_image_path_greyscale)
-            # for i, img_noisy in enumerate(images_noisy):
             for i, sigma in enumerate(self.sigmas):
-                output_image_path_noisy = f'{output_subfolder_greyscale_noisy[i]}/{image}'
-                # img_noisy.save(output_image_path_noisy)
-                if not os.path.exists(output_image_path_noisy):
+                noisy_path = f'{output_subfolder_greyscale_noisy[i]}/{image}'
+                if not os.path.exists(noisy_path):
                     img_noisy = random_noise(np.array(img_greyscale), mode='gaussian', var=sigma**2, clip=True)
                     img_noisy = Image.fromarray((img_noisy * 255).astype(np.uint8))
-                    img_noisy.save(output_image_path_noisy)
+                    img_noisy.save(noisy_path)
         
         self.count += 1

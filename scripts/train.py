@@ -11,110 +11,83 @@ from networks.unet_3d import UNet3d
 from networks.static_img_primal_dual_nn import StaticImagePrimalDualNN
 from metrics.metrics import PSNR, SSIM
 
+print(f"Using new version 2 of train.py")
 
 # Code adapted from https://www.github.com/koflera/LearningRegularizationParameterMaps
 
+def common_iter(sample, model, loss_func, stage:str):
+    noisy_5d, clean_5d = sample
+    denoised_5d = model(noisy_5d)
+    loss = loss_func(denoised_5d, clean_5d)
 
-# Code taken from https://www.github.com/koflera/LearningRegularizationParameterMaps
+    denoised_2d = denoised_5d.squeeze(0).squeeze(0).squeeze(-1)
+    clean_2d = clean_5d.squeeze(0).squeeze(0).squeeze(-1)
+    psnr = PSNR(denoised_2d, clean_2d)
+    ssim = SSIM(denoised_2d, clean_2d)
+    
+    wandb.log({f"{stage}_iter_loss": loss.item()})
+    wandb.log({f"{stage}_iter_PSNR": psnr})
+    wandb.log({f"{stage}_iter_SSIM": ssim})
 
-def train_epoch(model, data_loader, optimizer, loss_func) -> float:
+    # Free up memory
+    del denoised_5d # Delete output of model
+    del denoised_2d # Delete auxiliary variable
+    del clean_2d # Delete auxiliary variable
+    del noisy_5d # Noisy image is generated each time so can delete it
+    del clean_5d # TODO: Is this a copy that I can delete or a reference to the original?
+    
+    return loss, psnr, ssim
+
+
+def train_iter(sample, model, loss_func, optimizer):
+    optimizer.zero_grad(set_to_none=True)  # Zero your gradients for every batch! TODO: Why?
+    
+    loss, psnr, ssim = common_iter(
+        sample=sample, model=model, loss_func=loss_func, stage="training"
+    )
+    
+    loss.backward()
+    if loss.item() != loss.item():
+        raise ValueError("NaN returned by loss function...")
+    optimizer.step()
+    
+    loss_value = loss.item()
+    del loss # Free up memory
+    
+    return loss_value, psnr, ssim
+
+
+
+def validate_iter(sample, model, loss_func, optimizer=None):
+    loss, psnr, ssim = common_iter(
+        sample=sample, model=model, loss_func=loss_func, stage="val"
+    )
+
+    loss_value = loss.item()
+    del loss # Free up memory
+    
+    return loss_value, psnr, ssim
+
+
+def perform_epoch(data_loader, model, loss_func, optimizer, perform_iter):
     running_loss = 0.
     running_psnr = 0.
     running_ssim = 0.
     num_batches = len(data_loader)
     # for sample in tqdm(data_loader): # tqdm helps show a nice progress bar
     for sample in data_loader:
-        # loss, psnr, ssim = train_iteration(optimizer, model, loss_func, sample)
-
-        optimizer.zero_grad(set_to_none=True)  # Zero your gradients for every batch! TODO: Why?
-        noisy_image_5d, clean_image_5d = sample
-        # print(f"noisy_image_5d.size(): {noisy_image_5d.size()}")
-        # print(f"clean_image_5d.size(): {clean_image_5d.size()}")
-        denoised_image_5d = model(noisy_image_5d)
-        # print(f"denoised_image_5d.size(): {denoised_image_5d.size()}")
-        loss = loss_func(denoised_image_5d, clean_image_5d)
-
-        loss.backward()
-        if loss.item() != loss.item():
-            raise ValueError("NaN returned by loss function...")
-        optimizer.step()
-
-        denoised_image_2d = denoised_image_5d.squeeze(0).squeeze(0).squeeze(-1)
-        clean_image_2d = clean_image_5d.squeeze(0).squeeze(0).squeeze(-1)
-        psnr = PSNR(denoised_image_2d, clean_image_2d)
-        ssim = SSIM(denoised_image_2d, clean_image_2d)
-
-        running_loss += loss.item()
+        loss_value, psnr, ssim = perform_iter(
+            sample=sample, model=model, loss_func=loss_func, optimizer=optimizer
+        )
+        running_loss += loss_value
         running_psnr += psnr
         running_ssim += ssim
-        
-        wandb.log({"training_iter_loss": loss.item()})
-        wandb.log({"training_iter PSNR": psnr})
-        wandb.log({"training_iter SSIM": ssim})
-
-        # Free up memory
-        del loss 
-        del denoised_image_5d # Delete output of model
-        del denoised_image_2d # Delete auxiliary variable
-        del clean_image_2d # Delete auxiliary variable
-        del noisy_image_5d # Noisy image is generated each time so can delete it
-        del clean_image_5d # TODO: Is this a copy that I can delete or a reference to the original?
 
     avg_loss = running_loss / num_batches
     avg_psnr = running_psnr / num_batches
     avg_ssim = running_ssim / num_batches
 
-    del running_loss
-    del running_psnr
-    del running_ssim
-    del num_batches
-
-    return avg_loss, avg_psnr, avg_ssim
-
-
-
-def validate_epoch(model, data_loader, loss_func) -> float:
-    running_loss = 0.
-    running_psnr = 0.
-    running_ssim = 0.
-    num_batches = len(data_loader)
-    # for sample in tqdm(data_loader): # tqdm helps show a nice progress bar
-    for sample in data_loader:
-        # loss, psnr, ssim = validate_iteration(model, loss_func, sample)
-
-        noisy_image_5d, clean_image_5d = sample
-        denoised_image_5d = model(noisy_image_5d)
-        loss = loss_func(denoised_image_5d, clean_image_5d)
-
-        denoised_image_2d = denoised_image_5d.squeeze(0).squeeze(0).squeeze(-1)
-        clean_image_2d = clean_image_5d.squeeze(0).squeeze(0).squeeze(-1)
-        psnr = PSNR(denoised_image_2d, clean_image_2d)
-        ssim = SSIM(denoised_image_2d, clean_image_2d)
-
-        running_loss += loss.item()
-        running_psnr += psnr
-        running_ssim += ssim
-        
-        wandb.log({"validation_iter_loss": loss.item()})
-        wandb.log({"validation_iter PSNR": psnr})
-        wandb.log({"validation_iter SSIM": ssim})
-
-        # Free up memory
-        del loss 
-        del denoised_image_5d # Delete output of model
-        del denoised_image_2d # Delete auxiliary variable
-        del clean_image_2d # Delete auxiliary variable
-        del noisy_image_5d # Noisy image is generated each time so can delete it
-        del clean_image_5d # TODO: Is this a copy that I can delete or a reference to the original?
-
-    avg_loss = running_loss / num_batches
-    avg_psnr = running_psnr / num_batches
-    avg_ssim = running_ssim / num_batches
-
-    del running_loss
-    del running_psnr
-    del running_ssim
-    del num_batches
+    del running_loss, running_psnr, running_ssim, num_batches # Explicitly delete variables to free up memory
 
     return avg_loss, avg_psnr, avg_ssim
 
@@ -217,33 +190,6 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
 
     log_to_files()
 
-    # noisy_image_path = "./testcases/chest_xray_noisy.png"
-    # clean_image_path = "./testcases/chest_xray_clean.png"
-
-    # def get_image(image_path):
-    #     image = Image.open(image_path)
-    #     image = image.convert("L")
-    #     image_data = np.asarray(image)
-    #     image_data = convert_to_tensor_4D(image_data)
-    #     image_data = image_data.unsqueeze(0).to(DEVICE)
-    #     return image_data
-
-    # noisy_image_data = get_image(noisy_image_path)
-    # clean_image_data = get_image(clean_image_path)
-
-    # dataset_train = MyDataset(noisy_image_path, clean_image_path)
-    # dataset_valid = MyDataset(noisy_image_path, clean_image_path)
-
-    # data_loader_train = torch.utils.data.DataLoader(
-    #     dataset_train, batch_size=1, 
-    #     generator=torch.Generator(device=DEVICE),
-    #     shuffle=True)
-    # data_loader_valid = torch.utils.data.DataLoader(
-    #     dataset_valid, batch_size=1, 
-    #     generator=torch.Generator(device=DEVICE),
-    #     shuffle=False)
-
-
     init_wandb(config)
 
     # for epoch in range(start_epoch, num_epochs):
@@ -251,33 +197,24 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
         wandb.log({"epoch": epoch+1})
         # Model training
         pdhg.train(True)
-        training_loss, training_psnr, training_ssim = train_epoch(pdhg, data_loader_train, optimizer, loss_function)
-        # training_loss, training_psnr, training_ssim = train_iteration(optimizer, pdhg, loss_function, sample=(noisy_image_data, clean_image_data))
-        # print(f"Epoch {epoch+1} - TRAINING LOSS: {training_loss} - TRAINING PSNR: {training_psnr} - TRAINING SSIM: {training_ssim}")
-
+        train_loss, train_psnr, train_ssim = perform_epoch(
+            data_loader_train, pdhg, loss_function, optimizer, train_iter
+        )
         # Optional: Use wandb to log training progress
-        wandb.log({"training_loss": training_loss})
-        wandb.log({"training PSNR": training_psnr})
-        wandb.log({"training SSIM": training_ssim})
+        wandb.log({"train_loss": train_loss, "train_PSNR": train_psnr, "train_SSIM": train_ssim})
 
-        del training_loss
-        del training_psnr
-        del training_ssim
+        del train_loss, train_psnr, train_ssim
 
         pdhg.train(False)
         with torch.no_grad():
             torch.cuda.empty_cache()
 
             # Model validation
-            validation_loss, validation_psnr, validation_ssim = validate_epoch(pdhg, data_loader_valid, loss_function)
-            # validation_loss, validation_psnr, validation_ssim = validate_iteration(pdhg, loss_function, sample=(noisy_image_data, clean_image_data))
-            # print(f"Epoch {epoch+1} - VALIDATION LOSS: {validation_loss} - VALIDATION PSNR: {validation_psnr} - VALIDATION SSIM: {validation_ssim}")
-            time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-
+            val_loss, val_psnr, val_ssim = perform_epoch(
+                data_loader_valid, pdhg, loss_function, optimizer, validate_iter
+            )
             # Optional: Use wandb to log training progress
-            wandb.log({"validation_loss": validation_loss})
-            wandb.log({"validation PSNR": validation_psnr})
-            wandb.log({"validation SSIM": validation_ssim})
+            wandb.log({"val_loss": val_loss, "val_PSNR": val_psnr, "val_SSIM": val_ssim})
 
             torch.cuda.empty_cache()
 
@@ -286,14 +223,12 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
             current_model_name = f"model_epoch_{epoch+1}"
             torch.save(pdhg, f"{model_states_dir}/{current_model_name}.pt")
             
-            print(f"Epoch {epoch+1} - VALIDATION LOSS: {validation_loss} - VALIDATION PSNR: {validation_psnr} - VALIDATION SSIM: {validation_ssim}")
+            print(f"Epoch {epoch+1} - VALIDATION LOSS: {val_loss} - VALIDATION PSNR: {val_psnr} - VALIDATION SSIM: {val_ssim}")
 
         if (epoch+1) % save_epoch_wandb == 0:
             wandb.log_model(f"{model_states_dir}/{current_model_name}.pt", name=f"model_epoch_{epoch+1}")
             
-        del validation_loss
-        del validation_psnr
-        del validation_ssim
+        del val_loss, val_psnr, val_ssim
 
         torch.cuda.empty_cache()
 

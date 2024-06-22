@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
    name='learning_regularisation_parameter_map',
-   version='1.0',
+   version='1.0.0',
    description='Learn regularisation parameter map for image reconstruction using deep learning.',
    author='trung-vt',
    author_email='trung.vuthanh24@gmail.com',

@@ -20,7 +20,7 @@ class Result:
 
 
 
-class ResultDataFrame(pd.DataFrame):
+class SampleResult(pd.DataFrame):
     def __init__(self):
         pd.DataFrame.__init__(self, columns=["lambda", "loss", "psnr", "ssim", "denoised"])
         self.best_loss = Result(is_greater=False)
@@ -42,7 +42,10 @@ class ResultDataFrame(pd.DataFrame):
         
         
     
-def brute_force_scalar_reg(noisy, clean, model, lambdas, cmp_images, process_denoised, sample_result):
+def brute_force_scalar_reg(sample, model, lambdas, cmp_images, process_denoised, sample_result):
+    noisy, clean, output_path = sample
+    noisy, clean = transform(sample)
+    sample_result = ResultDataFrame()
     # Noisy and clean images must be the same size
     assert noisy.shape == clean.shape, f"Noisy and clean images have different sizes!\nnoisy.shape: {noisy.shape}, clean.shape: {clean.shape}"
     # Assert that the dimensions of the noisy image is accepted by the model
@@ -54,18 +57,15 @@ def brute_force_scalar_reg(noisy, clean, model, lambdas, cmp_images, process_den
     for _lambda in lambdas:
         denoised = model(noisy, _lambda)
         cmp_results = cmp_images(denoised, clean)
-        denoised = process_denoised(denoised, _lambda)
+        denoised = process_denoised(denoised, _lambda, output_path)
         sample_result.update_lambda(_lambda, cmp_results, denoised)
     
     
     
-def process_samples(sample_collection, model, lambdas, transform, cmp_images, save_denoised, num_threads:int=1):
+def process_samples(sample_collection, model, lambdas, transform, cmp_images, process_denoised, num_threads:int=1):
     def get_sample_result(sample):
-        noisy, clean, output_path = sample
-        noisy, clean = transform(sample)
-        sample_result = ResultDataFrame()
         brute_force_scalar_reg(
-            noisy, clean, model, lambdas, cmp_images, save_denoised, sample_result
+            sample, model, lambdas, cmp_images, process_denoised, sample_result
         )
         return sample_result
     

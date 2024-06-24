@@ -7,12 +7,11 @@ from .pdhg import PDHG
 class StaticImagePrimalDualNN(nn.Module):
     def __init__(
         self,
+        device="cpu",
         T=128,
         cnn_block=None,
-        mode="lambda_cnn",
         up_bound=0,
         phase="training",
-        device="cuda",
     ):
         """
         StaticImagePrimalDualNN
@@ -51,20 +50,14 @@ class StaticImagePrimalDualNN(nn.Module):
         dim = 3  # TODO: What does this 3 mean?? Does this include the time dimension?
         # dim = 2 # TODO: Will this limit to 2 spatial dimensions?
 
-
-
-        if mode == "lambda_cnn":
-            # the CNN-block to estimate the lambda regularization map
-            # must be a CNN yielding a two-channeld output, i.e.
-            # one map for lambda_cnn_xy and one map for lambda_cnn_t
-            self.cnn = cnn_block    # NOTE: This is actually the UNET!!! (At least in this project)
-            self.up_bound = torch.tensor(up_bound)
-        else:
-            raise ValueError(f"Unknown mode: {mode}")
+        # the CNN-block to estimate the lambda regularization map
+        # must be a CNN yielding a two-channeld output, i.e.
+        # one map for lambda_cnn_xy and one map for lambda_cnn_t
+        self.cnn = cnn_block    # NOTE: This is actually the UNET!!! (At least in this project)
+        self.up_bound = torch.tensor(up_bound)
 
         # number of terations
         self.T = T
-        self.mode = mode
 
         # distinguish between training and test phase;
         # during training, the input is padded using "reflect" padding, because

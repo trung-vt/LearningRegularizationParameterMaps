@@ -1,25 +1,36 @@
 numpy==1.23.4
-matplotlib
-torch       
-torchvision # transforming image to tensor
-pillow      # image loading
-img2pdf     # converting images to pdf losslessly
-tqdm        # progress bars
-wget # downloading the test data
-wandb       # training process logging
-ipykernel   # jupyter notebook
-scikit-learn
-scikit-image # standard PSNR and SSIM
-hydra-core  # configuration management
-pyyaml      # configuration management
-pandas    # data analysis
-seaborn  # data visualization
+torch==2.3.1      
+scikit-learn==1.5.0
 
-pytorch-ignite # faster PSNR and SSIM but results different from scikit-image
+torchvision==0.18.1         # transforming image to tensor
+scikit-image==0.24.0     # standard PSNR and SSIM, cpu only
+pillow==10.3.0                  # image loading
+img2pdf==0.5.1                 # converting images to pdf losslessly
+
+
+
+pandas                  # data analysis
+
+
+ipykernel==6.29.4   # jupyter notebook
+ipywidgets==8.1.3  # interactive, for tqdm.notebook and plotly_express
+
+plotly_express          # interactive plots
+seaborn                 # data visualization
+matplotlib
+
+hydra-core              # configuration management
+pyyaml                  # configuration management
+
+tqdm==4.66.4        # progress bars
+wget==3.2 # downloading the test data
+wandb==0.17.2       # training process logging
+
+pytorch-msssim # faster SSIM on cpu with the same results as scikit-image
+pytorch-ignite # fastest PSNR and SSIM on cuda but results different from scikit-image
 # https://pytorch.org/ignite/generated/ignite.metrics.PSNR.html
 # https://pytorch.org/ignite/generated/ignite.metrics.SSIM.html
 # https://pytorch-ignite.ai/tutorials/beginner/01-getting-started/
 
-pytorch-msssim # faster SSIM with the same results as scikit-image
 
 -e .  # local package installation

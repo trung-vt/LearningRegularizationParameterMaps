@@ -12,7 +12,3 @@ test_reg_map_path = "test_reg_map"
 # test_scalar_reg_path = "../test_results/test_scalar_reg"
 test_scalar_reg_path = "test_scalar_reg"
 
-size = 256
-num_samples = 5 # 0 for all
-
-sigmas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3]

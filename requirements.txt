@@ -3,6 +3,7 @@ matplotlib
 torch       
 torchvision # transforming image to tensor
 pillow      # image loading
+img2pdf     # converting images to pdf losslessly
 tqdm        # progress bars
 wget # downloading the test data
 wandb       # training process logging

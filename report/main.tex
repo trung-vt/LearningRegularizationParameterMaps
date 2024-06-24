@@ -1001,9 +1001,13 @@ In particular, we use the common data-independent Gaussian noise addition
     \mathbf{x}_{\text{noisy}} = \mathbf{x}_{\text{true}} + \sigma \mathbf{n}
 \end{equation}
 where the noise $\mathbf{n}$ is drawn from a standard Gaussian distribution with mean 0 and standard deviation 1.
-Examples of noisy images with different $\sigma$ values:
-
-TODO: Add noisy images with different $\sigma$ values.
+I am noting this because this might be important to make comparison between different experiments.
+I have seen that some implementations use custom functions to add noise to the images, 
+which might produce different results.
+For the same $\sigma$ value, the noise might be different.
+In my implementation, I used the \codeword{random_noise} function from \codeword{scikit-image} library version \codeword{0.24.0}.
+Examples of noisy images with different $\sigma$ values generated with my implementation 
+are shown in figure \ref{fig:example_turtle_images}.
 
 \begin{figure}
     \centering

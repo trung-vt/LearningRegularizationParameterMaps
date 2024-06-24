@@ -45,16 +45,24 @@ def convert_to_numpy(image):
     return image_data
 
 
-def convert_to_tensor_4D(image_numpy):
+def convert_to_tensor_4D(image_in):
     # xf = []
     # xf.append(image_numpy)
     # xf = np.stack(xf, axis=-1)
     # xf = torch.tensor(xf, dtype=torch.float)
+    image_numpy = convert_to_numpy(image_in) # in case image_in is a PIL.Image or something else. Note that converting a ndarray to a ndarray is a no-op.
     xf = torch.tensor(image_numpy, dtype=torch.float)
     xf = xf.unsqueeze(0)
     xf = xf.unsqueeze(-1)
     xf = xf / 255 # Normalise from [0, 255] to [0, 1]
     return xf
+
+def convert_to_PIL(image_tensor_4D):
+    img = image_tensor_4D.squeeze(0).squeeze(-1)
+    img = img * 255
+    img = img.detach().cpu().numpy().astype(np.uint8)
+    img = Image.fromarray(img)
+    return img
 
 
 def get_variable_noise(sigma_min, sigma_max, manual_seed=None):

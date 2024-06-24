@@ -6,6 +6,58 @@ from tqdm import tqdm
 import numpy as np
 import img2pdf
 
+
+import io
+import os
+import sys
+
+# Function to suppress stdout and stderr
+class SuppressOutput:
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        self._original_stderr = sys.stderr
+        self._original_stdout_fd = sys.stdout.fileno()
+        self._original_stderr_fd = sys.stderr.fileno()
+
+        self._null_fd = os.open(os.devnull, os.O_RDWR)
+        os.dup2(self._null_fd, self._original_stdout_fd)
+        os.dup2(self._null_fd, self._original_stderr_fd)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        os.dup2(self._original_stdout_fd, self._original_stdout_fd)
+        os.dup2(self._original_stderr_fd, self._original_stderr_fd)
+        os.close(self._null_fd)
+        sys.stdout = self._original_stdout
+        sys.stderr = self._original_stderr
+
+
+# import io
+# import contextlib
+# import sys
+
+# class DummyFile(io.StringIO):
+#     def write(self, *args, **kwargs):
+#         pass
+
+# @contextlib.contextmanager
+# def suppress_output():
+#     save_stdout = sys.stdout
+#     save_stderr = sys.stderr
+#     sys.stdout = DummyFile()
+#     sys.stderr = DummyFile()
+#     try:
+#         yield
+#     finally:
+#         sys.stdout = save_stdout
+#         sys.stderr = save_stderr
+
+
+# import logging
+
+# # Suppress img2pdf DEBUG logs
+# logging.getLogger("img2pdf").setLevel(logging.WARNING)
+# # logging.getLogger("img2pdf").setLevel(logging.ERROR)
+
 from data.transform import convert_to_tensor_4D, convert_to_PIL
 
 
@@ -67,12 +119,17 @@ class ResultGenerator:
             del denoised_5d # Explicitly free up memory
         cmp_results = self.cmp_func(denoised_4d, clean_4d)
         if self.saving_denoised:
-            if denoised_PIL is None:
+            if not os.path.exists(denoised_file):
                 denoised_PIL:Image = convert_to_PIL(denoised_4d)
-            denoised_PIL.save(denoised_file)
+                denoised_PIL.save(denoised_file)
             denoised_pdf = f"{denoised_filename}.pdf"
-            with open(denoised_pdf, "wb") as f:
-                f.write(img2pdf.convert(denoised_file))
+            if not os.path.exists(denoised_pdf):
+                # with suppress_output():
+                with SuppressOutput():
+                    pdf_bytes = img2pdf.convert(denoised_file)
+                    with open(denoised_pdf, "wb") as f:
+                        f.write(pdf_bytes)
+
         del denoised_4d # Explicitly free up memory
         return denoised_PIL, cmp_results
             
@@ -85,8 +142,7 @@ class ResultGenerator:
         
         denoised_PILs = []
         denoised_folder, extension = self.get_denoised_folder(noisy_path)
-        # extension = "PNG" # lossless format
-        extension = "PDF" # to avoid rasterization when adding to latex?
+        extension = "PNG" # lossless format
         for _lambda in self.lambdas:
             denoised_PIL, cmp_results = self.get_denoised_PIL(noisy_4d, clean_4d, denoised_folder, extension, _lambda)
             if self.returning_denoised_PILs:
@@ -107,5 +163,12 @@ class ResultGenerator:
         pool = ThreadPool(num_threads)
         print(f"Multiprocessing {len(self.sample_collection)} samples in {num_threads} threads")
         results = pool.map(self.brute_force_scalar_reg, self.sample_collection)
+        
+        # results = []
+        # for i in tqdm(range(len(self.sample_collection))):
+        #     sample = self.sample_collection[i]
+        #     result = self.brute_force_scalar_reg(sample)
+        #     results.append(result)
+        
         return results
 

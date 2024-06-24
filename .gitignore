@@ -175,8 +175,8 @@ sidd/models/
 sidd/results/
 model-chest_xray-2024_06_07_10_27_08/
 chest_xray/results/
-turtle_id/results/test/
-turtle_id/results/test_pdhg/
+turtle_id/results/test_scalar_reg/
+turtle_id/results/test_reg_map/
 
 # latex artifacts
 *.bbl

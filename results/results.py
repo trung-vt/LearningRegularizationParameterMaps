@@ -149,9 +149,7 @@ class ResultGenerator:
                 denoised_PILs.append(denoised_PIL)
             df = pd.concat([df, pd.DataFrame([[_lambda, *cmp_results]], columns=df.columns)], ignore_index=True)
         
-        # df.set_index("lambda", inplace=True) # Set sigma as index
-        # df.sort_index(inplace=True)          # Sort by sigma
-        df.to_csv(f"{denoised_folder}/results.csv", index=False)
+        df.to_csv(f"{denoised_folder}/results.csv", index=False) # Remove index column, only 4 columns are kept: lambda, MSE, PSNR, SSIM
         del noisy_4d, clean_4d # Explicitly free up memory
         return df, denoised_PILs
         

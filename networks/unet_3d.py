@@ -106,7 +106,7 @@ class UNet3d(nn.Module):
     def __init__(
             self, in_channels=1, out_channels=2, init_filters=32, n_blocks=3,
             activation="LeakyReLU",
-            downsampling_kernel=(2, 2, 1), downsampling_mode="max",
+            downsampling_kernel=(2, 2, 1), downsampling_mode="max_pool",
             upsampling_kernel=(2, 2, 1), upsampling_mode="linear_interpolation",
     ):
         """

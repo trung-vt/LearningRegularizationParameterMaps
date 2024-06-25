@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 
-from .grad_ops import GradOperators
-from .prox_ops import ClipAct
+from networks.grad_ops import GradOperators
+from networks.prox_ops import ClipAct
 
 # Code taken from https://www.github.com/koflera/LearningRegularizationParameterMaps
 

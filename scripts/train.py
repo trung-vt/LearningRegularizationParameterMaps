@@ -153,12 +153,9 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
     save_epoch_local = config["save_epoch_local"]
     save_epoch_wandb = config["save_epoch_wandb"]
 
-    time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    project = config["project"]
-    model_name = f"model-{project}-{time}"
-
     # Prepare to save the model
     save_dir = config["save_dir"]
+    model_name = config["model_name"]
     model_states_dir = f"{save_dir}/{model_name}"
 
     os.makedirs(model_states_dir, exist_ok=True)

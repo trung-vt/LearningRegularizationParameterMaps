@@ -1062,8 +1062,58 @@ On the other hand, all upsampling steps are done with linear interpolation with 
 In the end, the total number of trainable parameters of the set $\Theta$ is 1,796,034.
 
 For the activation function, we used the Leaky ReLU with a negative slope of 0.01.
-For the primal dual solver, we set the up-bound parameter to 0 and $T_{\text{train}}$ to 256.
+For the primal dual solver, we set 
+% the \codeword{up-bound} parameter to 0 and 
+$T_{\text{train}}$ to 256.
 During testing we also set $T_{\text{test}}$ to 256.
+
+% # constrain map to be striclty positive; further, bound it from below
+% if self.up_bound > 0:
+%     # constrain map to be striclty positive; further, bound it from below
+%     lambda_cnn = self.up_bound * self.op_norm_AHA * torch.sigmoid(lambda_cnn)
+% else:
+%     lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
+
+
+After the unet produces the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$,
+it will be transformed before being used in the PDHG solver.
+The default is
+
+\begin{equation}
+    \mathbf{\Lambda}_{\Theta} = 0.1 \times \times \text{softplus}(\mathbf{\Lambda}_{\Theta})
+\end{equation}
+
+which is what I used.
+
+I could also set a custom "up-bound" value so that
+
+\begin{equation}
+    \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
+\end{equation}
+
+One purpose of these transformations is to ensure that the regularisation parameter map is strictly positive.
+
+Another purpose is to ensure that the regularisation parameters are not too large.
+
+We can control the limit of the regularisation.
+
+A large up-bound value will allow more regularisation power.
+
+However, we might want to limit the regularisation power
+so that the model does not overfit the training data.
+
+These transformations can reduce the parameters values to 0 after some iterations if the up-bound is set too small.
+I tried with values up to 0.01 and quickly there was no more improvement. (This is due to the parameter map becoming 0?)
+
+I also tried 0.2 and a similar thing happened.
+
+This is due to the vanishing gradient problem when using sigmoid?
+
+I might experiment changing the code to use only softplus.
+
+Question: What if we simply clip the values to a sensible range like 0 to 0.4?
+
+What if we use only sigmoid or only softplus?
 
 For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
 
@@ -1072,6 +1122,9 @@ we used the 3D implementations of the convolutional layers as well as the downsa
 The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
 The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
 
+This might, however, increase the GPU memory usage and prevent us from using a larger model or a larger batch size.
+
+Perhaps it is still worth trying to use the 2D implementation.
 
 
 % \section{Results}
@@ -1360,6 +1413,25 @@ The 3D U-Net implementation is adapted from the dynamic image denoising applicat
 % \newpage
 
 \section{Results}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/clean.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
+    \caption{
+        Turtle ID example. 
+        The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.05$. 
+        The bottom row shows the denoised images using the TV method; 
+        the left image with PSNR = ... was produced 
+        using the best scalar regularisation parameter $\lambda = ...$ , 
+        while the right image with PSNR = \textbf{...} was denoised 
+        using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
+    \label{fig:compare_turtle_id}
+  \end{figure}
+  
+
 
 \begin{figure}[H]
   \centering

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .pdhg import PDHG
+from networks.pdhg import PDHG
 
 class StaticImagePrimalDualNN(nn.Module):
     def __init__(
@@ -72,7 +72,8 @@ class StaticImagePrimalDualNN(nn.Module):
         # receptive field of the CNN or so;
         # seems to be important in order not to create "holes" in the
         # lambda_maps in t-direction
-        npad_xy = 4
+        # npad_xy = 4
+        npad_xy = 0
         # npad_t = 8
         npad_t = 0 # TODO: Time dimension should not be necessary for single image input.
         # I changed the npad_t to 0 so that I can run on single image input without change the 3D type config. It seems that the number of frames must be greater than npad_t?

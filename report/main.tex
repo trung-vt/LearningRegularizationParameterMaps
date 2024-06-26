@@ -1060,17 +1060,18 @@ On the other hand, all upsampling steps are done with linear interpolation with 
 In the end, the total number of trainable parameters of the set $\Theta$ is 1,796,034.
 
 For the activation function, we used the Leaky ReLU with a negative slope of 0.01.
-For the primal dual solver, we set 
-% the \codeword{up-bound} parameter to 0 and 
-$T_{\text{train}}$ to 256.
-During testing we also set $T_{\text{test}}$ to 256.
 
-% # constrain map to be striclty positive; further, bound it from below
-% if self.up_bound > 0:
-%     # constrain map to be striclty positive; further, bound it from below
-%     lambda_cnn = self.up_bound * self.op_norm_AHA * torch.sigmoid(lambda_cnn)
-% else:
-%     lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
+
+It is worth noting that, for the implementation of the U-Net, 
+we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library \cite{PyTorch}.
+The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
+The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
+
+This might, however, increase the GPU memory usage and prevent us from using a larger model or a larger batch size.
+
+Perhaps it is still worth trying to use the 2D implementation.
+
+
 
 \subsubsection{PDHG Solver}
 
@@ -1089,6 +1090,9 @@ I could also set a custom "up-bound" value so that
 \begin{equation}
     \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
 \end{equation}
+
+
+
 
 In \cite{kofler2023learning}, it was mentioned that this helps make convergence faster.
 
@@ -1116,40 +1120,23 @@ Question: What if we simply clip the values to a sensible range like 0 to 0.4?
 
 What if we use only sigmoid or only softplus?
 
-For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
 
-It is worth noting that, for the implementation of the U-Net, 
-we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library \cite{PyTorch}.
-The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
-The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
+For the primal dual solver, we set 
+% the \codeword{up-bound} parameter to 0 and 
+$T_{\text{train}}$ to 256.
+During testing we also set $T_{\text{test}}$ to 256.
 
-This might, however, increase the GPU memory usage and prevent us from using a larger model or a larger batch size.
-
-Perhaps it is still worth trying to use the 2D implementation.
-
-
-
-% Here we present the results for two datasets: the Chest X-ray dataset and the SIDD dataset.
-
-% \subsection{Chest X-ray Dataset}
-
-% The Chest X-ray dataset consists of 2000 images of chest X-rays of various resolutions. 
-% All images are black-and-white and are in the JPEG format.
-% I used 800 images for the training dataset, 100 images for the validation dataset, and 100 images for the test dataset.
-% I used a U-Net with 3 blocks and 32 initial filters to denoise the images.
-
-% All images were resized to 256x256 pixels and noised with Gaussian noise with $\sigma$ ranging from 0.1 to 0.5.
+% # constrain map to be striclty positive; further, bound it from below
+% if self.up_bound > 0:
+%     # constrain map to be striclty positive; further, bound it from below
+%     lambda_cnn = self.up_bound * self.op_norm_AHA * torch.sigmoid(lambda_cnn)
+% else:
+%     lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
 
 
+\subsubsection{Training Options}
 
-
-
-% \section{Experimental Set-up}
-
-
-
-% \subsection{Chest X-ray}
-
+We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
 
 
 
@@ -1233,33 +1220,6 @@ Perhaps it is still worth trying to use the 2D implementation.
 
 
 
-% \section{Training and Results}
-
-% % \subsection{Objective and Setup}
-
-% The primary aim of this project is to explore the potential of achieving the optimal regularisation parameter map, $\mathbf{\Lambda}$, for a particular image. To this end, the training was conducted on a single image, using a grid search to determine the best single regularisation parameter, $\lambda$. The chosen $\lambda = 0.05$ yielded a PSNR (Peak Signal-to-Noise Ratio) of 35.64 dB, considered to be within the good range (30-40 dB). Our model, utilising the regularisation map $\mathbf{\Lambda}$, improved the PSNR to 37.84 dB compared to the 24.13 dB of the noisy original, demonstrating the efficacy of the model-specific parameter map.
-
-% \subsection{Data Preparation and Model Configuration}
-
-% Training was performed on image ID 0065, which was rescaled by a factor of 0.5 and split into six 512$\times$512 patches. Gaussian noise (mean 0, standard deviation 0.3) was added to simulate conditions for robust model training. The model was trained with a batch size of 1, resulting in six iterations per epoch, over 10,000 epochs.
-
-% \subsection{Training Details}
-
-% The Mean Squared Error (MSE) loss function was chosen due to its effectiveness in Gaussian noise contexts. The Adam optimiser was utilised for its adaptive learning rate capabilities, set at 0.0001. LeakyReLU activation function with $\alpha = 0.01$ was used across all hidden layers to ensure non-linearity without significant information loss at zero activations. 
-
-% The PDHG (Primal Dual Hybrid Gradient) solver, an integral part of the model, was run for 128 iterations per epoch. While increasing the number of iterations might improve results, time constraints limited our exploration.
-
-% \subsection{Performance Metrics and Results}
-
-% Performance was evaluated using the PSNR metric, calculated as:
-% $$
-% \text{PSNR} = 10 \cdot \log_{10} \left( \frac{{\text{MAX}^2}}{{\text{MSE}}} \right)
-% $$
-% where $\text{MAX}$ is the maximum possible pixel value, and $\text{MSE}$ is the mean squared error between the original and reconstructed images. 
-
-% Each epoch of training took approximately 6 seconds, translating to about 1 second per patch. The total training duration was around 17 hours, dominated by the computational demands of the PDHG algorithm.
-
-% \subsection{Inference and Efficiency}
 
 % The inference time for our model was about 1 second per 512$\times$512 patch. For a full HD (1920$\times$1080) image, denoising required processing 12 patches, taking less than half a minute in total. This demonstrates that while our method is slower than traditional single-parameter denoising methods, it offers a systematic approach to optimising regularisation without prior knowledge of the best $\lambda$.
 
@@ -1299,15 +1259,6 @@ Perhaps it is still worth trying to use the 2D implementation.
 %     \label{fig:compare_patches}
 % \end{figure}
 
-% \subsection{Analysis of the $\mathbf{\Lambda}$ Map}
-
-% The $\mathbf{\Lambda}$ map generated by our model provides a visual representation of how the PDHG solver is directed to handle different regions of the image. In areas where the original image was predominantly white, such as on a box, the $\mathbf{\Lambda}$ map exhibits higher regularisation values, indicated by whiter pixels. This implies that the PDHG solver is instructed to penalise high gradients in these regions, effectively smoothing them out.
-
-% Conversely, areas with intricate details, such as text on the box, display lower regularisation values, represented by darker pixels on the $\mathbf{\Lambda}$ map. This indicates that the solver is tuned to preserve finer details in these areas, maintaining clarity and sharpness.
-
-% % \subsubsection*{Challenges in regularisation}
-
-% Despite the intended function of the regularisation map, there are instances where the model does not perform as expected. For example, the squares on the color palettes in the background, which originally had smooth surfaces, should ideally exhibit high regularisation values. However, this is not always the case, suggesting areas for further refinement in the model's ability to accurately assess and respond to different textural features within an image.
 
 
 % \begin{figure}[ht]
@@ -1319,26 +1270,6 @@ Perhaps it is still worth trying to use the 2D implementation.
 %   \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\Theta$ with PSNR = 34.29}
 %   \label{fig:SIDD-chest-example-1}
 % \end{figure}
-
-
-% \section{Conclusion}
-
-% In this dissertation we have described the theory of application of total variational (TV) method to image denoising.
-% We have also described the implementation of the method and an improvement using a U-Net architecture to find the regularisation parameters more efficiently.
-% We have then presented the results of the method on a few different datasets.
-
-
-
-
-
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.8\linewidth]{100-line_plots.png}
-%     \caption{SIDD example: grid search}
-%     \label{fig:enter-label}
-% \end{figure}
-
-
 
 
 % \section{Test cases}
@@ -1377,7 +1308,6 @@ Perhaps it is still worth trying to use the 2D implementation.
 % \section{Data}
 
 
-
 % \url{https://openaccess.thecvf.com/content_CVPRW_2019/papers/NTIRE/Abdelhamed_NTIRE_2019_Challenge_on_Real_Image_Denoising_Methods_and_Results_CVPRW_2019_paper.pdf}
 
 % Gaussian $\sigma$, the estimated range is [0.242, 11.507]
@@ -1396,7 +1326,6 @@ Perhaps it is still worth trying to use the 2D implementation.
 % The testing data consisted of 1280 noisy image blocks different from the validation block but following the same format
 % as the validation data. Image metadata files were also provided for the 40 images from which the validation/testing
 % data was extracted.
-
 
 
 
@@ -1652,9 +1581,6 @@ Examples of noisy images with different $\sigma$ values generated with my implem
 are shown in figure \ref{fig:example_turtle_images}.
 
 
-
-are shown in figure \ref{fig:example_turtle_images}.
-
 \begin{figure}
     \centering
     \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t008/PaXakrkxqN.JPG}
@@ -1674,6 +1600,78 @@ are shown in figure \ref{fig:example_turtle_images}.
     We can see that at $\sigma = 0.3$, the image is highly degraded which will prove denoising difficult.
     }
     \label{fig:example_turtle_images}
+
+
+\subsubsection{PDHG Solver}
+
+
+After the unet produces the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$,
+it will be transformed before being used in the PDHG solver.
+The default is
+
+\begin{equation}
+    \mathbf{\Lambda}_{\Theta} = 0.1 \times \times \text{softplus}(\mathbf{\Lambda}_{\Theta})
+\end{equation}
+
+which is what I used.
+
+I could also set a custom "up-bound" value so that
+
+\begin{equation}
+    \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
+\end{equation}
+
+
+
+
+In \cite{kofler2023learning}, it was mentioned that this helps make convergence faster.
+
+One purpose of these transformations is to ensure that the regularisation parameter map is strictly positive.
+
+Another purpose is to ensure that the regularisation parameters are not too large.
+
+We can control the limit of the regularisation.
+
+A large up-bound value will allow more regularisation power.
+
+However, we might want to limit the regularisation power
+so that the model does not overfit the training data.
+
+These transformations can reduce the parameters values to 0 after some iterations if the up-bound is set too small.
+I tried with values up to 0.01 and quickly there was no more improvement. (This is due to the parameter map becoming 0?)
+
+I also tried 0.2 and a similar thing happened.
+
+This is due to the vanishing gradient problem when using sigmoid?
+
+I might experiment changing the code to use only softplus.
+
+Question: What if we simply clip the values to a sensible range like 0 to 0.4?
+
+What if we use only sigmoid or only softplus?
+
+
+For the primal dual solver, we set 
+% the \codeword{up-bound} parameter to 0 and 
+$T_{\text{train}}$ to 256.
+During testing we also set $T_{\text{test}}$ to 256.
+
+% # constrain map to be striclty positive; further, bound it from below
+% if self.up_bound > 0:
+%     # constrain map to be striclty positive; further, bound it from below
+%     lambda_cnn = self.up_bound * self.op_norm_AHA * torch.sigmoid(lambda_cnn)
+% else:
+%     lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
+
+
+\subsubsection{U-Net}
+
+For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. 
+This is show that the shuffling will be the same if someone runs the training again.
+
+
+
+
 
 \end{figure}
 \subsection{Results}

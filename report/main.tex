@@ -981,21 +981,46 @@ is then used for backpropagation to train the parameters $\Theta$.
 
 % \subsection{Chest X-ray Dataset}
 
-We used the Chest X-Ray Images (Pneumonia) dataset which was downloaded from \cite{kermany2018large} and the Turtle ID data set \cite{Adam_2024_WACV}.
+\subsubsection{Training Data}
+
+We used two datasets:
+
+- the Chest X-Ray Images (Pneumonia) dataset which was downloaded from \cite{kermany2018large} and 
+
+- the Turtle ID data set \cite{Adam_2024_WACV}.
+
 % \url{https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia}. 
-This is a dataset for binary classification of normal and pneumonia chest X-ray images. 
-The dataset consists of 5,863 X-Ray images (JPEG) and 2 categories (Pneumonia/Normal).
+The Chest X-Ray dataset was designed for binary classification of normal and pneumonia chest X-ray images. 
+The dataset consists of 5,863 X-Ray images which are split into two categories (Pneumonia/Normal).
 All images are black-and-white and are in the JPEG format.
 The X-rays images have various resolutions.
 
-At the time of download, the original dataset had already been split into a training set, a validation set, and a test set.
+The Turtle ID dataset is a dataset of turtle images which are labeled by the IDs of the individual turtles.
+This dataset is designed for the task of turtle identification.
+The dataset consists of over 7,000 images, also in JPEG format.
+All images are color images and have various resolutions.
+
+At the time of download, the original Chest X-ray dataset had already been split into a training set, a validation set, and a test set.
 We picked 200 images for the training dataset for training and 100 images from the test set for testing. The validation set consists of only 8 images which were all used for validation.
 We used only images which were classified as normal.
 
-For consistent input, we cropped the images to squares and then resized them to $256 \times 256$.
-The images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively.
-The pixel values are originally integers in the range from 0 to 255, so we normalised to the range from 0 to 1 by dividing by 255.
-During training, for each image, we generated a random value of $\sigma$ uniformly in the range from 0 to 0.3, and noised the image with Gaussian noise with mean 0 and the corresponding standard deviation $\sigma$.
+For the Turtle ID dataset, we split the dataset into training, validation, and test sets with ratio 0.8 : 0.1 : 0.1.
+During training, we used 100 training images and 10 validation images. 
+
+For consistent input, for each dataset, we cropped the images to squares and then resized them to the same resolution.
+For the Chest X-ray dataset, we set the resolution to $256 \times 256$.
+For the Turtle ID dataset, we set the resolution to $512 \times 512$.
+
+The Turtle ID images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively.
+All pixel values are originally integers in the range from 0 to 255, so we normalised to the range from 0 to 1 by dividing by 255.
+
+During training, for each image in the Chest X-ray dataset, we generated a random value of $\sigma$ uniformly in the range from 0.1 to 0.5, and noised the image with Gaussian noise with mean 0 and the corresponding standard deviation $\sigma$.
+The formula used for this dataset is a data-dependent Gaussian noise addition
+
+\begin{equation}
+    \mathbf{x}_{\text{noisy}} = (\mathbf{x}_{\text{true}} + \sigma \mathbf{n}) \times \sigma_{x_{\text{true}}}
+\end{equation}
+
 In particular, we use the common data-independent Gaussian noise addition
 \begin{equation}
     \mathbf{x}_{\text{noisy}} = \mathbf{x}_{\text{true}} + \sigma \mathbf{n}
@@ -1007,6 +1032,32 @@ which might produce different results.
 For the same $\sigma$ value, the noise might be different.
 In my implementation, I used the \codeword{random_noise} function from \codeword{scikit-image} library version \codeword{0.24.0}.
 Examples of noisy images with different $\sigma$ values generated with my implementation 
+
+
+
+
+
+
+For the turtle ID dataset, I setup using a different method of adding Gaussian noise.
+Before training, for each image, I generated six different noisy images with six different levels of noise: $\sigma = 0.05, 0.1, 0.15, 0.2, 0.25, 0.3$.
+100 original images gave me 600 noisy images for training.
+This helps provide reproducibility for future assessment.
+For more randomness, we could generate six images with a random level of noise from $0 to 0.3$.
+In particular, we use the common data-independent Gaussian noise addition
+\begin{equation}
+    \mathbf{x}_{\text{noisy}} = \mathbf{x}_{\text{true}} + \sigma \mathbf{n}
+\end{equation}
+where the noise $\mathbf{n}$ is drawn from a standard Gaussian distribution with mean 0 and standard deviation 1.
+I am noting this because this might be important to make comparison between different experiments.
+I have seen that some implementations use custom functions to add noise to the images, 
+which might produce different results.
+For the same $\sigma$ value, the noise might be different.
+In my implementation, I used the \codeword{random_noise} function from \codeword{scikit-image} library version \codeword{0.24.0}.
+Examples of noisy images with different $\sigma$ values generated with my implementation 
+are shown in figure \ref{fig:example_turtle_images}.
+
+
+
 are shown in figure \ref{fig:example_turtle_images}.
 
 \begin{figure}
@@ -1414,30 +1465,8 @@ Perhaps it is still worth trying to use the 2D implementation.
 
 \section{Results}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/clean.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
-    \caption{
-        Turtle ID example. 
-        The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.05$. 
-        The bottom row shows the denoised images using the TV method; 
-        the left image with PSNR = 29.10 was produced 
-        using the best scalar regularisation parameter $\lambda = 0.07$ , 
-        while the right image with PSNR = \textbf{30.12} was denoised 
-        using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
-    \label{fig:compare_turtle_id}
-  \end{figure}
 
-
-
-
-
-
-  
-  
+\subsubsection{Chest X-ray Dataset}
 
 
 \begin{figure}[H]
@@ -1639,6 +1668,33 @@ We can see that the differences are positive in all cases, which shows that the 
 
 
 % The total variational denoising method was able to produce denoised images that were closer to the ground truth images.
+
+
+
+
+subsubsection{Turtle ID 2022 Dataset}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/clean.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
+    \caption{
+        Turtle ID example. 
+        The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.1$. 
+        The bottom row shows the denoised images using the TV method; 
+        the left image with PSNR = 29.10 was produced 
+        using the best scalar regularisation parameter $\lambda = 0.07$ , 
+        while the right image with PSNR = \textbf{30.12} was denoised 
+        using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
+    \label{fig:compare_turtle_id}
+  \end{figure}
+
+
+
+
 
 \section{Important Implementation Details}
 

@@ -1124,7 +1124,6 @@ This might, however, increase the GPU memory usage and prevent us from using a l
 Perhaps it is still worth trying to use the 2D implementation.
 
 
-% \section{Results}
 
 % Here we present the results for two datasets: the Chest X-ray dataset and the SIDD dataset.
 
@@ -1409,11 +1408,7 @@ Perhaps it is still worth trying to use the 2D implementation.
 
 % \newpage
 
-\section{Results}
-
-
-\subsection{Chest X-ray Dataset}
-
+\subsection{Results}
 
 \begin{figure}[H]
   \centering
@@ -1618,27 +1613,6 @@ We can see that the differences are positive in all cases, which shows that the 
 
 
 
-subsubsection{Turtle ID 2022 Dataset}
-
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/clean.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
-    \caption{
-        Turtle ID example. 
-        The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.1$. 
-        The bottom row shows the denoised images using the TV method; 
-        the left image with PSNR = 29.10 was produced 
-        using the best scalar regularisation parameter $\lambda = 0.07$ , 
-        while the right image with PSNR = \textbf{30.12} was denoised 
-        using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
-    \label{fig:compare_turtle_id}
-  \end{figure}
-
-
 
 \section{Turtle ID Dataset}
 
@@ -1698,6 +1672,25 @@ are shown in figure \ref{fig:example_turtle_images}.
     \label{fig:example_turtle_images}
 
 \end{figure}
+\subsection{Results}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/clean.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
+    \caption{
+        Turtle ID example. 
+        The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.1$. 
+        The bottom row shows the denoised images using the TV method; 
+        the left image with PSNR = 29.10 was produced 
+        using the best scalar regularisation parameter $\lambda = 0.07$ , 
+        while the right image with PSNR = \textbf{30.12} was denoised 
+        using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
+    \label{fig:compare_turtle_id}
+  \end{figure}
 
 
 

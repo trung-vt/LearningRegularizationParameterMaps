@@ -981,7 +981,7 @@ is then used for backpropagation to train the parameters $\Theta$.
 
 % \subsection{Chest X-ray Dataset}
 
-\subsubsection{Training Data}
+\subsection{Training Data}
 
 We used two datasets:
 
@@ -1021,7 +1021,10 @@ The formula used for this dataset is a data-dependent Gaussian noise addition
     \mathbf{x}_{\text{noisy}} = (\mathbf{x}_{\text{true}} + \sigma \mathbf{n}) \times \sigma_{x_{\text{true}}}
 \end{equation}
 
-In particular, we use the common data-independent Gaussian noise addition
+where $\sigma_{x_{\text{true}}}$ is the standard deviation of the pixels in the true image $\mathbf{x}_{\text{true}}$.
+For images with low variation (hence low standard deviation), the added noise is milder.
+
+For the turtle ID dataset, we use the common data-independent Gaussian noise addition
 \begin{equation}
     \mathbf{x}_{\text{noisy}} = \mathbf{x}_{\text{true}} + \sigma \mathbf{n}
 \end{equation}

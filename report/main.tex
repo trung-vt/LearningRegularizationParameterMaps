@@ -3,7 +3,7 @@
 \usepackage{csquotes}
 \usepackage{amssymb,tikz,pdftexcmds,xparse}
 \usepackage{url}
-\usepackage{titlesec}
+
 
 % \usepackage{biblatex}
 \usepackage[%
@@ -24,23 +24,29 @@ style=apa,
 \usepackage{subcaption} % for subfigures
 \usetikzlibrary{shapes, arrows.meta, positioning}
 
-% Adjust spacing for section
-\titlespacing*{\section}
-{0pt} % Left spacing
-{10pt} % Spacing before the section
-{4pt}  % Spacing after the section
 
-% Adjust spacing for subsection
-\titlespacing*{\subsection}
-{0pt} % Left spacing
-{8pt} % Spacing before the subsection
-{3pt}  % Spacing after the subsection
+% https://tex.stackexchange.com/questions/336673/appendix-is-not-showing
+\usepackage[titletoc]{appendix}
 
-% Adjust spacing for subsubsection
-\titlespacing*{\subsubsection}
-{0pt} % Left spacing
-{12pt} % Spacing before the subsubsection
-{1pt}  % Spacing after the subsubsection
+% \usepackage{titlesec}
+
+% % Adjust spacing for section
+% \titlespacing*{\section}
+% {0pt} % Left spacing
+% {10pt} % Spacing before the section
+% {4pt}  % Spacing after the section
+
+% % Adjust spacing for subsection
+% \titlespacing*{\subsection}
+% {0pt} % Left spacing
+% {8pt} % Spacing before the subsection
+% {3pt}  % Spacing after the subsection
+
+% % Adjust spacing for subsubsection
+% \titlespacing*{\subsubsection}
+% {0pt} % Left spacing
+% {12pt} % Spacing before the subsubsection
+% {1pt}  % Spacing after the subsubsection
 
 
 \tikzset{box/.style={
@@ -495,11 +501,10 @@ This algorithm can also be applied to the single scalar $\lambda$ case by simply
 % The choice of $L$ is taken from \cite{Sidky2012}.
 % \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
 The number of iterations $T$ is a hyperparameter that we can choose for the training process.
-In our case we fix $T_{\text{train}} = 128$ for training.
+% In our case we fix $T_{\text{train}} = 128$ for training.
 As shown in \cite{kofler2023learning}, the higher the number of iterations, the better the denoising performance of the algorithm. 
 However, beyond a certain point, the performance improvement is marginal.
 
-% \textit{
 % TODO:
 
 % - The code initialises $p_0 = x_0$ instead of $p_0 = 0$.
@@ -509,11 +514,6 @@ However, beyond a certain point, the performance improvement is marginal.
 
 % - The paper \cite{kofler2023learning} page ... mentions that the values of $\sigma$ and $\tau$ were trained.
 % The code does not show any training of $\sigma$ and $\tau$, although there is still a sigmoid function applied to them only once with a fixed value of 10.
-% }
-
-\textit{
-(TODO: Understand what $L$ is. Do we need to include $\theta = 1$? Can we write $\bar{\mathbf{x}}_{k+1} = 2 \mathbf{x}_{k+1} - \mathbf{x}_k$? In the code, initially $\mathbf{p}_0 = \mathbf{x}_0$?)
-}
 
 
 % (For comparison with the original version in \cite{kofler2023learning}:
@@ -526,78 +526,6 @@ However, beyond a certain point, the performance improvement is marginal.
 
 % HOWEVER, note that in the code, $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma  \times (\bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
 
-
-
-To derive the corresponding dual problem of the given nonlinear primal problem:
-
-\begin{equation}
-\min_{x \in X} F(Kx) + G(x),
-\end{equation}
-
-we can use the convex optimization framework, particularly the Fenchel duality approach. Here’s the process to derive the dual problem:
-
-Primal Problem:
-\begin{equation}
-\min_{x \in X} F(Kx) + G(x)
-\end{equation}
-
-\section*{Step-by-Step Dual Derivation}
-
-\begin{enumerate}
-  \item \textbf{Introduce a new variable} \( y \) to replace \( Kx \):
-  \begin{equation}
-  \min_{x \in X, y = Kx} F(y) + G(x)
-  \end{equation}
-
-  \item \textbf{Write the Lagrangian}:
-  \begin{equation}
-  \mathcal{L}(x, y, \lambda) = F(y) + G(x) + \lambda^T (y - Kx)
-  \end{equation}
-  where \( \lambda \) is the Lagrange multiplier (dual variable).
-
-  \item \textbf{Form the Dual Function} by minimizing the Lagrangian over \( x \) and \( y \):
-  \begin{equation}
-  g(\lambda) = \inf_{x \in X, y} \mathcal{L}(x, y, \lambda)
-  \end{equation}
-
-  \item \textbf{Separate the minimization} over \( y \) and \( x \):
-  \begin{equation}
-  g(\lambda) = \inf_{y} \left[ F(y) + \lambda^T y \right] + \inf_{x \in X} \left[ G(x) - \lambda^T Kx \right]
-  \end{equation}
-
-  \item \textbf{Identify the Fenchel conjugates} of \( F \) and \( G \):
-  \begin{equation}
-  F^*(\lambda) = \sup_{y} \left[ \lambda^T y - F(y) \right]
-  \end{equation}
-
-  \begin{equation}
-  G^*(\lambda) = \sup_{x \in X} \left[ \lambda^T Kx - G(x) \right]
-  \end{equation}
-
-  \item \textbf{Express the dual function} using these conjugates:
-  \begin{equation}
-  g(\lambda) = -F^*(-\lambda) - G^*(K^T \lambda)
-  \end{equation}
-
-  \item \textbf{Form the Dual Problem}:
-  \begin{equation}
-  \max_{\lambda} g(\lambda) = \max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
-  \end{equation}
-\end{enumerate}
-
-Dual Problem:
-
-\begin{equation}
-\max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
-\end{equation}
-
-In summary, the corresponding dual problem of the given nonlinear primal problem is:
-
-\begin{equation}
-\max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
-\end{equation}
-
-where \( F^*(-\lambda) \) and \( G^*(K^T \lambda) \) are the Fenchel conjugates of \( F \) and \( G \) respectively.
 
 
 
@@ -716,7 +644,7 @@ These convolutional and pooling layers will form the building block for the U-Ne
 
 
 
-\subsection{U-Net}
+\subsection{U-Net Architecture}
 
 The U-Net is a type of neural network that is commonly used for image segmentation \cite{ronneberger2015unet}.
 The U-Net is an encoder-decoder network that is designed to take an image as input and produce a segmentation mask as output.
@@ -1016,6 +944,7 @@ The formula used for this dataset is a data-dependent Gaussian noise addition
 
 \begin{equation}
     \mathbf{x}_{\text{noisy}} = (\mathbf{x}_{\text{true}} + \sigma \mathbf{n}) \times \sigma_{x_{\text{true}}}
+    \label{eq:data-dependent-noise}
 \end{equation}
 
 where $\sigma_{x_{\text{true}}}$ is the standard deviation of the pixels in the true image $\mathbf{x}_{\text{true}}$.
@@ -1041,7 +970,7 @@ The Turtle ID dataset below uses a different method of adding Gaussian noise.
 
 % We performed various experiments on the Chest X-ray dataset and the SIDD dataset with various configurations of the total variational denoising method and the U-Net.
 
-\subsubsection{U-Net}
+\subsubsection{U-Net Set-Up}
 
 For learning the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$, we used a U-Net structure with 1 initial double convolutional block, followed by 3 encoding blocks, 3 decoding blocks, and 1 final fully connected layer.
 The number of initial filters, or output channels of the first convolution layer, is set to 32.
@@ -1081,21 +1010,23 @@ The default is
 
 \begin{equation}
     \mathbf{\Lambda}_{\Theta} = 0.1 \times \times \text{softplus}(\mathbf{\Lambda}_{\Theta})
+    \label{eq:default-softplus}
 \end{equation}
 
 which is what I used.
 
-I could also set a custom "up-bound" value so that
 
+\begin{textit}
+In the code, if we specify a $t$ value then the following transformation is used:
+\end{textit}
 \begin{equation}
     \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
 \end{equation}
 
 
-
-
 In \cite{kofler2023learning}, it was mentioned that this helps make convergence faster.
 
+\begin{textit}
 One purpose of these transformations is to ensure that the regularisation parameter map is strictly positive.
 
 Another purpose is to ensure that the regularisation parameters are not too large.
@@ -1119,7 +1050,7 @@ I might experiment changing the code to use only softplus.
 Question: What if we simply clip the values to a sensible range like 0 to 0.4?
 
 What if we use only sigmoid or only softplus?
-
+\end{textit}
 
 For the primal dual solver, we set 
 % the \codeword{up-bound} parameter to 0 and 
@@ -1136,7 +1067,9 @@ During testing we also set $T_{\text{test}}$ to 256.
 
 \subsubsection{Training Options}
 
-We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
+We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. 
+
+We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
 
 
 
@@ -1376,7 +1309,7 @@ We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of
 % \end{wrapfigure}{l}
 
 As previously mentioned, we used 100 images with label "normal" from the test set provided in the Chest X-ray dataset for testing.
-Each test image was noised with a Gaussian noise of mean 0 and standard deviation $\sigma = 0.5$.
+Each test image was noised with a Gaussian noise of mean 0 and standard deviation $\sigma = 0.5$ (generated using equation \ref{eq:data-dependent-noise}).
 For each test image, we also did a grid search with 81 equally spaced values between 0 and 0.8 in order to find the best scalar $\lambda$ for the total variational denoising method, which we used as a baseline to show the effectiveness of our method.
 
 As an example, we present the results for one of the test images.
@@ -1549,6 +1482,11 @@ We can see that the differences are positive in all cases, which shows that the 
 
 \section{Turtle ID Dataset}
 
+
+\subsection{Experimental Set-Up}
+
+\subsubsection{Training Data}
+
 We used the Turtle ID data set \cite{Adam_2024_WACV}.
 The Turtle ID dataset is a dataset of turtle images which are labeled by the IDs of the individual turtles.
 This dataset is designed for the task of turtle identification.
@@ -1562,19 +1500,18 @@ For the Turtle ID dataset, we set the resolution to $512 \times 512$.
 
 The Turtle ID images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively.
 
-For the turtle ID dataset, We setup using a different method of adding Gaussian noise. We use the common data-independent Gaussian noise addition
+For the turtle ID dataset, we set up using a different method of adding Gaussian noise. We use the common data-independent Gaussian noise addition
 \begin{equation}
     \mathbf{x}_{\text{noisy}} = \mathbf{x}_{\text{true}} + \sigma \mathbf{n}
 \end{equation}
 where the noise $\mathbf{n}$ is drawn from a standard Gaussian distribution with mean 0 and standard deviation 1.
 
 In my implementation, I used the \codeword{random_noise} function from \codeword{scikit-image} library version \codeword{0.24.0}.
-Examples of noisy images with different $\sigma$ values generated with my implementation 
 
 Before training, for each image, I generated six different noisy images with six different levels of noise: $\sigma = 0.05, 0.1, 0.15, 0.2, 0.25, 0.3$.
 100 original images gave me 600 noisy images for training.
 This helps provide reproducibility for future assessment.
-For more randomness, we could generate six images with a random level of noise from $0 to 0.3$.
+For more randomness, we could generate six images with a random level of noise from 0 to 0.3.
 
 
 Examples of noisy images with different $\sigma$ values generated with my implementation 
@@ -1584,132 +1521,98 @@ are shown in figure \ref{fig:example_turtle_images}.
 \begin{figure}
     \centering
     \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t008/PaXakrkxqN.JPG}
-    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256/t008/PaXakrkxqN.JPG}
-    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale/t008/PaXakrkxqN.JPG}
-    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_05/t008/PaXakrkxqN.JPG}
-    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN.JPG}
-    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_15/t008/PaXakrkxqN.JPG}
-    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_2/t008/PaXakrkxqN.JPG}
-    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_25/t008/PaXakrkxqN.JPG}
-    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_256_greyscale_noisy_0_3/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN.JPG}
     \caption{Example of the transformations and noisy versions of one color image.
-    First the image is cropped to a square and rescaled to 256 by 256.
+    First the image is cropped to a square and rescaled to 512 by 512.
     Then it is converted to greyscale.
     Finally, it is noised with Gaussian noise with different $\sigma$ values.
     The noise levels are 0.05, 0.1, 0.15, 0.2, 0.25, and 0.3.
-    We can see that at $\sigma = 0.3$, the image is highly degraded which will prove denoising difficult.
     }
     \label{fig:example_turtle_images}
+
+\end{figure}
+
+
+\subsubsection{U-Net Set-Up}
+
+
+For learning the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$, we used a U-Net structure with 1 initial double convolutional block, followed by 3 encoding blocks, 3 decoding blocks, and 1 final fully connected layer.
+
+The number of initial filters, or output channels of the first convolution layer, is set to 128.
+This leads to a 1-128-256-512-1024-512-256-128-2 structure.
+Everything else is kept the same.
+The total number of trainable parameters of the set $\Theta$ is 28,712,709.
+
+For the activation function, we used the Leaky ReLU with a negative slope of 0.01.
+
+
+For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process.
+
 
 
 \subsubsection{PDHG Solver}
 
 
 After the unet produces the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$,
-it will be transformed before being used in the PDHG solver.
-The default is
+the map is transformed in the same way as in the chest x-ray experiment, using the default \ref{eq:default-softplus}.
 
-\begin{equation}
-    \mathbf{\Lambda}_{\Theta} = 0.1 \times \times \text{softplus}(\mathbf{\Lambda}_{\Theta})
-\end{equation}
-
-which is what I used.
-
-I could also set a custom "up-bound" value so that
-
-\begin{equation}
-    \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
-\end{equation}
-
-
-
-
-In \cite{kofler2023learning}, it was mentioned that this helps make convergence faster.
-
-One purpose of these transformations is to ensure that the regularisation parameter map is strictly positive.
-
-Another purpose is to ensure that the regularisation parameters are not too large.
-
-We can control the limit of the regularisation.
-
-A large up-bound value will allow more regularisation power.
-
-However, we might want to limit the regularisation power
-so that the model does not overfit the training data.
-
-These transformations can reduce the parameters values to 0 after some iterations if the up-bound is set too small.
-I tried with values up to 0.01 and quickly there was no more improvement. (This is due to the parameter map becoming 0?)
-
-I also tried 0.2 and a similar thing happened.
-
-This is due to the vanishing gradient problem when using sigmoid?
-
-I might experiment changing the code to use only softplus.
-
-Question: What if we simply clip the values to a sensible range like 0 to 0.4?
-
-What if we use only sigmoid or only softplus?
-
-
-For the primal dual solver, we set 
+For the number of iterations, we set 
 % the \codeword{up-bound} parameter to 0 and 
-$T_{\text{train}}$ to 256.
-During testing we also set $T_{\text{test}}$ to 256.
-
-% # constrain map to be striclty positive; further, bound it from below
-% if self.up_bound > 0:
-%     # constrain map to be striclty positive; further, bound it from below
-%     lambda_cnn = self.up_bound * self.op_norm_AHA * torch.sigmoid(lambda_cnn)
-% else:
-%     lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
+$T_{\text{train}}$ to 128.
+During testing we also set $T_{\text{test}}$ to 128.
 
 
-\subsubsection{U-Net}
+\subsubsection{Training Options}
 
-For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process. 
-This is show that the shuffling will be the same if someone runs the training again.
+We also use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function.
 
+We trained for a total of 60 epochs, but use the model at the 50-epoch checkpoint. 
+After around 50 epochs, the validation accuracy started to drop.
+The total training time was 9 hours, and the GPU memory footprint was around 10 GB.
 
-
-
-
-\end{figure}
 \subsection{Results}
 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/clean.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    \includegraphics[width=0.34\linewidth]{images//turtle_id/test/images_crop_resize_256_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
+    \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/clean.png}
+    \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
     \caption{
         Turtle ID example. 
-        The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.1$. 
+        The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.2$. 
         The bottom row shows the denoised images using the TV method; 
-        the left image with PSNR = 29.10 was produced 
-        using the best scalar regularisation parameter $\lambda = 0.07$ , 
-        while the right image with PSNR = \textbf{30.12} was denoised 
+        the left image with PSNR = 27.33 was produced 
+        using the best scalar regularisation parameter $\lambda = 0.145$ from our grid search with step size 0.005, 
+        while the right image with PSNR = \textbf{28.19} was denoised 
         using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
     \label{fig:compare_turtle_id}
   \end{figure}
 
 
 
-\section{Important Implementation Details}
+% \section{Important Implementation Details}
 
-\subsection{Metrics}
+% \subsection{Metrics}
 
-The SSIM metrics were calculated using the pytorch Ignite library \cite{pytorch-ignite} for speed.
-As far as I know, it is the fastest implementation of the SSIM metric.
-The SSIM metric was calculated using the default settings of the library, which uses a window size of 11 and a Gaussian filter of standard deviation 1.5.
-This is the common setting for other libraries as well, such as the scikit-image library \cite{scikit-image}.
-However, the results are a little different from the scikit-image.
-Furthermore, the results were obtained using the GPU which also differs from the CPU.
-It might be a good idea to use scikit-image instead as it is more widely used and tested.
-The downside is that it uses the CPU which is slower.
+% The SSIM metrics were calculated using the pytorch Ignite library \cite{pytorch-ignite} for speed.
+% As far as I know, it is the fastest implementation of the SSIM metric.
+% The SSIM metric was calculated using the default settings of the library, which uses a window size of 11 and a Gaussian filter of standard deviation 1.5.
+% This is the common setting for other libraries as well, such as the scikit-image library \cite{scikit-image}.
+% However, the results are a little different from the scikit-image.
+% Furthermore, the results were obtained using the GPU which also differs from the CPU.
+% It might be a good idea to use scikit-image instead as it is more widely used and tested.
+% The downside is that it uses the CPU which is slower.
 
-My comparison: \url{...}
+% My comparison: \url{...}
 
 
 
@@ -1746,6 +1649,90 @@ Through experiments with the Chest X-ray dataset, we demonstrated that using U-N
 - Train on colour images.
 
 - Extend to Total Generalised Variation (TGV) method.
+
+
+\newpage
+
+\appendix
+% Check out:
+% https://stackoverflow.com/questions/717316/how-to-make-appendix-appear-in-toc-in-latex
+
+% https://latex-tutorial.com/latex-appendix/
+
+\chapter{Deriving the Dual Problem}
+
+To derive the corresponding dual problem of the given nonlinear primal problem:
+
+\begin{equation}
+\min_{x \in X} F(Kx) + G(x),
+\end{equation}
+
+we can use the convex optimization framework, particularly the Fenchel duality approach. Here’s the process to derive the dual problem:
+
+Primal Problem:
+\begin{equation}
+\min_{x \in X} F(Kx) + G(x)
+\end{equation}
+
+\section*{Step-by-Step Dual Derivation}
+
+\begin{enumerate}
+  \item \textbf{Introduce a new variable} \( y \) to replace \( Kx \):
+  \begin{equation}
+  \min_{x \in X, y = Kx} F(y) + G(x)
+  \end{equation}
+
+  \item \textbf{Write the Lagrangian}:
+  \begin{equation}
+  \mathcal{L}(x, y, \lambda) = F(y) + G(x) + \lambda^T (y - Kx)
+  \end{equation}
+  where \( \lambda \) is the Lagrange multiplier (dual variable).
+
+  \item \textbf{Form the Dual Function} by minimizing the Lagrangian over \( x \) and \( y \):
+  \begin{equation}
+  g(\lambda) = \inf_{x \in X, y} \mathcal{L}(x, y, \lambda)
+  \end{equation}
+
+  \item \textbf{Separate the minimization} over \( y \) and \( x \):
+  \begin{equation}
+  g(\lambda) = \inf_{y} \left[ F(y) + \lambda^T y \right] + \inf_{x \in X} \left[ G(x) - \lambda^T Kx \right]
+  \end{equation}
+
+  \item \textbf{Identify the Fenchel conjugates} of \( F \) and \( G \):
+  \begin{equation}
+  F^*(\lambda) = \sup_{y} \left[ \lambda^T y - F(y) \right]
+  \end{equation}
+
+  \begin{equation}
+  G^*(\lambda) = \sup_{x \in X} \left[ \lambda^T Kx - G(x) \right]
+  \end{equation}
+
+  \item \textbf{Express the dual function} using these conjugates:
+  \begin{equation}
+  g(\lambda) = -F^*(-\lambda) - G^*(K^T \lambda)
+  \end{equation}
+
+  \item \textbf{Form the Dual Problem}:
+  \begin{equation}
+  \max_{\lambda} g(\lambda) = \max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+  \end{equation}
+\end{enumerate}
+
+Dual Problem:
+
+\begin{equation}
+\max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+\end{equation}
+
+In summary, the corresponding dual problem of the given nonlinear primal problem is:
+
+\begin{equation}
+\max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+\end{equation}
+
+where \( F^*(-\lambda) \) and \( G^*(K^T \lambda) \) are the Fenchel conjugates of \( F \) and \( G \) respectively.
+
+
 
 \newpage
 

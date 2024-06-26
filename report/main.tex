@@ -1497,6 +1497,7 @@ We can see that the differences are positive in all cases, which shows that the 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t570/UaEGrKBOme.jpeg}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t101/AiEMbgYfIX.jpg}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t200/AXJrcNfeds.jpg}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t300/cEGpnPZeDI.jpeg}
@@ -1504,8 +1505,8 @@ We can see that the differences are positive in all cases, which shows that the 
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t500/dnoPzYiZii.jpeg}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t600/crnsyTUIyS.jpeg}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t070/AHmeYdbiKe.JPG}
-    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t080/BHfaybcCbL.jpg}
 
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t080/BHfaybcCbL.jpg}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t090/ckWXIjaiUr.JPG}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t102/AGbpwnGLVP.JPG}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t110/adTmyVFBsx.JPG}
@@ -1514,6 +1515,7 @@ We can see that the differences are positive in all cases, which shows that the 
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t160/bIeNjNmPqN.JPG}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t170/FzMylIXByx.JPG}
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t190/HCFFrEjYfB.JPG}
+
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t120/pKGKUmGNUu.JPG}
     \caption{
         Examples of the Turtle ID 2022 dataset.
@@ -1650,6 +1652,7 @@ The total training time was 9 hours, and the GPU memory footprint was around 10 
         The top image shows the colours that correspond to the actual values of lambda.
         The middle image shows the colours that correspond to the actual values of lambda, but the values are clipped to the range [0, 0.6].
         The bottom image shows the colours that correspond to the logarithm of the values with an offset of 0.05 to avoid taking the log of zero.
+        We can see that the regions with higher values correspond to the smooth parts of the image, like the water, turtle's shadow on the sand, and the black gap between the shell and its head.
     }
 \end{figure}
 
@@ -1657,28 +1660,40 @@ The total training time was 9 hours, and the GPU memory footprint was around 10 
 \begin{figure}[H]
     \centering
 
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/noisy.png}
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/denoised.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/noisy.png}
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/denoised.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/noisy.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/denoised.png}
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/noisy.png}
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    % \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/denoised.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/noisy.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/scalar/best_PSNR.png}
-    \includegraphics[width=0.25\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/denoised.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/noisy.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/denoised.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/reg_map.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/reg_map.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/noisy.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/denoised.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/reg_map.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/denoised.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/reg_map.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/noisy.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/denoised.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/reg_map.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/denoised.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/reg_map.png}
 
     \caption{
         Different noise levels for the example and the corresponding denoised images using the two methods.
         From the top, the noise levels $\sigma$ are 0.1, 0.2, and 0.3.
+        The best scalar regularisation parameters $\lambda$ are 
+        0.07, 
+        0.145, 
+        and 
+        0.21 
+        respectively.
     }
 
 \end{figure}

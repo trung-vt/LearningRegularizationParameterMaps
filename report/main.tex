@@ -1041,7 +1041,8 @@ The Turtle ID dataset below uses a different method of adding Gaussian noise.
 
 % We performed various experiments on the Chest X-ray dataset and the SIDD dataset with various configurations of the total variational denoising method and the U-Net.
 
-% For both datasets, 
+\subsubsection{U-Net}
+
 For learning the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$, we used a U-Net structure with 1 initial double convolutional block, followed by 3 encoding blocks, 3 decoding blocks, and 1 final fully connected layer.
 The number of initial filters, or output channels of the first convolution layer, is set to 32.
 As commonly done, each encoding/decoding block contains a(n) downsampling/upsampling step, followed by 2 (fully) convolutional layers, in which the first convolutional layer doubles/halves the number channels which the second maintains the number of channels.
@@ -1071,6 +1072,7 @@ During testing we also set $T_{\text{test}}$ to 256.
 % else:
 %     lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
 
+\subsubsection{PDHG Solver}
 
 After the unet produces the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$,
 it will be transformed before being used in the PDHG solver.
@@ -1087,6 +1089,8 @@ I could also set a custom "up-bound" value so that
 \begin{equation}
     \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
 \end{equation}
+
+In \cite{kofler2023learning}, it was mentioned that this helps make convergence faster.
 
 One purpose of these transformations is to ensure that the regularisation parameter map is strictly positive.
 

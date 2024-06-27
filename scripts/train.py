@@ -110,11 +110,6 @@ def init_wandb(config):
 
 
 def start_training(config, get_datasets, pretrained_model_path=None, is_state_dict=False, start_epoch=0):
-    
-    data_loader_train, data_loader_valid, data_loader_test = get_data_loaders(config, get_datasets(config))
-
-    del data_loader_test # Not used for now
-
     if pretrained_model_path is None or is_state_dict:
         # Define CNN block
         unet = UNet3d(
@@ -147,6 +142,10 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
     #   AttributeError: partially initialized module 'torch._dynamo' has no attribute 'trace_rules' (most likely due to a circular import)
     optimizer = torch.optim.Adam(pdhg.parameters(), lr=config["learning_rate"])
     loss_function = torch.nn.MSELoss()
+    
+    data_loader_train, data_loader_valid, data_loader_test = get_data_loaders(config, get_datasets(config))
+
+    del data_loader_test # Not used for now
 
     num_epochs = config["epochs"]
 

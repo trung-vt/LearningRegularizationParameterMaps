@@ -40,7 +40,8 @@ class StaticImagePrimalDualNN(nn.Module):
         super(StaticImagePrimalDualNN, self).__init__()
         self.device = device
         self.op_norm_AHA = torch.sqrt(torch.tensor(1.0))
-        self.op_norm_GHG = torch.sqrt(torch.tensor(12.0)) # TODO: Why sqrt(12.0)???
+        # self.op_norm_GHG = torch.sqrt(torch.tensor(12.0))
+        self.op_norm_GHG = torch.sqrt(torch.tensor(8.0)) # I calculated the maximum singular value # I calculated the maximum singular value --> L = 3 = sqrt(9)
         self.pdhg = PDHG(
             op_norm_AHA=self.op_norm_AHA,
             op_norm_GHG=self.op_norm_GHG, 

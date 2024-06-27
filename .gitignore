@@ -162,6 +162,7 @@ SIDD_Small_sRGB_Only/
 
 .hydra/
 
+junk/
 data/chest_xray/
 data/chest_ct/
 data/bone_fracture_xray/

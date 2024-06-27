@@ -4,7 +4,6 @@ from PIL import Image
 import torch
 from tqdm import tqdm
 import numpy as np
-import img2pdf
 
 
 import io
@@ -51,20 +50,26 @@ class SuppressOutput:
 #         sys.stdout = save_stdout
 #         sys.stderr = save_stderr
 
+# import img2pdf
+from multiprocessing.dummy import Pool as ThreadPool
 
-# import logging
+import logging
 
-# # Suppress img2pdf DEBUG logs
+# Suppress img2pdf DEBUG logs
+logging.getLogger("img2pdf").propagate = False
 # logging.getLogger("img2pdf").setLevel(logging.WARNING)
-# # logging.getLogger("img2pdf").setLevel(logging.ERROR)
+logging.getLogger("img2pdf").setLevel(logging.ERROR)
+
+logging.getLogger("multiprocessing").propagate = False
+# logging.getLogger("multiprocessing").setLevel(logging.WARNING)
+logging.getLogger("multiprocessing").setLevel(logging.ERROR)
 
 from data.transform import convert_to_tensor_4D, convert_to_PIL
-
+from networks.pdhg import PDHG
 
 class ResultGenerator:
-    def __init__(self, model_path, min_lambda, max_lambda, num_lambdas, cmp_func, saving_denoised:bool, in_path:str, out_path:str, file_paths:dict, returning_denoised_PILs:bool=False):
-        self.model = torch.load(model_path)
-        self.model.eval()
+    def __init__(self, min_lambda, max_lambda, num_lambdas, cmp_func, saving_denoised:bool, in_path:str, out_path:str, file_paths:dict, returning_denoised_PILs:bool=False):
+        self.model = PDHG()
         self.lambdas = np.linspace(min_lambda, max_lambda, num_lambdas)
         
         self.cmp_func = cmp_func
@@ -88,6 +93,7 @@ class ResultGenerator:
                 clean_4d = convert_to_tensor_4D(np.array(Image.open(in_path + "/" + clean_file_path)))
                 self.sample_collection.append((noisy_4d, clean_4d, noisy_file_path))
                 
+        self.lambda_col = "lambda"
             
     def get_denoised_folder(self, noisy_path):
         extension = noisy_path.split(".")[-1]
@@ -106,31 +112,50 @@ class ResultGenerator:
 
     def get_denoised_PIL(self, noisy_4d, clean_4d, denoised_folder, extension, _lambda):
         denoised_filename = self.get_denoised_filename(denoised_folder, _lambda)
+        results_file = f"{denoised_filename}.csv"
+        
+        if os.path.exists(results_file) and not self.returning_denoised_PILs:
+            cmp_results = pd.read_csv(results_file)
+            return None, cmp_results
+
         denoised_file = f"{denoised_filename}.{extension}"
-        denoised_PIL = None
+        denoised_PIL = None        
         
         if os.path.exists(denoised_file):
             denoised_PIL:Image = Image.open(denoised_file)
             denoised_4d:torch.tensor = convert_to_tensor_4D(denoised_PIL)
         else:
-            denoised_5d:torch.tensor = self.model(noisy_4d.unsqueeze(0).to("cuda"), _lambda)
+            denoised_5d:torch.tensor = self.model(noisy_4d.unsqueeze(0), _lambda)
             assert len(denoised_5d.shape) == 5, f"Model output has unexpected shape {denoised_5d.shape}. Expected 5D tensor."
             denoised_4d:torch.tensor = denoised_5d.squeeze(0).cpu()
+            
+            if self.saving_denoised:
+                if not os.path.exists(denoised_file):
+                    denoised_PIL:Image = convert_to_PIL(denoised_4d)
+                    denoised_PIL.save(denoised_file)
+            
             del denoised_5d # Explicitly free up memory
-        cmp_results = self.cmp_func(denoised_4d, clean_4d)
-        if self.saving_denoised:
-            if not os.path.exists(denoised_file):
-                denoised_PIL:Image = convert_to_PIL(denoised_4d)
-                denoised_PIL.save(denoised_file)
-            denoised_pdf = f"{denoised_filename}.pdf"
-            if not os.path.exists(denoised_pdf):
-                # with suppress_output():
-                with SuppressOutput():
-                    pdf_bytes = img2pdf.convert(denoised_file)
-                    with open(denoised_pdf, "wb") as f:
-                        f.write(pdf_bytes)
+
+        if os.path.exists(results_file) and not self.returning_denoised_PILs:
+            cmp_results = pd.read_csv(results_file)
+        else:
+            cmp_results = self.cmp_func(denoised_4d, clean_4d)
+            cmp_results[self.lambda_col] = [_lambda]
+            cmp_results.to_csv(results_file, index=False) # Remove index column  
+
+                
+            # # Optional: Save as PDF
+            # denoised_pdf = f"{denoised_filename}.pdf"
+            # if not os.path.exists(denoised_pdf):
+            #     # with suppress_output():
+            #     with SuppressOutput():
+            #         pdf_bytes = img2pdf.convert(denoised_file)
+            #         with open(denoised_pdf, "wb") as f:
+            #             f.write(pdf_bytes)
 
         del denoised_4d # Explicitly free up memory
+        if not self.returning_denoised_PILs:
+            denoised_PIL = None
         return denoised_PIL, cmp_results
             
         
@@ -138,7 +163,7 @@ class ResultGenerator:
         noisy_4d, clean_4d, noisy_path = sample
         assert noisy_4d.shape == clean_4d.shape, f"Noisy and clean images have different sizes!\nnoisy.shape: {noisy_4d.shape}, clean.shape: {clean_4d.shape}"
 
-        df = pd.DataFrame(columns=["lambda", "MSE", "PSNR", "SSIM"])
+        df = pd.DataFrame(columns=[self.lambda_col, "MSE", "PSNR", "SSIM"])
         
         denoised_PILs = []
         denoised_folder, extension = self.get_denoised_folder(noisy_path)
@@ -147,7 +172,8 @@ class ResultGenerator:
             denoised_PIL, cmp_results = self.get_denoised_PIL(noisy_4d, clean_4d, denoised_folder, extension, _lambda)
             if self.returning_denoised_PILs:
                 denoised_PILs.append(denoised_PIL)
-            df = pd.concat([df, pd.DataFrame([[_lambda, *cmp_results]], columns=df.columns)], ignore_index=True)
+            
+            df = pd.concat([df, cmp_results], ignore_index=True)
         
         df.to_csv(f"{denoised_folder}/results.csv", index=False) # Remove index column, only 4 columns are kept: lambda, MSE, PSNR, SSIM
         del noisy_4d, clean_4d # Explicitly free up memory
@@ -156,7 +182,6 @@ class ResultGenerator:
         
     def process_samples(self, num_threads:int=1):
         # Don't use too many threads, the computation is also done on the GPU which doesn't have a lot of memory?
-        from multiprocessing.dummy import Pool as ThreadPool
         # https://stackoverflow.com/questions/2846653/how-do-i-use-threading-in-python
         pool = ThreadPool(num_threads)
         print(f"Multiprocessing {len(self.sample_collection)} samples in {num_threads} threads")

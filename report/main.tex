@@ -4,6 +4,7 @@
 \usepackage{amssymb,tikz,pdftexcmds,xparse}
 \usepackage{url}
 
+\usepackage{bm} % bold math
 
 % \usepackage{biblatex}
 \usepackage[%
@@ -220,14 +221,14 @@ style=apa,
 
 This project is largely based on existing research 
 on the learning of 
-regularisation parameter maps for variational image reconstruction using deep neural networks and algorithm unrolling \cite{kofler2023learning}.
+regularisation parameter maps for variational image reconstruction using deep neural networks and algorithm unrolling (\cite{kofler2023learning}).
 In this dissertation, we 
 focus on the problem of image denoising.
 We define solving the denoising problem as solving the total variation (TV) problem and give a mathematical formulation of variational image denoising. 
 We then discuss the primal dual algorithm for solving the TV denoising problem, and the importance of choosing the regularisation parameter.
 This led to the idea of using a deep learning method called U-Net to help us find a regularisation parameter map which can improve the denoising performance of the primal dual algorithm.
 We combine a U-Net architecture with the primal dual algorithm to create an end-to-end unsupervised model for image denoising that can achieve said improvement while staying completely interpretable. 
-We implement the proposed combined model and evaluate it on the Chest X-ray dataset and the Turtle ID 2022 dataset.
+We implement the proposed combined model and evaluate it on the Chest X-ray dataset (\cite{kermany2018large}) and the SeaTurtleID2022 (\cite{Adam_2024_WACV}).
 The results show that the combined model consistently outperforms the traditional method of using a single regularisation parameter.
 
 \subsection{Motivation for this work}
@@ -240,7 +241,7 @@ The results show that the combined model consistently outperforms the traditiona
 
 - Adapt the existing code of the dynamic image denoising project in \cite{kofler2023learning} to static image denoising. Train and evaluate the model using new datasets.
 
-- Experiment with a larger neural network.
+- Experiment with a larger neural network on the SeaTurtleID2022 dataset.
 
 - Present the theory of the total variation denoising method and the experimental set-up in detail so that a fellow student can understand the method and implement it themselves.
 
@@ -316,14 +317,16 @@ For the forward gradient, the vertical gradient is calculated as
     \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \mathbf{x}_{3, 2} - \mathbf{x}_{2, 2} & \ldots & \mathbf{x}_{3, n-1} - \mathbf{x}_{2, n-1} & \mathbf{x}_{3, n} - \mathbf{x}_{2, n}  \\
     \vdots & \vdots & \ddots & \vdots & \vdots \\
     \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m, 2} - \mathbf{x}_{m-1, 2} & \ldots & \mathbf{x}_{m, n-1} - \mathbf{x}_{m-1, n-1} & \mathbf{x}_{m, n} - \mathbf{x}_{m-1, n} \\
-    \mathbf{x}_{1, 1} - \mathbf{x}_{m, 1} & \mathbf{x}_{1, 2} - \mathbf{x}_{m, 2} & \ldots & \mathbf{x}_{1, n-1} - \mathbf{x}_{m, n-1} & \mathbf{x}_{1, n} - \mathbf{x}_{m, n} \\
+    % \mathbf{x}_{1, 1} - \mathbf{x}_{m, 1} & \mathbf{x}_{1, 2} - \mathbf{x}_{m, 2} & \ldots & \mathbf{x}_{1, n-1} - \mathbf{x}_{m, n-1} & \mathbf{x}_{1, n} - \mathbf{x}_{m, n} \\
+    - \mathbf{x}_{m, 1} & - \mathbf{x}_{m, 2} & \ldots & - \mathbf{x}_{m, n-1} & - \mathbf{x}_{m, n} \\
   \end{bmatrix} \\
   &= \begin{bmatrix}
     -1 & 1 & \ldots & 0 & 0 \\
     0 & -1 & \ldots & 0 & 0 \\
      \vdots & \vdots & \ddots & \vdots & \vdots \\
     0 & 0 & \ldots & -1 & 1 \\
-    1 & 0 & \ldots & 0 & -1
+    % 1 & 0 & \ldots & 0 & -1
+    0 & 0 & \ldots & 0 & -1
     \end{bmatrix} \mathbf{x}
   \end{aligned}
 \end{equation}
@@ -333,14 +336,21 @@ and the horizontal gradient is calculated as
 \begin{equation}
   \begin{aligned}
   \nabla_{y} \mathbf{x} &= \begin{bmatrix}
-    \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} & \mathbf{x}_{1,1} - \mathbf{x}_{1,n} \\
-    \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} & \mathbf{x}_{2,1} - \mathbf{x}_{2,n}  \\
+    % \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} & \mathbf{x}_{1,1} - \mathbf{x}_{1,n} \\
+    % \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} & \mathbf{x}_{2,1} - \mathbf{x}_{2,n}  \\
+    % \vdots & \vdots & \ddots & \vdots & \vdots \\
+    % \mathbf{x}_{m-1,2} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m-1,3} - \mathbf{x}_{m-1,2} & \ldots & \mathbf{x}_{m-1,n} - \mathbf{x}_{m-1,n-1} & \mathbf{x}_{m-1,1} - \mathbf{x}_{m-1,n} \\
+    % \mathbf{x}_{m,2} - \mathbf{x}_{m,1} & \mathbf{x}_{m,3} - \mathbf{x}_{m,2} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m,n-1} & \mathbf{x}_{m,1} - \mathbf{x}_{m,n} \\
+
+    \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} & \mathbf- \mathbf{x}_{1,n} \\
+    \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} & \mathbf- \mathbf{x}_{2,n}  \\
     \vdots & \vdots & \ddots & \vdots & \vdots \\
-    \mathbf{x}_{m-1,2} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m-1,3} - \mathbf{x}_{m-1,2} & \ldots & \mathbf{x}_{m-1,n} - \mathbf{x}_{m-1,n-1} & \mathbf{x}_{m-1,1} - \mathbf{x}_{m-1,n} \\
-    \mathbf{x}_{m,2} - \mathbf{x}_{m,1} & \mathbf{x}_{m,3} - \mathbf{x}_{m,2} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m,n-1} & \mathbf{x}_{m,1} - \mathbf{x}_{m,n} \\
+    \mathbf{x}_{m-1,2} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m-1,3} - \mathbf{x}_{m-1,2} & \ldots & \mathbf{x}_{m-1,n} - \mathbf{x}_{m-1,n-1} & - \mathbf{x}_{m-1,n} \\
+    \mathbf{x}_{m,2} - \mathbf{x}_{m,1} & \mathbf{x}_{m,3} - \mathbf{x}_{m,2} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m,n-1} & \mathbf- \mathbf{x}_{m,n} \\
   \end{bmatrix} \\
   &=  \mathbf{x} \begin{bmatrix}
-    -1 & 0 & \ldots & 0 & 1 \\
+    % -1 & 0 & \ldots & 0 & 1 \\
+    -1 & 0 & \ldots & 0 & 0 \\
     1 & -1 & \ldots & 0 & 0 \\
     \vdots & \vdots & \ddots & \vdots & \vdots \\
     0 & 0 & \ldots & -1 & 0 \\
@@ -361,13 +371,15 @@ The $\ell_1$ norm of the image gradient $\nabla \mathbf{x}$ is the sum of the $\
 where
 
 \begin{equation}
-  \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |\mathbf{x}_{1, j} - \mathbf{x}_{m,j}|
+%   \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |\mathbf{x}_{1, j} - \mathbf{x}_{m,j}|
+  \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |- \mathbf{x}_{m,j}|
 \end{equation}
 
 and
 
 \begin{equation}
-  \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |\mathbf{x}_{i, 1} - \mathbf{x}_{i,n}|
+%   \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |\mathbf{x}_{i, 1} - \mathbf{x}_{i,n}|
+  \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |- \mathbf{x}_{i,n}|
 \end{equation}
 
 
@@ -446,7 +458,7 @@ To solve equation \ref{eq:minimisation_problem_lambda_map},
 we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) algorithm: 
 
 \begin{algorithm}[H]
-\caption{PDHG algorithm for image denoising with fixed regularisation parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning} using the implementation \cite{dyn_img_pdhg_code})}
+\caption{PDHG algorithm for image denoising with fixed regularisation parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning} using the implementation by \cite{dyn_img_pdhg_code})}
 \begin{algorithmic}[1]
 
 \STATE \textbf{Input:} 
@@ -478,14 +490,27 @@ noisy image $\mathbf{x}_0$
 \end{algorithm}
 
 where 
+
+\begin{equation}
+    \left( \operatorname{clip}_{\bm{\Lambda}}(\bm{y}) \right)_i =
+    \begin{cases}
+    -(\bm{\Lambda})_i, & \bm{y}_i \in (-\infty, -(\bm{\Lambda})_i) \\
+    \bm{y}_i, & \bm{y}_i \in \left[ -(\bm{\Lambda})_i, (\bm{\Lambda})_i \right] \\
+    (\bm{\Lambda})_i, & \bm{y}_i \in ((\bm{\Lambda})_i, \infty)
+    \end{cases}
+\end{equation}
+
+% $\text{clip}_{\boldsymbol{\Lambda}}$ 
+% is a function that clips the values of $\bm{y}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
+is the proximal operator of choice,
 % $\lesssim$ means
 % "slightly less than",
 % less than but almost equal to 
-$\text{sigmoid}(y) = 1 / (1 + \exp(-y))$ is the sigmoid function,
-$\mathbf{I}$ is the identity matrix, $\text{clip}_{\boldsymbol{\Lambda}}$ is a function that clips the values of $\mathbf{q}_{k+1}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
+$\text{sigmoid}(y) = 1 / (1 + \exp(-y))$ is the sigmoid function, and
+$\mathbf{I}$ is the identity matrix.
 
-It has been proven that, if $L^2 \sigma \tau < 1$ then the PDHG algorithm converges to the solution of the primal dual problem \cite{chambolle_pock_2011}.
-However, in practice, the algorithm always converges even if $L^2 \sigma \tau = 1$ \cite{sidky_2012}.
+It has been proven that, if $L^2 \sigma \tau < 1$ then the PDHG algorithm converges to the solution of the primal dual problem (\cite{chambolle_pock_2011}).
+However, in practice, the algorithm always converges even if $L^2 \sigma \tau = 1$ (\cite{sidky_2012}).
 Nevertheless, here $\text{sigmoid}(10) = 0.9999546$ is used to scale the parameters to satisfy the condition $L^2 \sigma \tau < 1$ as well as $\theta < 1$, ensuring convergence.
 Since $\sigma$ and $\tau$ are the step sizes, choosing them to be as large as possible will help speed up the convergence of the algorithm.
 
@@ -498,7 +523,7 @@ We can calculate the value $L = \| [\mathbf{I}, \nabla]^\text{T} \|_2 = 3$ using
 where  $\sigma_{\text{max}}(\mathbf{M})$ is the largest singular value of matrix $\mathbf{M}$.
 For a square 2D matrix with each side of length $2n$, the largest singular value is $3$.
 % It is proven that if $L \geq \| [\mathbf{I}, \nabla]^\text{T} \|_2$ then the algorithm converges.
-However, the code uses a safe value of $\sqrt{13}$ for $L$ as chosen in the original implementation \cite{dyn_img_pdhg_code}.
+However, the code uses a safe value of $\sqrt{13}$ for $L$ as chosen in the original implementation (\cite{dyn_img_pdhg_code}).
 
 
 
@@ -561,7 +586,7 @@ Convolutional Neural Network (CNN)
 \begin{figure}[ht]
     \includegraphics[width=1\linewidth]{Le-Net 5.png}
     
-    \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks \cite{726791}} 
+    \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks (\cite{726791})} 
     \label{fig:lenet}
 \end{figure}
 
@@ -652,7 +677,7 @@ These convolutional and pooling layers will form the building block for the U-Ne
 
 \subsection{U-Net Architecture}
 
-The U-Net is a type of neural network that is commonly used for image segmentation \cite{ronneberger2015unet}.
+The U-Net is a type of neural network that is commonly used for image segmentation (\cite{ronneberger2015unet}).
 The U-Net is an encoder-decoder network that is designed to take an image as input and produce a segmentation mask as output.
 The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
 The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
@@ -922,9 +947,7 @@ is then used for backpropagation to train the parameters $\Theta$.
 
 \subsubsection{Training Data}
 
-We used the Chest X-Ray Images (Pneumonia) dataset which was downloaded from \cite{kermany2018large} and 
-
-
+We used the Chest X-Ray Images (Pneumonia) dataset which provided by \cite{kermany2018large}.
 % \url{https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia}. 
 The Chest X-Ray dataset was designed for binary classification of normal and pneumonia chest X-ray images. 
 The dataset consists of 5,863 X-Ray images which are split into two categories (Pneumonia/Normal).
@@ -961,7 +984,7 @@ I am noting this because this might be important to make comparison between diff
 I have seen that some implementations use custom functions to add noise to the images, 
 which might produce different results.
 For the same $\sigma$ value, the noise might be different.
-The Turtle ID dataset below uses a different method of adding Gaussian noise.
+The SeaTurtleID2022 dataset below uses a different and more traditional data-independent method of adding Gaussian noise.
 
   
 
@@ -999,13 +1022,13 @@ For the activation function, we used the Leaky ReLU with a negative slope of 0.0
 
 
 It is worth noting that, for the implementation of the U-Net, 
-we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library \cite{PyTorch}.
+we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library (\cite{PyTorch}).
 The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
 The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
 
 This might, however, increase the GPU memory usage and prevent us from using a larger model or a larger batch size.
 
-Perhaps it is still worth trying to use the 2D implementation.
+% Perhaps it is still worth trying to use the 2D implementation.
 
 
 
@@ -1013,25 +1036,25 @@ Perhaps it is still worth trying to use the 2D implementation.
 
 After the unet produces the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$,
 it will be transformed before being used in the PDHG solver.
-The default is
+% The default is
 
 \begin{equation}
-    \mathbf{\Lambda}_{\Theta} = 0.1 \times \times \text{softplus}(\mathbf{\Lambda}_{\Theta})
+    \mathbf{\Lambda}_{\Theta} = t \times \text{softplus}(\mathbf{\Lambda}_{\Theta})
     \label{eq:default-softplus}
 \end{equation}
 
-which is what I used.
-
-
-\begin{textit}
-In the code, if we specify a $t$ value then the following transformation is used:
-\end{textit}
-\begin{equation}
-    \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
-\end{equation}
-
-
+where $t = 0.1$.
+% which is what I used.
 In \cite{kofler2023learning}, it was mentioned that this helps make convergence faster.
+
+% In the code, if we specify a $t$ value then the following transformation is used:
+
+% \begin{equation}
+%     \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
+% \end{equation}
+
+
+
 
 % \begin{textit}
 % One purpose of these transformations is to ensure that the regularisation parameter map is strictly positive.
@@ -1458,7 +1481,7 @@ Plotting the results for all the test images, we can see that the regularisation
 The box plots in Figure 
 \ref{fig:box_plots} 
 % 7
-show the distribution of PSNR and SSIM \cite{ssim} values for the test images
+show the distribution of PSNR and SSIM (\cite{ssim}) values for the test images
 using the two methods.
 Figure 
 \ref{fig:hist_diff}
@@ -1487,7 +1510,7 @@ We can see that the differences are positive in all cases, which shows that the 
 
 
 
-\section{Turtle ID Dataset}
+\section{SeaTurtleID2022 Dataset}
 
 
 \subsection{Experimental Set-Up}
@@ -1517,34 +1540,35 @@ We can see that the differences are positive in all cases, which shows that the 
     \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t190/HCFFrEjYfB.JPG}
 
     \caption{
-        Examples of the Turtle ID 2022 dataset.
+        Examples from the SeaTurtleID2022 dataset (\cite{Adam_2024_WACV}).
     }
 \end{figure}
 
-We used the Turtle ID data set \cite{Adam_2024_WACV}.
-The Turtle ID dataset is a dataset of turtle images which are labeled by the IDs of the individual turtles.
-This dataset is designed for the task of turtle identification.
-The dataset consists of over 7,000 images, also in JPEG format.
-All images are color images and have various resolutions.
+% We used the SeaTurtleID2022 data set \cite{Adam_2024_WACV}.
+The SeaTurtleID2022 dataset (\cite{Adam_2024_WACV}) is a dataset of 8729 images which are labeled with the IDs of 438 individual sea-turtles. The dataset is kindly provided by \cite{seaturtleid2022}.
+This dataset is designed for the task of sea-turtle identification as well as other image segmentation tasks.
+All images are color images in JPEG format with a maximum length of 2000 pixels.
 Compared to the Chest X-ray dataset, the images in this dataset contain a lot more variations.
 
-For the Turtle ID dataset, first we split the dataset into training, validation, and test sub-datasets with ratio 0.8 : 0.1 : 0.1.
+First we split the dataset into training, validation, and test sub-datasets with ratio 0.8 : 0.1 : 0.1.
 For resources reasons, we used only a small subset of each of the sub-dataset.
 Specifically, we pick 100 images to generate training set, 10 images to generate the validation set, and another 100 images to generate the testing set.
 
-For the Turtle ID dataset, we also crop the images to squares. Then we rescale the resolution to $512 \times 512$.
+For consistency, we also crop the images to squares. Then we rescale the resolution to $512 \times 512$.
 
-The Turtle ID images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively.
+The colour images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively.
 
-For the turtle ID dataset, we set up using a different method of adding Gaussian noise. We use the common data-independent Gaussian noise addition
+For this dataset, we set up using a different method of adding Gaussian noise. Specifically, we use the common data-independent Gaussian noise addition
 \begin{equation}
     \mathbf{x}_{\text{noisy}} = \mathbf{x}_{\text{true}} + \sigma \mathbf{n}
 \end{equation}
 where the noise $\mathbf{n}$ is drawn from a standard Gaussian distribution with mean 0 and standard deviation 1.
 
-In my implementation, I used the \codeword{random_noise} function from \codeword{scikit-image} library version \codeword{0.24.0}.
+% In my implementation, I used 
+For consistency, we implement noise generation using the
+\codeword{random_noise} function from the well-established \codeword{scikit-image} library, version \codeword{0.24.0}.
 
-Before training, for each image, we generate six different noisy images with six different levels of noise: $\sigma = 0.05, 0.1, 0.15, 0.2, 0.25, 0.3$.
+Before training, for each image, we generate six different noisy images with six different levels of noise: $\sigma =$ 0.05, 0.1, 0.15, 0.2, 0.25, 0.3.
 This gives us a total of 600 images for training, 60 images for validation, and 600 images for testing.
 We also use a batch size of 1, so each training epoch consists of 600 iterations, one iteration for each image in the training dataset.
 This helps provide reproducibility for future assessment.
@@ -1566,7 +1590,9 @@ are shown in figure \ref{fig:example_turtle_images}.
     \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN.JPG}
     % \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN.JPG}
     \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN.JPG}
-    \caption{Example of the transformations and noisy versions of one color image.
+    \caption{
+    An example from the SeaTurtleID2022 dataset and its transformations.
+    % Example of the transformations and noisy versions of one color image.
     First the image is cropped to a square and rescaled to 512 by 512.
     Then it is converted to greyscale.
     Finally, it is noised with Gaussian noise with different $\sigma$ values.
@@ -1630,7 +1656,8 @@ The total training time was 9 hours, and the GPU memory footprint was around 10 
     \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
     \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
     \caption{
-        Turtle ID example. 
+        % An example from the SeaTurtleID2022 dataset and its transformations.
+        Comparing the reconstructions of the SeaTurtleID2022 dataset example.
         The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.2$. 
         The bottom row shows the denoised images using the TV method; 
         the left image with PSNR = 27.33 was produced 
@@ -1646,7 +1673,7 @@ The total training time was 9 hours, and the GPU memory footprint was around 10 
     \includegraphics[width=0.51\linewidth]{images/turtle_id/reg_map_clip.png}
     \includegraphics[width=0.51\linewidth]{images/turtle_id/reg_map_log.png}
     \caption{
-        The produced $\mathbf{\Lambda}_{\Theta}$ map for the Turtle ID dataset example. 
+        The produced $\mathbf{\Lambda}_{\Theta}$ map for the chosen example. 
         The pixel colour represents the magnitude of the regularisation parameter at a particular point.
         The top image shows the colours that correspond to the actual values of lambda.
         The middle image shows the colours that correspond to the actual values of lambda, but the values are clipped to the range [0, 0.6].
@@ -1693,6 +1720,16 @@ The total training time was 9 hours, and the GPU memory footprint was around 10 
         and 
         0.21 
         respectively.
+        The PSNR values for the denoised images using the scalar $\lambda$ are
+        30.4797,
+        27.3257,
+        and
+        24.6757;
+        whereas the PSNR values for the denoised images using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ are
+        31.5126,
+        28.1870
+        and
+        25.3198.
     }
 
 \end{figure}
@@ -1719,7 +1756,7 @@ The total training time was 9 hours, and the GPU memory footprint was around 10 
 
 % Through experimentation with the Chest X-ray dataset, we showed that using U-Net produces a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ that improves the denoising of images using the total variational method compared to the traditional scalar $\lambda$.
 
-Through experiments with the Chest X-ray dataset and the Turtle ID 2022 dataset, we demonstrate that using U-Net to produce a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ enhances the denoising performance of the total variation method compared to the traditional scalar $\lambda$.
+Through experiments with the Chest X-ray dataset and the SeaTurtleID2022 dataset, we demonstrate that using U-Net to produce a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ enhances the denoising performance of the total variation method compared to the traditional scalar $\lambda$.
 
 % This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.
 

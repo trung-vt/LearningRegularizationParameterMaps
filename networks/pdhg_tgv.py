@@ -1,121 +1,64 @@
-import torch
-import torch.nn as nn
+import numpy as np
 
-from networks.grad_ops import GradOperators
-from networks.prox_ops import ClipAct
+# Assuming some necessary functions and projections are defined
+def P_alpha1(x):
+    # Placeholder for projection operator P_alpha1
+    return x
 
-# Code taken from https://www.github.com/koflera/LearningRegularizationParameterMaps
+def P_alpha0(x):
+    # Placeholder for projection operator P_alpha0
+    return x
 
-class PDHG(nn.Module):
-    def __init__(
-            self, dim=3,
-            op_norm_AHA=torch.sqrt(torch.tensor(1.0)),
-            op_norm_GHG=torch.sqrt(torch.tensor(12.0)), # TODO: Why sqrt(12.0)???
-        ):
-        super(PDHG, self).__init__()
-        self.GradOps = GradOperators(dim, mode="forward", padmode="circular")
+def id_tauFh_inverse(x):
+    # Placeholder for (id + τ∂Fh)^(-1)
+    return x
 
-        # operator norms
-        self.op_norm_AHA = op_norm_AHA
-        self.op_norm_GHG = op_norm_GHG
-        # operator norm of K = [A, \nabla]
-        # https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf,
-        # see page 3083. NOTE: This does not explain the choice of 12.0 for the operator norm of GHG
-        self.L = torch.sqrt(self.op_norm_AHA**2 + self.op_norm_GHG**2) # TODO: Why sqrt(13.0)???
+def Fh(u):
+    # Placeholder for the function Fh
+    return u
 
-        # function for projecting
-        self.ClipAct = ClipAct()
+def TGV2_alpha(u):
+    # Placeholder for the TGV^2_α function
+    return u
 
-        # constants depending on the operators
-        self.tau = nn.Parameter(
-            torch.tensor(10.0), requires_grad=True
-        )  # starting value approximately  1/L
-        self.sigma = nn.Parameter(
-            torch.tensor(10.0), requires_grad=True
-        )  # starting value approximately  1/L
+def grad_h(u):
+    # Placeholder for the gradient operator ∇h
+    return np.gradient(u)
 
-        # theta should be in \in [0,1]
-        self.theta = nn.Parameter(
-            torch.tensor(10.0), requires_grad=True
-        )  # starting value approximately  1
+def div_h(v):
+    # Placeholder for the divergence operator div_h
+    return np.divergence(v)
 
-        
+# Parameters
+sigma = 1.0
+tau = 1.0
+while sigma * tau * 0.5 * (17 + np.sqrt(33)) > 1:
+    sigma /= 2
+    tau /= 2
 
+# Initial variables
+u0, p0 = np.zeros((10, 10)), np.zeros((10, 10))
+v0, w0 = np.zeros((10, 10)), np.zeros((10, 10))
+u_bar0, p_bar0 = u0.copy(), p0.copy()
 
-    def forward(
-            self, x_5D, lambda_reg, T=128, 
-            # lambda_reg_container=None,
-    ):
-        """
-        Reconstructs the image using the PDHG algorithm.
+# Number of iterations
+N = 100
 
-        Parameters:
-            dynamic_image_tensor_5D: The (noisy) (dynamic) image tensor.
-            Size of the tensor: (`patches`, `channels`, `Nx`, `Ny`, `Nt`) where
-            
-            - `patches`: number of patches
-            - `channels`: number of (colour) channels
-            - `Nx`: number of pixels in x
-            - `Ny`: number of pixels in y
-            - `Nt`: number of time steps (frames)
+# Iteration loop
+for n in range(N):
+    vn_plus1 = P_alpha1(v0 + sigma * (grad_h(u_bar0) - p_bar0))
+    wn_plus1 = P_alpha0(w0 + sigma * grad_h(p0))
+    un_plus1 = id_tauFh_inverse(u0 + tau * div_h(vn_plus1))
+    pn_plus1 = p0 + tau * (vn_plus1 + div_h(wn_plus1))
+    u_bar0 = 2 * un_plus1 - u0
+    p_bar0 = 2 * pn_plus1 - p0
 
-            lambda_reg: The regularization parameter. Can be a scalar or a tensor of suitable size.
-            T: Number of iterations.
+    # Update for next iteration
+    u0, p0 = un_plus1, pn_plus1
+    v0, w0 = vn_plus1, wn_plus1
 
-        Returns:
-            The reconstructed image tensor.
-        """
+# Result
+uN = u0
 
-        dim = 3
-        patches, channels, Nx, Ny, Nt = x_5D.shape
-        
-        assert channels == 1, "Only grayscale images are supported."
-
-        device = x_5D.device
-
-
-        # starting values
-        xbar = x_5D.clone()
-        x0 = x_5D.clone()
-        xnoisy = x_5D.clone()
-
-        # dual variable
-        p = x_5D.clone()
-        q = torch.zeros(patches, dim, Nx, Ny, Nt, dtype=x_5D.dtype).to(device)
-
-        # sigma, tau, theta
-        sigma = (1 / self.L) * torch.sigmoid(self.sigma)  # \in (0,1/L)
-        tau = (1 / self.L) * torch.sigmoid(self.tau)  # \in (0,1/L)
-        theta = torch.sigmoid(self.theta)  # \in (0,1)
-
-        # Algorithm 2 - Unrolled PDHG algorithm (page 18)
-        # TODO: In the paper, L is one of the inputs but not used anywhere in the pseudo code???
-        for kT in range(T):
-            # update p
-            p =  (p + sigma * (xbar - xnoisy) ) / (1. + sigma)
-            # update q
-            q = self.ClipAct(q + sigma * self.GradOps.apply_G(xbar), lambda_reg)
-
-            x1 = x0 - tau * p - tau * self.GradOps.apply_GH(q)
-
-            if kT != T - 1:
-                # update xbar
-                xbar = x1 + theta * (x1 - x0)
-                x0 = x1
-            with torch.no_grad():
-                torch.cuda.empty_cache()
-
-        # Explicitly free up (GPU) memory to be safe
-        del x_5D
-        del xbar, x0, xnoisy
-        del p, q
-        del tau, sigma, theta
-
-        with torch.no_grad():
-            torch.cuda.empty_cache()
-
-        # if lambda_reg_container is not None:
-        #     assert isinstance(lambda_reg_container, list), f"lambda_reg_container should be a list, not {type(lambda_reg_container)}"
-        #     lambda_reg_container.append(lambda_reg) # For comparison
-
-        return x1
+# Output the result
+print(uN)

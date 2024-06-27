@@ -1556,7 +1556,7 @@ Specifically, we pick 100 images to generate training set, 10 images to generate
 
 For consistency, we also crop the images to squares. Then we rescale the resolution to $512 \times 512$.
 
-The colour images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively.
+The colour images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively (\cite{RGB-to-greyscale-formula-ITU-R_BT601}).
 
 For this dataset, we set up using a different method of adding Gaussian noise. Specifically, we use the common data-independent Gaussian noise addition
 \begin{equation}

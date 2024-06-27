@@ -12,6 +12,7 @@ class StaticImagePrimalDualNN(nn.Module):
         cnn_block=None,
         up_bound=0,
         phase="training",
+        t_out=0.1,
     ):
         """
         StaticImagePrimalDualNN
@@ -59,6 +60,8 @@ class StaticImagePrimalDualNN(nn.Module):
 
         # number of terations
         self.T = T
+        
+        self.t_out = t_out
 
         # distinguish between training and test phase;
         # during training, the input is padded using "reflect" padding, because
@@ -101,12 +104,21 @@ class StaticImagePrimalDualNN(nn.Module):
         # double spatial map and stack
         lambda_cnn = torch.cat((lambda_cnn[:, 0, ...].unsqueeze(1), lambda_cnn), dim=1)
 
+        # See page 10 in paper "Learning Regularization Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling"
+        # constrain the regularization parameter-maps to be strictly positive
+        # apply softplus and multiply by t > 0
+        # Empirically, we have experienced that the network’s training beneﬁts in terms of faster convergence if the order of the scale of the output is properly set depending on the application. 
+        # This can be achieved either by accordingly initializing the weights of the network, or in a simpler way, as we do here by scaling the output of the CNN. 
+        # t_out = self.t_out
+        t_out = 0.1
+        # t_out = 0.05
+
         # constrain map to be striclty positive; further, bound it from below
         if self.up_bound > 0:
             # constrain map to be striclty positive; further, bound it from below
             lambda_cnn = self.up_bound * self.op_norm_AHA * torch.sigmoid(lambda_cnn)
         else:
-            lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
+            lambda_cnn = t_out * self.op_norm_AHA * F.softplus(lambda_cnn)
 
         del x, npad_xy, npad_t, pad, neg_pad # Explicitly free up (GPU) memory to be safe
 

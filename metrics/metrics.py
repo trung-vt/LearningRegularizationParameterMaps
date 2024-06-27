@@ -1,6 +1,7 @@
 import torch
 from skimage.metrics import structural_similarity, peak_signal_noise_ratio
 import numpy as np
+import pandas as pd
 
 def PSNR(original, compressed): 
     mse = torch.mean((original - compressed) ** 2) 
@@ -31,4 +32,10 @@ def compare(noisy_4d, clean_4d):
     psnr_val = peak_signal_noise_ratio(clean_np, noisy_np, data_range=1)
     ssim_val = structural_similarity(clean_np, noisy_np, data_range=1)
     
-    return mse_val, psnr_val, ssim_val
+    df_results = pd.DataFrame({
+        "MSE": [mse_val],
+        "PSNR": [psnr_val],
+        "SSIM": [ssim_val]
+    })
+    
+    return df_results

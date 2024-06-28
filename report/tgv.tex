@@ -2,6 +2,17 @@
 \usepackage{amsmath}
 \usepackage{amssymb} % for \mathbb
 
+\usepackage{algorithm}
+\usepackage{algpseudocode} % For algorithmic environment
+\usepackage{hyperref} % For hyperlinks
+
+\usepackage[%
+backend=biber,
+natbib=true,
+style=apa,
+]{biblatex}
+\addbibresource{references.bib}
+
 \begin{document}
 
 \subsection{Discrete TGV minimisation problem}
@@ -147,12 +158,13 @@ is defined as (page ...)
 \begin{equation}
     % \min_{u \in L^p(\Omega)} F(u) + \mathrm{TGV}^2_\alpha(u)
     \min_{u \in \mathbb{R}^{N_1 \times N_2}} F(u) + \mathrm{TGV}^2_\alpha(u)
+    \label{eq:tgv_minimisation_problem}
 \end{equation}
 
 where
 the data fidelity/discrepancy function is (page ...)
 \begin{equation}
-    F(u) = \frac{1}{2} || u - f ||^2_2
+    F(u) = \frac{1}{2} || u - f ||^2_2 = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} (u_{i,j} - f_{i,j})^2
 \end{equation}
 
 and
@@ -165,5 +177,71 @@ the regularisation term is (page 14)
     \end{aligned}
     \right\}
 \end{equation}
+
+
+
+\subsection{
+% PDHG 
+Numerical
+algorithm for TGV minimisation problem
+}
+
+% This minimisation problem is equivalent to the saddle-point problem (page ...).
+
+\begin{algorithm}[H]
+    \caption{Solve $\min_{u \in U} F_h(u) + \mathrm{TGV}^2_{\alpha}(u)$}
+    \begin{algorithmic}[1]
+    \State Choose $\sigma > 0$, $\tau > 0$ such that $\sigma \tau \frac{1}{2} (17 + \sqrt{33}) \leq 1$.
+    \State Choose $(u^0, p^0) \in U \times V$, $(v^0, w^0) \in V \times W$ and set $\bar{u}^0 = u^0$, $\bar{p}^0 = p^0$.
+    \For {$n = 0, 1, 2, \ldots$}
+        \State \begin{equation*}
+        \begin{cases}
+        v^{n+1} = \mathcal{P}_{\alpha_1} \left( v^n + \sigma (\nabla_h \bar{u}^n - \bar{p}^n) \right), \\
+        w^{n+1} = \mathcal{P}_{\alpha_0} \left( w^n + \sigma \mathcal{E}_h (\bar{p}^n) \right), \\
+        u^{n+1} = \left( u^n + \tau (\text{div}_h v^{n+1} + f) \right) / ( 1 + \tau ), \\
+        p^{n+1} = p^n + \tau (v^{n+1} + \text{div}_h w^{n+1}), \\
+        \bar{u}^{n+1} = 2u^{n+1} - u^n, \\
+        \bar{p}^{n+1} = 2p^{n+1} - p^n.
+        \end{cases}
+        \end{equation*}
+    \EndFor
+    \State Return $u^N$ for some large $N$.
+    \end{algorithmic}
+    \label{alg:pdhg}
+\end{algorithm}
+
+where 
+
+\begin{equation}
+    \begin{aligned}
+    & \mathcal{P}_{\alpha_1}(v) = \frac{v}{\max \left(1, \frac{|v|}{\alpha_1}\right)}, \quad v \in V \\
+    & \mathcal{P}_{\alpha_0}(w) = \frac{w}{\max \left(1, \frac{|w|}{\alpha_0}\right)}, \quad w \in W,
+    \end{aligned}
+\end{equation}
+
+
+
+\begin{equation}
+    \begin{aligned}
+    v \in V : \quad &|v|_{i,j} = \left( \left( (v)_{i,j}^1 \right)^2 + \left( (v)_{i,j}^2 \right)^2 \right)^{1/2}, \\
+    w \in W : \quad &|w|_{i,j} = \left( \left( (w)_{i,j}^{11} \right)^2 + \left( (w)_{i,j}^{22} \right)^2 + 2 \left( (w)_{i,j}^{12} \right)^2 \right)^{1/2}.
+    \end{aligned}
+\end{equation}
+
+
+This algorithm is used to solve the minimisation problem \ref{eq:tgv_minimisation_problem}.
+It is taken from the paper \cite{recovering_piecewise_smooth_multichannel_images}, page ....
+
+
+% Page 19:
+% \begin{equation}
+%     (\text{id} + \tau \partial F_h)^{-1}(\bar{u}) =
+%     \begin{cases}
+%     \frac{\bar{u} + \tau f}{1 + \tau} & \text{if } q = 2, \\
+%     f + \mathcal{S}_\tau(\bar{u} - f) & \text{if } q = 1.
+%     \end{cases}
+% \end{equation}
+
+\printbibliography
 
 \end{document}

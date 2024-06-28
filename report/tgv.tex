@@ -1,0 +1,169 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb} % for \mathbb
+
+\begin{document}
+
+\subsection{Discrete TGV minimisation problem}
+
+Let
+\begin{equation}
+    \Omega_h = \{(i,j) \mid i,j \in \mathbb{N}, \ 1 \leq i \leq N_1, \ 1 \leq j \leq N_2\}.
+\end{equation}
+be ...
+\newline
+
+An image is a function $\Omega_h \rightarrow \mathbb{R}$. \newline
+
+% A matrix is a discrete function. \newline
+
+Let $u \in \mathbb{R}^{N_1 \times N_2}$ be 
+% the image to be reconstructed, 
+an image,
+$f \in \mathbb{R}^{N_1 \times N_2}$ the observed image. \newline
+
+
+The spaces of scalar, vector, and symmetric matrix valued functions are defined as (page 13)
+\begin{equation}
+    U = \{u : \Omega_h \rightarrow \mathbb{R}\}, \
+    V = \{u : \Omega_h \rightarrow \mathbb{R}^2\}, \
+    W = \{u : \Omega_h \rightarrow \mathrm{Sym}^2(\mathbb{R}^2)\}.
+\end{equation}
+
+where $\mathrm{Sym}^2(\mathbb{R}^2)$ is the space of symmetric $2 \times 2$ matrices. \newline
+
+
+\begin{equation}
+    \begin{aligned}
+    & $v \in V$ has components $\left(v\right)^1$ and $\left(v\right)^2$ \\
+    & $w \in W$ has components $\left(w\right)^{11},\left(w\right)^{12} = \left(w\right)^{21}$, $\left(w\right)^{22}$. 
+\end{aligned}
+\end{equation}
+
+% \begin{equation}
+%     a, b : \Omega_h \rightarrow \mathbb{R}, \quad \langle a, b \rangle = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} a_{i,j} b_{i,j}
+% \end{equation}
+
+\begin{equation}
+\begin{aligned}
+    % & u, r \in U:\langle u, r\rangle_U=\left\langle u, r\right\rangle \\
+    & u, r \in U:\langle u, r\rangle_U = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} u_{i,j} r_{i,j} \\
+    & v, p \in V:\langle v, p\rangle_V=\left\langle\left(v\right)^1,\left(p\right)^1\right\rangle+\left\langle\left(v\right)^2,\left(p\right)^2\right\rangle \\
+    & w, q \in W:\langle w, q\rangle_W=\left\langle\left(w\right)^{11},\left(q\right)^{11}\right\rangle+\left\langle\left(w\right)^{22},\left(q\right)^{22}\right\rangle+2\left\langle\left(w\right)^{12},\left(q\right)^{12}\right\rangle
+\end{aligned}
+\end{equation}
+
+are the scalar products in $U$, $V$, $W$.
+\newline
+
+
+The $x$ and $y$ forward finite difference operators are (page 13)
+\begin{equation}
+(\partial_x^+ u)_{i,j} =
+\begin{cases}
+u_{i+1,j} - u_{i,j} & \text{for } 1 \leq i < N_1, \\
+0 & \text{for } i = N_1,
+\end{cases}
+\end{equation}
+
+\begin{equation}
+(\partial_y^+ u)_{i,j} =
+\begin{cases}
+u_{i,j+1} - u_{i,j} & \text{for } 1 \leq j < N_2, \\
+0 & \text{for } j = N_2,
+\end{cases}
+\end{equation}
+
+and the backward finite difference operators are (page 13)
+\begin{equation}
+    (\partial_x^- u)_{i,j} = 
+    \begin{cases}
+    u_{1,j} & \text{if } i = 1, \\
+    u_{i,j} - u_{i-1,j} & \text{for } 1 < i < N_1, \\
+    -u_{N_1-1,j} & \text{for } i = N_1,
+    \end{cases}
+\end{equation}
+    
+\begin{equation}
+    (\partial_y^- u)_{i,j} = 
+    \begin{cases}
+    u_{i,1} & \text{if } j = 1, \\
+    u_{i,j} - u_{i,j-1} & \text{for } 1 < j < N_2, \\
+    -u_{i,N_2-1} & \text{for } j = N_2,
+    \end{cases}
+\end{equation}
+
+
+
+
+
+
+The gradient operator is defined as (page 13)
+\begin{equation}
+    \nabla_h : U \rightarrow V, \quad \nabla_h u = 
+    \begin{pmatrix}
+    \partial_x^+ u \\
+    \partial_y^+ u
+    \end{pmatrix},
+\end{equation}
+
+and the symmetrised gradient operator is defined as (page 14)
+\begin{equation}
+    \mathcal{E}_h : V \rightarrow W, \quad \mathcal{E}_h (v) = 
+    \begin{pmatrix}
+    \partial_x^- (v)^1 &
+    \frac{1}{2} \left( \partial_y^- (v)^1 + \partial_x^- (v)^2 \right) \\
+    \frac{1}{2} \left( \partial_y^- (v)^1 + \partial_x^- (v)^2 \right) &
+    \partial_y^- (v)^2
+    \end{pmatrix},
+\end{equation}
+
+and
+
+
+\begin{equation}
+\mathrm{div}_h : V \rightarrow U, \quad \mathrm{div}_h v = \partial_x^- (v)^1 + \partial_y^- (v)^2,
+\end{equation}
+
+\begin{equation}
+\mathrm{div}_h : W \rightarrow V, \quad \mathrm{div}_h w = 
+\begin{pmatrix}
+\partial_x^+ (w)^{11} + \partial_y^+ (w)^{12} \\
+\partial_x^+ (w)^{12} + \partial_y^+ (w)^{22}
+\end{pmatrix}.
+\end{equation}
+
+The discrete $\infty\text{-norms}$ are
+\begin{equation}
+    \begin{aligned}
+    & v \in V : \quad \|v\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (v)_{i,j}^1 \right)^2 + \left( (v)_{i,j}^2 \right)^2 \right)^{1/2}, \\
+    & w \in W : \quad \|w\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (w)_{i,j}^{11} \right)^2 + \left( (w)_{i,j}^{22} \right)^2 + 2 \left( (w)_{i,j}^{12} \right)^2 \right)^{1/2}.
+\end{aligned}
+\end{equation}
+
+
+Finally, the TGV minimisation problem
+is defined as (page ...)
+\begin{equation}
+    % \min_{u \in L^p(\Omega)} F(u) + \mathrm{TGV}^2_\alpha(u)
+    \min_{u \in \mathbb{R}^{N_1 \times N_2}} F(u) + \mathrm{TGV}^2_\alpha(u)
+\end{equation}
+
+where
+the data fidelity/discrepancy function is (page ...)
+\begin{equation}
+    F(u) = \frac{1}{2} || u - f ||^2_2
+\end{equation}
+
+and
+the regularisation term is (page 14)
+\begin{equation}
+    \mathrm{TGV}^2_\alpha(u) = \max \left\{ \langle u, \mathrm{div}_h v \rangle_U \ \middle| \ 
+    \begin{aligned}
+    &(v, w) \in V \times W, \ \mathrm{div}_h w = v, \\
+    &\|w\|_\infty \leq \alpha_0, \ \|v\|_\infty \leq \alpha_1 
+    \end{aligned}
+    \right\}
+\end{equation}
+
+\end{document}

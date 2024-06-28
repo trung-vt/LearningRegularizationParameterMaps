@@ -14,6 +14,7 @@ class PdhgTgvSolver:
         sigma, tau, grad_h, div_h, P_alpha1, P_alpha0,
         convergence_limit
     ):
+        print(f"convergence_limit: {convergence_limit}")
         excluded = ["self", "convergence_limit"]
         # Set all the attributes without repeating self.x = x
         for name, value in vars().items():
@@ -23,10 +24,13 @@ class PdhgTgvSolver:
         while self.sigma * self.tau > convergence_limit:
             self.sigma /= 2
             self.tau /= 2
+        print(f"sigma: {self.sigma}, tau: {self.tau}")
         
     def solve(self, u0, u, p, u_bar, p_bar, v, w, alpha1, alpha0, num_iters=100):
         print(f"Using data-type-independent solver")
+        
         for i in range(num_iters):
+            print("Iteration: ", i)
             v_next = self.P_alpha1(v + self.sigma * (self.grad_h(u_bar) - p_bar), alpha1)
             
             w_next = self.P_alpha0(w + self.sigma * self.grad_h(p), alpha0)
@@ -40,7 +44,7 @@ class PdhgTgvSolver:
             
             u, p = u_next, p_next
             v, w = v_next, w_next
-            
+
         del v_next, w_next, u_next, p_next # Explicitly free up memory
             
         return u

@@ -45,11 +45,19 @@ def P_alpha1_v(v, alpha1):
             [1.4 , 4.8 ],
             [1.8 , 2.4 ]]])
     """
-    pointwise_norm = pointwise_norm_2_v(v)
-    max_element = np.max(pointwise_norm)
-    max_over_alpha1 = max_element / alpha1
-    factor = np.maximum(1, max_over_alpha1)
-    projection = v / factor
+    # # My understanding: Factor is a scalar.
+    # pointwise_norm = pointwise_norm_2_v(v)
+    # max_element = np.max(pointwise_norm)
+    # max_over_alpha1 = max_element / alpha1
+    # factor = np.maximum(1, max_over_alpha1)
+    # projection = v / factor
+    # return projection
+
+    # ChatGPT understanding: Factor is a matrix. Divide each element in v by the corresponding element in factor.
+    pointwise_norm = pointwise_norm_2_v(v) # (n, m)
+    factor_matrix = np.maximum(1, pointwise_norm / alpha1) # Element-wise max
+    factor_matrix = factor_matrix[:, :, np.newaxis] # Change (n, m) to (n, m, 1) to allow element-wise division with v which is 3D with shape (n, m, 2)
+    projection = v / factor_matrix # Element-wise division
     return projection
 
 def P_alpha0_w(w, alpha0):
@@ -113,13 +121,20 @@ def P_alpha0_w(w, alpha0):
             [[1.8 , 0.  ],
              [0.  , 1.8 ]]]])
     """
-    pointwise_norm = pointwise_norm_2_w(w)
-    max_element = np.max(pointwise_norm)
-    max_over_alpha0 = max_element / alpha0
-    factor = np.max(1, max_over_alpha0)
-    projection = w / factor
-    return projection
+    # # My understanding: Factor is a scalar.
+    # pointwise_norm = pointwise_norm_2_w(w)
+    # max_element = np.max(pointwise_norm)
+    # max_over_alpha0 = max_element / alpha0
+    # factor = np.max(1, max_over_alpha0)
+    # projection = w / factor
+    # return projection
 
+    # ChatGPT understanding: Factor is a matrix. Divide each element in v by the corresponding element in factor.
+    pointwise_norm = pointwise_norm_2_w(w) # (n, m, 2)
+    factor_matrix = np.maximum(1, pointwise_norm / alpha0) # Element-wise max
+    factor_matrix = factor_matrix[:, :, np.newaxis] # Change (n, m, 2) to (n, m, 2, 1) to allow element-wise division with w which is 4D with shape (n, m, 2, 2)
+    projection = w / factor_matrix # Element-wise division
+    return projection
 
 
 ############### TESTS ###############

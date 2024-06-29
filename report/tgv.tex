@@ -46,8 +46,9 @@ where $\mathrm{Sym}^2(\mathbb{R}^2)$ is the space of symmetric $2 \times 2$ matr
 
 \begin{equation}
     \begin{aligned}
-    & $v \in V$ has components $\left(v\right)^1$ and $\left(v\right)^2$ \\
-    & $w \in W$ has components $\left(w\right)^{11},\left(w\right)^{12} = \left(w\right)^{21}$, $\left(w\right)^{22}$. 
+    & $v \in V$ has components $\left(v\right)^{(1)}$ and $\left(v\right)^{(2)}$ \\
+    & $w \in W$ has components $\left(w\right)^{(11)}$, $\left(w\right)^{(12)}$, $\left(w\right)^{(21)}$, $\left(w\right)^{(22)} \\
+    & \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \text{where} \left(w\right)^{(12)} = \left(w\right)^{(21)}$. 
 \end{aligned}
 \end{equation}
 
@@ -59,8 +60,8 @@ where $\mathrm{Sym}^2(\mathbb{R}^2)$ is the space of symmetric $2 \times 2$ matr
 \begin{aligned}
     % & u, r \in U:\langle u, r\rangle_U=\left\langle u, r\right\rangle \\
     & u, r \in U:\langle u, r\rangle_U = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} u_{i,j} r_{i,j} \\
-    & v, p \in V:\langle v, p\rangle_V=\left\langle\left(v\right)^1,\left(p\right)^1\right\rangle+\left\langle\left(v\right)^2,\left(p\right)^2\right\rangle \\
-    & w, q \in W:\langle w, q\rangle_W=\left\langle\left(w\right)^{11},\left(q\right)^{11}\right\rangle+\left\langle\left(w\right)^{22},\left(q\right)^{22}\right\rangle+2\left\langle\left(w\right)^{12},\left(q\right)^{12}\right\rangle
+    & v, p \in V:\langle v, p\rangle_V=\left\langle\left(v\right)^{(1)},\left(p\right)^{(1)}\right\rangle+\left\langle\left(v\right)^{(2)},\left(p\right)^{(2)}\right\rangle \\
+    & w, q \in W:\langle w, q\rangle_W=\left\langle\left(w\right)^{(11)},\left(q\right)^{(11)}\right\rangle+\left\langle\left(w\right)^{(22)},\left(q\right)^{(22)}\right\rangle+2\left\langle\left(w\right)^{(12)},\left(q\right)^{(12)}\right\rangle
 \end{aligned}
 \end{equation}
 
@@ -122,10 +123,10 @@ and the symmetrised gradient operator is defined as (page 14)
 \begin{equation}
     \mathcal{E}_h : V \rightarrow W, \quad \mathcal{E}_h (v) = 
     \begin{pmatrix}
-    \partial_x^- (v)^1 &
-    \frac{1}{2} \left( \partial_y^- (v)^1 + \partial_x^- (v)^2 \right) \\
-    \frac{1}{2} \left( \partial_y^- (v)^1 + \partial_x^- (v)^2 \right) &
-    \partial_y^- (v)^2
+    \partial_x^- (v)^{(1)} &
+    \frac{1}{2} \left( \partial_y^- (v)^{(1)} + \partial_x^- (v)^{(2)} \right) \\
+    \frac{1}{2} \left( \partial_y^- (v)^{(1)} + \partial_x^- (v)^{(2)} \right) &
+    \partial_y^- (v)^{(2)}
     \end{pmatrix},
 \end{equation}
 
@@ -133,22 +134,22 @@ and
 
 
 \begin{equation}
-\mathrm{div}_h : V \rightarrow U, \quad \mathrm{div}_h v = \partial_x^- (v)^1 + \partial_y^- (v)^2,
+\mathrm{div}_h : V \rightarrow U, \quad \mathrm{div}_h v = \partial_x^- (v)^{(1)} + \partial_y^- (v)^{(2)},
 \end{equation}
 
 \begin{equation}
 \mathrm{div}_h : W \rightarrow V, \quad \mathrm{div}_h w = 
 \begin{pmatrix}
-\partial_x^+ (w)^{11} + \partial_y^+ (w)^{12} \\
-\partial_x^+ (w)^{12} + \partial_y^+ (w)^{22}
+\partial_x^+ (w)^{(11)} + \partial_y^+ (w)^{(12)} \\
+\partial_x^+ (w)^{(12)} + \partial_y^+ (w)^{(22)}
 \end{pmatrix}.
 \end{equation}
 
 The discrete $\infty\text{-norms}$ are
 \begin{equation}
     \begin{aligned}
-    & v \in V : \quad \|v\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (v)_{i,j}^1 \right)^2 + \left( (v)_{i,j}^2 \right)^2 \right)^{1/2}, \\
-    & w \in W : \quad \|w\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (w)_{i,j}^{11} \right)^2 + \left( (w)_{i,j}^{22} \right)^2 + 2 \left( (w)_{i,j}^{12} \right)^2 \right)^{1/2}.
+    & v \in V : \quad \|v\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (v)_{i,j}^{(1)} \right)^{2} + \left( (v)_{i,j}^{(2)} \right)^{2} \right)^{1/2}, \\
+    & w \in W : \quad \|w\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (w)_{i,j}^{(11)} \right)^{2} + \left( (w)_{i,j}^{(22)} \right)^{2} + 2 \left( (w)_{i,j}^{(12)} \right)^{2} \right)^{1/2}.
 \end{aligned}
 \end{equation}
 
@@ -192,20 +193,20 @@ algorithm for TGV minimisation problem
     \caption{Solve $\min_{u \in U} F_h(u) + \mathrm{TGV}^2_{\alpha}(u)$}
     \begin{algorithmic}[1]
     \State Choose $\sigma > 0$, $\tau > 0$ such that $\sigma \tau \frac{1}{2} (17 + \sqrt{33}) \leq 1$.
-    \State Choose $(u^0, p^0) \in U \times V$, $(v^0, w^0) \in V \times W$ and set $\bar{u}^0 = u^0$, $\bar{p}^0 = p^0$.
+    \State Choose $(u^{[0]}, p^{[0]}) \in U \times V$, $(v^{[0]}, w^{[0]}) \in V \times W$ and set $\bar{u}^{[0]} = u^{[0]}$, $\bar{p}^{[0]} = p^{[0]}$.
     \For {$n = 0, 1, 2, \ldots$}
         \State \begin{equation*}
         \begin{cases}
-        v^{n+1} = \mathcal{P}_{\alpha_1} \left( v^n + \sigma (\nabla_h \bar{u}^n - \bar{p}^n) \right), \\
-        w^{n+1} = \mathcal{P}_{\alpha_0} \left( w^n + \sigma \mathcal{E}_h (\bar{p}^n) \right), \\
-        u^{n+1} = \left( u^n + \tau (\text{div}_h v^{n+1} + f) \right) / ( 1 + \tau ), \\
-        p^{n+1} = p^n + \tau (v^{n+1} + \text{div}_h w^{n+1}), \\
-        \bar{u}^{n+1} = 2u^{n+1} - u^n, \\
-        \bar{p}^{n+1} = 2p^{n+1} - p^n.
+        v^{[n+1]} = \mathcal{P}_{\alpha_1} \left( v^{[n]} + \sigma (\nabla_h \bar{u}^{[n]} - \bar{p}^{[n]}) \right), \\
+        w^{[n+1]} = \mathcal{P}_{\alpha_0} \left( w^{[n]} + \sigma \mathcal{E}_h (\bar{p}^{[n]}) \right), \\
+        u^{[n+1]} = \left( u^{[n]} + \tau (\text{div}_h v^{[n+1]} + f) \right) / ( 1 + \tau ), \\
+        p^{[n+1]} = p^{[n]} + \tau (v^{[n+1]} + \text{div}_h w^{[n+1]}), \\
+        \bar{u}^{[n+1]} = 2u^{[n+1]} - u^{[n]}, \\
+        \bar{p}^{[n+1]} = 2p^{[n+1]} - p^{[n]}.
         \end{cases}
         \end{equation*}
     \EndFor
-    \State Return $u^N$ for some large $N$.
+    \State Return $u^{[N]}$ for some large $N$.
     \end{algorithmic}
     \label{alg:pdhg}
 \end{algorithm}
@@ -223,8 +224,8 @@ where
 
 \begin{equation}
     \begin{aligned}
-    v \in V : \quad &|v|_{i,j} = \left( \left( (v)_{i,j}^1 \right)^2 + \left( (v)_{i,j}^2 \right)^2 \right)^{1/2}, \\
-    w \in W : \quad &|w|_{i,j} = \left( \left( (w)_{i,j}^{11} \right)^2 + \left( (w)_{i,j}^{22} \right)^2 + 2 \left( (w)_{i,j}^{12} \right)^2 \right)^{1/2}.
+    v \in V : \quad &|v|_{i,j} = \left( \left( (v)_{i,j}^{(1)} \right)^{2} + \left( (v)_{i,j}^{(2)} \right)^{2} \right)^{1/2}, \\
+    w \in W : \quad &|w|_{i,j} = \left( \left( (w)_{i,j}^{(11)} \right)^{2} + \left( (w)_{i,j}^{(22)} \right)^{2} + 2 \left( (w)_{i,j}^{(12)} \right)^{2} \right)^{1/2}.
     \end{aligned}
 \end{equation}
 

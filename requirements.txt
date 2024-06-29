@@ -30,5 +30,8 @@ pytorch-ignite # fastest PSNR and SSIM on cuda but results different from scikit
 # https://pytorch.org/ignite/generated/ignite.metrics.SSIM.html
 # https://pytorch-ignite.ai/tutorials/beginner/01-getting-started/
 
+pylops # for TGV denoising
+# odl<0.5.3 # for TGV denoising?
+odl # for TGV denoising?
 
 -e .  # local package installation

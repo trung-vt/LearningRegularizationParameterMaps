@@ -34,4 +34,6 @@ pylops # for TGV denoising
 # odl<0.5.3 # for TGV denoising?
 odl # for TGV denoising?
 
+pytest # unit testing
+
 -e .  # local package installation

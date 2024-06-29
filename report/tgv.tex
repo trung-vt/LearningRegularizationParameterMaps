@@ -69,6 +69,81 @@ are the scalar products in $U$, $V$, $W$.
 \newline
 
 
+The $x$ and $y$ forward finite difference operators are (page 13)
+\begin{equation}
+(\partial_x^+ u)_{i,j} =
+\begin{cases}
+u_{i+1,j} - u_{i,j} & \text{for } 1 \leq i < N_1, \\
+0 & \text{for } i = N_1,
+\end{cases}
+\end{equation}
+
+\begin{equation}
+(\partial_y^+ u)_{i,j} =
+\begin{cases}
+u_{i,j+1} - u_{i,j} & \text{for } 1 \leq j < N_2, \\
+0 & \text{for } j = N_2,
+\end{cases}
+\end{equation}
+
+and the backward finite difference operators are (page 13)
+\begin{equation}
+    (\partial_x^- u)_{i,j} = 
+    \begin{cases}
+    u_{1,j} & \text{if } i = 1, \\
+    u_{i,j} - u_{i-1,j} & \text{for } 1 < i < N_1, \\
+    -u_{N_1-1,j} & \text{for } i = N_1,
+    \end{cases}
+\end{equation}
+    
+\begin{equation}
+    (\partial_y^- u)_{i,j} = 
+    \begin{cases}
+    u_{i,1} & \text{if } j = 1, \\
+    u_{i,j} - u_{i,j-1} & \text{for } 1 < j < N_2, \\
+    -u_{i,N_2-1} & \text{for } j = N_2,
+    \end{cases}
+\end{equation}
+
+
+
+
+
+
+The gradient operator is defined as (page 13)
+\begin{equation}
+    \nabla_h : U \rightarrow V, \quad \nabla_h u = 
+    \begin{pmatrix}
+    \partial_x^+ u \\
+    \partial_y^+ u
+    \end{pmatrix},
+\end{equation}
+
+and the symmetrised gradient operator is defined as (page 14)
+\begin{equation}
+    \mathcal{E}_h : V \rightarrow W, \quad \mathcal{E}_h (v) = 
+    \begin{pmatrix}
+    \partial_x^- (v)^{(1)} &
+    \frac{1}{2} \left( \partial_y^- (v)^{(1)} + \partial_x^- (v)^{(2)} \right) \\
+    \frac{1}{2} \left( \partial_y^- (v)^{(1)} + \partial_x^- (v)^{(2)} \right) &
+    \partial_y^- (v)^{(2)}
+    \end{pmatrix},
+\end{equation}
+
+and
+
+
+\begin{equation}
+\mathrm{div}_h : V \rightarrow U, \quad \mathrm{div}_h v = \partial_x^- (v)^{(1)} + \partial_y^- (v)^{(2)},
+\end{equation}
+
+\begin{equation}
+\mathrm{div}_h : W \rightarrow V, \quad \mathrm{div}_h w = 
+\begin{pmatrix}
+\partial_x^+ (w)^{(11)} + \partial_y^+ (w)^{(12)} \\
+\partial_x^+ (w)^{(12)} + \partial_y^+ (w)^{(22)}
+\end{pmatrix}.
+\end{equation}
 
 The discrete $\infty\text{-norms}$ are
 \begin{equation}
@@ -152,84 +227,6 @@ where
     v \in V : \quad &|v|_{i,j} = \left( \left( (v)_{i,j}^{(1)} \right)^{2} + \left( (v)_{i,j}^{(2)} \right)^{2} \right)^{1/2}, \\
     w \in W : \quad &|w|_{i,j} = \left( \left( (w)_{i,j}^{(11)} \right)^{2} + \left( (w)_{i,j}^{(22)} \right)^{2} + 2 \left( (w)_{i,j}^{(12)} \right)^{2} \right)^{1/2}.
     \end{aligned}
-\end{equation}
-
-
-
-The $x$ and $y$ forward finite difference operators are (page 13)
-\begin{equation}
-(\partial_x^+ u)_{i,j} =
-\begin{cases}
-u_{i+1,j} - u_{i,j} & \text{for } 1 \leq i < N_1, \\
-0 & \text{for } i = N_1,
-\end{cases}
-\end{equation}
-
-\begin{equation}
-(\partial_y^+ u)_{i,j} =
-\begin{cases}
-u_{i,j+1} - u_{i,j} & \text{for } 1 \leq j < N_2, \\
-0 & \text{for } j = N_2,
-\end{cases}
-\end{equation}
-
-and the backward finite difference operators are (page 13)
-\begin{equation}
-    (\partial_x^- u)_{i,j} = 
-    \begin{cases}
-    u_{1,j} & \text{if } i = 1, \\
-    u_{i,j} - u_{i-1,j} & \text{for } 1 < i < N_1, \\
-    -u_{N_1-1,j} & \text{for } i = N_1,
-    \end{cases}
-\end{equation}
-    
-\begin{equation}
-    (\partial_y^- u)_{i,j} = 
-    \begin{cases}
-    u_{i,1} & \text{if } j = 1, \\
-    u_{i,j} - u_{i,j-1} & \text{for } 1 < j < N_2, \\
-    -u_{i,N_2-1} & \text{for } j = N_2,
-    \end{cases}
-\end{equation}
-
-
-
-
-
-
-The gradient operator is defined as (page 13)
-\begin{equation}
-    \nabla_h : U \rightarrow V, \quad \nabla_h u = 
-    \begin{pmatrix}
-    \partial_x^+ u \\
-    \partial_y^+ u
-    \end{pmatrix},
-\end{equation}
-
-and the symmetrised gradient operator is defined as (page 14)
-\begin{equation}
-    \mathcal{E}_h : V \rightarrow W, \quad \mathcal{E}_h (v) = 
-    \begin{pmatrix}
-    \partial_x^- (v)^{(1)} &
-    \frac{1}{2} \left( \partial_y^- (v)^{(1)} + \partial_x^- (v)^{(2)} \right) \\
-    \frac{1}{2} \left( \partial_y^- (v)^{(1)} + \partial_x^- (v)^{(2)} \right) &
-    \partial_y^- (v)^{(2)}
-    \end{pmatrix},
-\end{equation}
-
-and
-
-
-\begin{equation}
-\mathrm{div}_h : V \rightarrow U, \quad \mathrm{div}_h v = \partial_x^- (v)^{(1)} + \partial_y^- (v)^{(2)},
-\end{equation}
-
-\begin{equation}
-\mathrm{div}_h : W \rightarrow V, \quad \mathrm{div}_h w = 
-\begin{pmatrix}
-\partial_x^+ (w)^{(11)} + \partial_y^+ (w)^{(12)} \\
-\partial_x^+ (w)^{(12)} + \partial_y^+ (w)^{(22)}
-\end{pmatrix}.
 \end{equation}
 
 

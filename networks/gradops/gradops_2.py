@@ -86,7 +86,7 @@ def test_adjoint_property():
     
     return adjoint_x.item(), adjoint_y.item()
 
-# if __name__ == "__main__":
-#     import doctest
-#     doctest.testmod()
-#     print("Adjoint property test results:", test_adjoint_property())
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+    print("Adjoint property test results:", test_adjoint_property())

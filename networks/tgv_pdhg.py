@@ -5,7 +5,7 @@ import numpy as np
 from networks.gradops.gradops_2 import dx_forward, dy_forward, dx_backward, dy_backward
 # from networks.gradops.gradops_1 import dx_forward, dy_forward, dx_backward, dy_backward
 
-class PdhgTgvSolver:
+class TgvPdhgSolver:
     """
     See page 17 in "Recovering piecewise smooth multichannel images..."
     https://unipub.uni-graz.at/obvugroa/content/titleinfo/125370
@@ -140,31 +140,31 @@ class GradOpsTorch:
     
 
     def e_h(v):
-        """
+        # """
         
-        Parameters
-        ----------
-        v : torch.Tensor
-            Assume 3D tensor of shape [n, n, 2] (for now).
+        # Parameters
+        # ----------
+        # v : torch.Tensor
+        #     Assume 3D tensor of shape [n, n, 2] (for now).
             
-        Returns
-        -------
-        w : torch.Tensor
-            Assume 4D tensor of shape [n, n, 2, 2] (for now).
+        # Returns
+        # -------
+        # w : torch.Tensor
+        #     Assume 4D tensor of shape [n, n, 2, 2] (for now).
             
-        Example
-        -------
-        >>> v = torch.tensor([[[1, 1], [2, 2], [3, 3]], [[4, 4], [5, 5], [6, 6]], [[7, 7], [8, 8], [9, 9]]])
-        >>> GradOpsTorch.e_h(v)
-        tensor([[[[ 1,  2],
-                  [ 2,  5]],
-        <BLANKLINE>
-                  [[ 5,  6],
-                   [ 6,  9]]],
-        <BLANKLINE>
-                  [[[ 9, 10],
-        """
-        assert len(v.shape) == 3, f"v must be a 3D tensor, but got {len(v.shape)}D tensor"
+        # Example
+        # -------
+        # >>> v = torch.tensor([[[1, 1], [2, 2], [3, 3]], [[4, 4], [5, 5], [6, 6]], [[7, 7], [8, 8], [9, 9]]])
+        # >>> GradOpsTorch.e_h(v)
+        # tensor([[[[ 1,  2],
+        #           [ 2,  5]],
+        # <BLANKLINE>
+        #           [[ 5,  6],
+        #            [ 6,  9]]],
+        # <BLANKLINE>
+        #           [[[ 9, 10],
+        # """
+        # assert len(v.shape) == 3, f"v must be a 3D tensor, but got {len(v.shape)}D tensor"
         assert v.shape[-1] == 2, f"v must have 2 channels in the last dimension, but got {v.shape[-1]} channels"
         dx_b_1 = dx_backward(v[..., 0])
         dy_b_1 = dy_backward(v[..., 0])
@@ -220,7 +220,7 @@ class GradOpsTorch:
         return div_h_v
     
     def div_h_w(w):
-        assert len(w.shape) == 4, f"w must be a 4D tensor, but got {len(w.shape)}D tensor"
+        # assert len(w.shape) == 4, f"w must be a 4D tensor, but got {len(w.shape)}D tensor"
         assert w.shape[-2] == 2, f"w must have 2 channels in the second last dimension, but got {w.shape[-2]} channels"
         assert w.shape[-1] == 2, f"w must have 2 channels in the last dimension, but got {w.shape[-1]} channels"
         dx_f_11 = dx_forward(w[..., 0, 0])
@@ -239,10 +239,10 @@ class GradOpsTorch:
         return v
     
 
-class PdhgTgvTorch(nn.Module):
+class TgvPdhgTorch(nn.Module):
     # See page 17 in "Recovering piecewise smooth multichannel..." for the algorithm
     def __init__(self, device):
-        super(PdhgTgvTorch, self).__init__() # Ensure proper initialisation
+        super(TgvPdhgTorch, self).__init__() # Ensure proper initialisation
         self.device = device
         self.sigma = torch.tensor(1.0, device=device)
         self.tau = torch.tensor(1.0, device=device)
@@ -252,7 +252,7 @@ class PdhgTgvTorch(nn.Module):
         convergence_limit = 1.0 / (0.5 * (17 + torch.sqrt(torch.tensor(33.0, device=device))))
         # TODO: Change this for the 2D static greyscale image denoising problem
         
-        self.pdhg_tgv_solver = PdhgTgvSolver(
+        self.pdhg_tgv_solver = TgvPdhgSolver(
             sigma=self.sigma,
             tau=self.tau,
             nabla_h=GradOpsTorch.nabla_h,
@@ -420,7 +420,7 @@ class PdhgTgvNumpy():
         # Norm of K. See page 16 in "Recovering piecewise smooth multichannel..."
         convergence_limit = 0.5 * (17 + np.sqrt(33))
             
-        self.pdhg_tgv_solver = PdhgTgvSolver(
+        self.pdhg_tgv_solver = TgvPdhgSolver(
             sigma=self.sigma,
             tau=self.tau,
             grad_h=self.grad_h,

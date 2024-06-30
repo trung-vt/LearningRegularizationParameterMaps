@@ -16,7 +16,7 @@ class TgvPdhgSolver:
         sigma, tau, nabla_h, e_h, div_h_v, div_h_w, P_alpha1, P_alpha0,
         convergence_limit
     ):
-        print(f"convergence_limit: {convergence_limit}")
+        # print(f"convergence_limit: {convergence_limit}")
         excluded = ["self", "convergence_limit"]
         # Set all the attributes without repeating self.x = x
         for name, value in vars().items():

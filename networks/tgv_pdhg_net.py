@@ -81,19 +81,39 @@ class TgvPdhgNet(nn.Module):
             self, u, regularisation_params=None,
             T=128,  # number of iterations for the PDHG algorithm
     ):
+        """
+        
+        >>> net = TgvPdhgNet()
+        >>> u = torch.randn(1, 1, 3, 3) # 4D, normal use case when training
+        >>> print(u.shape)
+        torch.Size([1, 1, 3, 3])
+        >>> scalar_params = torch.tensor([0.1, 0.1]) # scalar alpha1 and alpha0
+        >>> u_T = net(u, scalar_params, T=16)
+        >>> print(u_T.shape)
+        torch.Size([1, 1, 3, 3])
+        >>> u = torch.randn(3, 3) # 2D, for demo and easy testing by hand
+        >>> print(u.shape)
+        torch.Size([3, 3])
+        >>> u_T = net(u, scalar_params, T=16)
+        >>> print(u_T.shape)
+        torch.Size([3, 3])
+        >>> reg_map_params = torch.randn(2, 3, 3) # regularisation parameter maps
+        >>> print(reg_map_params.shape)
+        torch.Size([2, 3, 3])
+        >>> u_T = net(u, reg_map_params, T=16)
+        >>> print(u_T.shape)
+        torch.Size([3, 3])
+        
+        """
         u = u.to(self.device)
         if regularisation_params is None:
-            # estimate lambda reg from the image
+            # estimate lambda regularisation parameter maps from the image
             regularisation_params = self.get_regularisation_param_maps(u)
         assert len(regularisation_params) == 2, f"Should have 2 regularisation parameters or 2 parameter maps, not {len(regularisation_params)}"
 
-        alpha0 = regularisation_params[0]
-        alpha1 = regularisation_params[1]
-        # assert alpha0.shape == alpha1.shape, f"alpha0 and alpha1 should have the same shape, not {alpha0.shape} and {alpha1.shape}"
+        alpha0 = torch.tensor(regularisation_params[0], device=self.device)
+        alpha1 = torch.tensor(regularisation_params[1], device=self.device)
         
-        # # TODO: Do we need to impose the same shape for u and alpha0?
-        # assert alpha0.shape == u.shape, f"Shape {alpha0} of alpha0 and alpha1 are not matching shape {u.shape} of input"
-
         p = torch.zeros((*u.shape, 2), device=self.device) # Assume u is 2D now
         u_T = self.pdhg.solve(u=u, p=p, alpha1=alpha1, alpha0=alpha0, num_iters=T)
         return u_T

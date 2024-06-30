@@ -1,259 +1,202 @@
 import torch
 import torch.nn as nn
 
-import numpy as np
+# Used https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py as a reference
 
-
-class ConvBlock(nn.Module):
-
-    """
-    A block of convolutional layers (1D, 2D or 3D)
-    """
-
+class DoubleConv(nn.Module):
     def __init__(
-        self,
-        dim,
-        n_ch_in,
-        n_ch_out,
-        n_convs,
-        kernel_size=3,
-        bias=False,
-        padding_mode="zeros",
-    ):
-        super().__init__()
+            self, in_channels: int, out_channels: int, n_dimensions=2, activation="LeakyReLU"):
+        super(DoubleConv, self).__init__()
 
-        if dim == 1:
-            conv_op = nn.Conv1d
-        if dim == 2:
-            conv_op = nn.Conv2d
-        elif dim == 3:
-            conv_op = nn.Conv3d
+        def get_conv(in_channels, out_channels):
+            # 1-dimensional convolution is not supported
+            if n_dimensions == 3:
+                return nn.Conv3d(in_channels, out_channels, kernel_size=(3, 3, 1), padding=(1, 1, 0))
+            elif n_dimensions == 2:
+                return nn.Conv2d(in_channels, out_channels, kernel_size=(3, 3), padding=(1, 1))
+            else:
+                raise ValueError(f"Unsupported number of dimensions: {n_dimensions}")
 
-        padding = int(np.floor(kernel_size / 2))
+        def get_activation():
+            if activation == "LeakyReLU":
+                return nn.LeakyReLU(negative_slope=0.01, inplace=True)
+            elif activation == "ReLU":
+                return nn.ReLU(inplace=True)
+            else:
+                raise ValueError(f"Unsupported activation function: {activation}")
 
-        conv_block_list = []
-        conv_block_list.extend(
-            [
-                conv_op(
-                    n_ch_in,
-                    n_ch_out,
-                    kernel_size,
-                    padding=padding,
-                    bias=bias,
-                    padding_mode=padding_mode,
-                ),
-                nn.LeakyReLU(), # NOTE: We use LeakyReLU instead of ReLU!!!
-                # Can we try using ReLU instead of LeakyReLU?
-            ]
-        )
+        self.conv_block = nn.Sequential(
+            get_conv(in_channels, out_channels), get_activation(),
+            get_conv(out_channels, out_channels), get_activation())
 
-        for i in range(n_convs - 1):
-            conv_block_list.extend(
-                [
-                    conv_op(
-                        n_ch_out,
-                        n_ch_out,
-                        kernel_size,
-                        padding=padding,
-                        bias=bias,
-                        padding_mode=padding_mode,
-                    ),
-                    nn.LeakyReLU(), # NOTE: We use LeakyReLU instead of ReLU!!!
-                    # Can we try using ReLU instead of LeakyReLU?
-                ]
-            )
-
-        self.conv_block = nn.Sequential(*conv_block_list)
-
-    def forward(self, x):
+    def forward(self, x: torch.Tensor):
         return self.conv_block(x)
+        
 
-
-class Encoder(nn.Module):
+class EncodeBlock2d(nn.Module):
     def __init__(
-        self,
-        dim,
-        n_ch_in,
-        n_enc_stages,
-        n_convs_per_stage,
-        n_filters,
-        kernel_size=3,
-        bias=False,
-        padding_mode="zeros",
-    ):
-        super().__init__()
+            self, in_channels: int,
+            activation="LeakyReLU",
+            downsampling_kernel=(2, 2), downsampling_mode="max"):
+        super(EncodeBlock2d, self).__init__()
 
-        n_ch_list = [n_ch_in]
-        for ne in range(n_enc_stages):
-            n_ch_list.append(int(n_filters) * 2**ne)
-
-        self.enc_blocks = nn.ModuleList(
-            [
-                ConvBlock(
-                    dim,
-                    n_ch_list[i],
-                    n_ch_list[i + 1],
-                    n_convs_per_stage,
-                    kernel_size=kernel_size,
-                    bias=bias,
-                    padding_mode=padding_mode,
-                )
-                for i in range(len(n_ch_list) - 1)
-            ]
-        )
-
-        if dim == 1:
-            pool_op = nn.MaxPool1d(2)
-        elif dim == 2:
-            pool_op = nn.MaxPool2d(2)
-        elif dim == 3:
-            # pool_op = nn.MaxPool3d(2)
-            # Change back after making the code working with 2D MaxPool
-            # TODO: Can I make it so that if there is only a single image then it reduces the pool size to 1?
-            # pool_op = nn.MaxPool3d(2)
-            pool_op = nn.MaxPool3d(1) # TODO: Change back after making the code working with 2D MaxPool
+        len = downsampling_kernel[0] # Assume kernel has shape (len, len)
+        assert downsampling_kernel == (len, len), f"Expected a flat square kernel like {(len, len)}, got {downsampling_kernel}"
+        stride = (2, 2) # Stride 2x2 to halve each side 
+        padding = ((len-1)//2, (len-1)//2) # Padding (len-1) // 2 to exactly halve each side 
+        if downsampling_mode == "max_pool":
+            self.pool = nn.MaxPool2d(
+                kernel_size=downsampling_kernel, stride=stride, padding=padding)
+        elif downsampling_mode == "avg_pool":
+            self.pool = nn.AvgPool2d(
+                kernel_size=downsampling_kernel, stride=stride, padding=padding)
         else:
-            raise ValueError(f"Unsupported dim value: {dim}")
+            raise ValueError(f"Unknown pooling method: {downsampling_mode}")
 
-        self.pool = pool_op
+        self.double_conv = DoubleConv(in_channels, in_channels * 2, n_dimensions=2, activation=activation)
 
-    def forward(self, x):
-        features = []
-        for block in self.enc_blocks:
-            x = block(x)
-            features.append(x)
-            x = self.pool(x)
-        return features
-
-
-class Decoder(nn.Module):
-    def __init__(
-        self,
-        dim,
-        n_ch_in,
-        n_dec_stages,
-        n_convs_per_stage,
-        n_filters,
-        kernel_size=3,
-        bias=False,
-        padding_mode="zeros",
-    ):
-        super().__init__()
-
-        n_ch_list = []
-        for ne in range(n_dec_stages):
-            n_ch_list.append(int(n_ch_in * (1 / 2) ** ne))
-
-        if dim == 1:
-            conv_op = nn.Conv1d
-            interp_mode = "linear"
-        elif dim == 2:
-            conv_op = nn.Conv2d
-            interp_mode = "bilinear"
-        elif dim == 3:
-            interp_mode = "trilinear"
-            conv_op = nn.Conv3d
-
-        self.interp_mode = interp_mode
-
-        padding = int(np.floor(kernel_size / 2))
-        self.upconvs = nn.ModuleList(
-            [
-                conv_op(
-                    n_ch_list[i],
-                    n_ch_list[i + 1],
-                    kernel_size=kernel_size,
-                    padding=padding,
-                    bias=bias,
-                    padding_mode=padding_mode,
-                )
-                for i in range(len(n_ch_list) - 1)
-            ]
-        )
-        self.dec_blocks = nn.ModuleList(
-            [
-                ConvBlock(
-                    dim,
-                    n_ch_list[i],
-                    n_ch_list[i + 1],
-                    n_convs_per_stage,
-                    kernel_size=kernel_size,
-                    bias=bias,
-                    padding_mode=padding_mode,
-                )
-                for i in range(len(n_ch_list) - 1)
-            ]
-        )
-
-    def forward(self, x, encoder_features):
-        for i in range(len(self.dec_blocks)):
-            enc_features = encoder_features[i]
-            enc_features_shape = enc_features.shape
-            x = nn.functional.interpolate(
-                x, enc_features_shape[2:], mode=self.interp_mode, align_corners=False
-            )
-            x = self.upconvs[i](x)
-            x = torch.cat([x, enc_features], dim=1)
-            x = self.dec_blocks[i](x)
+    def forward(self, x: torch.Tensor):
+        x = self.pool(x)
+        x = self.double_conv(x)
         return x
 
 
-class UNet(nn.Module):
+
+class DecodeBlock2d(nn.Module):
     def __init__(
-        self,
-        dim,
-        n_ch_in=2,
-        n_ch_out=2,
-        n_enc_stages=3,
-        n_convs_per_stage=2,
-        n_filters=16,
-        kernel_size=3,
-        res_connection=False,
-        bias=True,
-        padding_mode="zeros",
-    ):
-        super().__init__()
-        self.encoder = Encoder(
-            dim,
-            n_ch_in,
-            n_enc_stages,
-            n_convs_per_stage,
-            n_filters,
-            kernel_size=kernel_size,
-            bias=bias,
-            padding_mode=padding_mode,
-        )
-        self.decoder = Decoder(
-            dim,
-            n_filters * (2 ** (n_enc_stages - 1)),
-            n_enc_stages,
-            n_convs_per_stage,
-            n_filters * (n_enc_stages * 2),
-            kernel_size=kernel_size,
-            bias=bias,
-            padding_mode=padding_mode,
-        )
+            self, in_channels: int,
+            activation="LeakyReLU",
+            upsampling_kernel=(2, 2), upsampling_mode="linear_interpolation"):
+        super(DecodeBlock2d, self).__init__()
 
-        if dim == 1:
-            conv_op = nn.Conv1d
-        elif dim == 2:
-            conv_op = nn.Conv2d
-        elif dim == 3:
-            conv_op = nn.Conv3d
-
-        self.c1x1 = conv_op(n_filters, n_ch_out, kernel_size=1, padding=0, bias=bias)
-        if res_connection:
-            if n_ch_in == n_ch_out:
-                self.res_connection = lambda x: x
-            else:
-                self.res_connection = conv_op(n_ch_in, n_ch_out, 1)
+        if upsampling_mode == "linear_interpolation":
+            self.upsampling = nn.Sequential(
+                nn.Upsample(
+                    scale_factor=(2, 2), # Assume the shape is (Nx, Ny) where Nx is the image width and Ny is the image height.
+                    mode='bilinear', align_corners=True), # What difference does it make in the end if align_corners is True or False? Preserving symmetry?
+                # 1x1 convolution to reduce the number of channels while keeping the size the same
+                nn.Conv2d(
+                    in_channels, in_channels // 2, 
+                    kernel_size=(1, 1), stride=(1, 1), padding=(0, 0))
+            )
+        elif upsampling_mode == "transposed_convolution":  
+            len = upsampling_kernel[0] # Assume kernel has shape (len, len)
+            assert upsampling_kernel == (len, len), f"Expected a flat square kernel like {(len, len)}, got {upsampling_kernel}"
+            stride = (2, 2) # Stride 2x2 to double each side 
+            padding = ((len-1)//2, (len-1)//2) # Padding (len-1) // 2 to exactly double each side    
+            self.upsampling = nn.ConvTranspose2d(
+                in_channels, in_channels // 2, 
+                kernel_size=upsampling_kernel, stride=stride, padding=padding, 
+                output_padding=padding # TODO: Should this be the same as padding?
+            )
         else:
-            self.res_connection = False
+            raise ValueError(f"Unsupported upsampling method: {upsampling_mode}")
+        
+        self.double_conv = DoubleConv(in_channels, in_channels // 2, n_dimensions=2, activation=activation)
 
-    def forward(self, x):
-        enc_features = self.encoder(x)
-        dec = self.decoder(enc_features[-1], enc_features[::-1][1:])
-        out = self.c1x1(dec)
-        if self.res_connection:
-            out = out + self.res_connection(x)
-        return out
+    def forward(self, x: torch.Tensor, x_encoder_output: torch.Tensor):
+        x = self.upsampling(x)
+        x = torch.cat([x_encoder_output, x], dim=1)   # skip-connection. No cropping since we ensure that the size is the same.
+        x = self.double_conv(x)
+        return x
+
+
+
+class UNet2d(nn.Module):
+    def __init__(
+            self, in_channels=1, out_channels=2, init_filters=32, n_blocks=3,
+            activation="LeakyReLU",
+            downsampling_kernel=(2, 2), downsampling_mode="max_pool",
+            upsampling_kernel=(2, 2), upsampling_mode="linear_interpolation",
+    ):
+        """
+        Assume that input is 4D tensor of shape (batch_size, channels, N1, N2).
+        Usually batch_size = 1 (one image per batch), channels = 1 (greyscale), N1 = N2 (square image).
+        ("channels" is equivalent to the number of filters or features)
+
+        Example from U-Net paper (2015, Olaf Ronneberger https://arxiv.org/abs/1505.04597):
+            - in_channels = 1
+            - out_channels = 2
+            - init_filters = 64
+            - n_blocks = 4
+            - pooling: max pooling 2x2
+            - pool padding = 0
+                - 0 padding will reduce the size of the "image" by 2 in each dimension after each convolution. The skip-connection will have to crop the encoder's output to match the decoder's input.
+            - upsampling kernel: 2x2
+            - up_mode: ? (linear interpolation or transposed convolution)
+            
+        >>> unet = UNet2d(init_filters=8, n_blocks=2)
+        >>> x = torch.randn(1, 1, 16, 16) # 4D, normal use case when training
+        >>> print(x.shape)
+        torch.Size([1, 1, 16, 16])
+        >>> y = unet(x)
+        >>> print(y.shape)
+        torch.Size([1, 2, 16, 16])
+
+        """
+        
+        super(UNet2d, self).__init__()
+        
+        self.c0x0 = DoubleConv( # TODO: Find a better name
+            in_channels=in_channels, 
+            out_channels=init_filters,
+            activation=activation,
+            n_dimensions=2,
+        )
+        self.encoder = nn.ModuleList([
+            EncodeBlock2d(
+                in_channels=init_filters * 2**i,
+                activation=activation,
+                downsampling_kernel=downsampling_kernel,
+                downsampling_mode=downsampling_mode
+            ) for i in range(n_blocks)
+        ])
+        self.decoder = nn.ModuleList([
+            DecodeBlock2d(
+                in_channels=init_filters * 2**(n_blocks-i),
+                activation=activation, 
+                upsampling_kernel=upsampling_kernel,
+                upsampling_mode=upsampling_mode
+            ) for i in range(n_blocks)
+        ])
+        # 1x1x1 convo
+        self.c1x1 = nn.Conv2d( # TODO: Find a better name
+            in_channels=init_filters,
+            out_channels=out_channels,
+            kernel_size=(1, 1), stride=(1, 1), padding=(0, 0)
+        )
+
+    def forward(self, x: torch.Tensor):
+        # Assume that x is 5D tensor of shape (batch_size, channels, Nx, Ny, Nt)
+        # where Nx is the image width and Ny is the image height.
+        # Aslo assume that batch_size = 1, channels = 1, Nx = Ny (square image), Nt = 1 (static image).
+        # NOTE: The convention used in pytorch documentation is (batch_size, channels, Nt, Ny, Nx).
+        # assert len(x.size()) == 5, f"Expected 5D tensor, got {x.size()}"
+        # batch_size, channels, Nx, Ny, Nt = x.size()
+        # batch_size, channels, Nx, Ny= x.size()
+        # assert channels == 1, f"Expected 1 channel, got {channels}" # TODO: Allow multiple channels (colour images)
+        # assert Nx == Ny, f"Expected square image, got ({Nx}, {Ny})" # TODO: Allow non-square images
+        # assert Nt == 1, f"Expected 1 time step, got {Nt}" # TODO: Allow multiple time steps (dynamic images, video)
+        # assert batch_size == 1, f"Expected batch size 1, got {batch_size}" # TODO: Might train with larger batch size
+
+        Nx, Ny = x.size()[-2], x.size()[-1]
+        n_blocks = len(self.encoder)
+        assert Nx >= 2**n_blocks, f"Expected width (Nx) of at least {2**n_blocks}, got {Nx}"
+        assert Ny >= 2**n_blocks, f"Expected height (Ny) of at least {2**n_blocks}, got {Ny}"
+
+        x = self.c0x0(x)
+
+        encoder_outputs = []
+        for i, enc_block in enumerate(self.encoder):
+            encoder_outputs.append(x)
+            x = enc_block(x)
+        for i, dec_block in enumerate(self.decoder):
+            x = dec_block(x, encoder_outputs[-i-1]) # skip-connection inside
+            
+        x = self.c1x1(x)
+
+        for enc_output in encoder_outputs:
+            del enc_output
+        del encoder_outputs
+
+        return x

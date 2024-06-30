@@ -181,6 +181,7 @@ turtle_id/test/test_reg_map copy*
 turtle_id/test/test_scalar_reg/
 turtle_id/models/
 turtle_id/test/images_*
+tgv/models/
 
 # latex artifacts
 *.bbl

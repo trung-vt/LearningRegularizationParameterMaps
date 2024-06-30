@@ -9,7 +9,6 @@ class TgvPdhgNet(nn.Module):
         self,
         cnn=None,
         device="cpu",
-        phase="training",
         constraint_activation="softplus",
         upper_bound=0.1,
     ):
@@ -25,10 +24,6 @@ class TgvPdhgNet(nn.Module):
             Device to run the model on.
             Default is "...".
             
-        phase : str    
-            Phase, either "training" or "testing".
-            Default is "training".
-
         constraint_activation : str
             Activation function to constrain the regularization parameter-maps to be strictly positive. Either "softplus" or "sigmoid".
             Default is "softplus".
@@ -45,14 +40,9 @@ class TgvPdhgNet(nn.Module):
         # the CNN-block to estimate the lambda regularization map
         # must be a CNN yielding a two-channeld output, i.e.
         # one map for lambda_cnn_xy and one map for lambda_cnn_t
-        self.cnn = cnn.to(device) # This is the U-Net
-        
-        # distinguish between training and test phase;
-        # during training, the input is padded using "reflect" padding, because
-        # patches are used by reducing the number of temporal points;
-        # while testing, "reflect" padding is used in x,y- direction, while
-        # circular padding is used in t-direction
-        self.phase = phase
+        self.cnn = cnn
+        if cnn is not None:
+            self.cnn = cnn.to(device) # This is the U-Net
         
         # See page 10 in paper "Learning Regularization Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling"
         # constrain the regularization parameter-maps to be strictly positive
@@ -95,15 +85,15 @@ class TgvPdhgNet(nn.Module):
         if regularisation_params is None:
             # estimate lambda reg from the image
             regularisation_params = self.get_regularisation_param_maps(u)
-        assert len(regularisation_params.shape) == 2, f"Should have 2 regularisation parameters or 2 parameter maps, not {regularisation_params.shape}"
+        assert len(regularisation_params) == 2, f"Should have 2 regularisation parameters or 2 parameter maps, not {len(regularisation_params)}"
 
         alpha0 = regularisation_params[0]
         alpha1 = regularisation_params[1]
-        assert alpha0.shape == alpha1.shape, f"alpha0 and alpha1 should have the same shape, not {alpha0.shape} and {alpha1.shape}"
+        # assert alpha0.shape == alpha1.shape, f"alpha0 and alpha1 should have the same shape, not {alpha0.shape} and {alpha1.shape}"
         
         # # TODO: Do we need to impose the same shape for u and alpha0?
         # assert alpha0.shape == u.shape, f"Shape {alpha0} of alpha0 and alpha1 are not matching shape {u.shape} of input"
 
-        p = torch.zeros((u.shape[0], u.shape[1], 2), device=self.device) # Assume u is 2D now
+        p = torch.zeros((*u.shape, 2), device=self.device) # Assume u is 2D now
         u_T = self.pdhg.solve(u=u, p=p, alpha1=alpha1, alpha0=alpha0, num_iters=T)
         return u_T

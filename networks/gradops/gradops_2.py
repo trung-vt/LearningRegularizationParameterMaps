@@ -69,23 +69,30 @@ def dx_backward(u):
     Computes the backward difference in the x direction.
     
     >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32) # 2D
+    >>> print(u.shape)
+    torch.Size([3, 3])
     >>> dx_backward(u)
     tensor([[ 1.,  2.,  3.],
             [ 3.,  3.,  3.],
             [-4., -5., -6.]])
             
     >>> u = torch.tensor([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], dtype=torch.float32) # 3D
+    >>> print(u.shape)
+    torch.Size([1, 3, 3])
     >>> dx_backward(u)
     tensor([[[ 1.,  2.,  3.],
              [ 3.,  3.,  3.],
              [-4., -5., -6.]]])
     
     >>> u = torch.tensor([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=torch.float32) # 4D
+    >>> print(u.shape)
+    torch.Size([1, 1, 3, 3])
     >>> dx_backward(u)
     tensor([[[[ 1.,  2.,  3.],
               [ 3.,  3.,  3.],
               [-4., -5., -6.]]]])
     """
+    print(f"u.shape: {u.shape}")
     diff_x = torch.zeros_like(u)
     # Handle the first row (i == 0)
     diff_x[..., 0, :] = u[..., 0, :]

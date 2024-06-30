@@ -1,19 +1,34 @@
 import torch
 
+######################### Forward Difference Operators #########################
+
 def dx_forward(u):
     """
     Computes the forward difference in the x direction.
     
-    >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32)
+    >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32) # 2D
     >>> dx_forward(u)
     tensor([[3., 3., 3.],
             [3., 3., 3.],
             [0., 0., 0.]])
+    
+    >>> u = torch.tensor([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], dtype=torch.float32) # 3D
+    >>> dx_forward(u)
+    tensor([[[3., 3., 3.],
+             [3., 3., 3.],
+             [0., 0., 0.]]])
+    
+    >>> u = torch.tensor([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=torch.float32) # 4D
+    >>> dx_forward(u)
+    tensor([[[[3., 3., 3.],
+              [3., 3., 3.],
+              [0., 0., 0.]]]])
     """
-    N1, N2 = u.shape
     diff_x = torch.zeros_like(u)
-    diff_x[:-1, :] = u[1:, :] - u[:-1, :]
+    # Handle the middle rows (1 <= i < N1 - 1)
+    diff_x[..., :-1, :] = u[..., 1:, :] - u[..., :-1, :]
     return diff_x
+
 
 def dy_forward(u):
     """
@@ -24,45 +39,100 @@ def dy_forward(u):
     tensor([[1., 1., 0.],
             [1., 1., 0.],
             [1., 1., 0.]])
+            
+    >>> u = torch.tensor([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], dtype=torch.float32)
+    >>> dy_forward(u)
+    tensor([[[1., 1., 0.],
+             [1., 1., 0.],
+             [1., 1., 0.]]])
+    
+    >>> u = torch.tensor([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=torch.float32)
+    >>> dy_forward(u)
+    tensor([[[[1., 1., 0.],
+              [1., 1., 0.],
+              [1., 1., 0.]]]])
     """
-    N1, N2 = u.shape
     diff_y = torch.zeros_like(u)
-    diff_y[:, :-1] = u[:, 1:] - u[:, :-1]
+    # Handle the middle columns (1 <= j < N2 - 1)
+    diff_y[..., :, :-1] = u[..., :, 1:] - u[..., :, :-1]
     return diff_y
+
+
+
+
+
+
+######################### Backward Difference Operators #########################
 
 def dx_backward(u):
     """
     Computes the backward difference in the x direction.
     
-    >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32)
+    >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32) # 2D
     >>> dx_backward(u)
     tensor([[ 1.,  2.,  3.],
             [ 3.,  3.,  3.],
             [-4., -5., -6.]])
+            
+    >>> u = torch.tensor([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], dtype=torch.float32) # 3D
+    >>> dx_backward(u)
+    tensor([[[ 1.,  2.,  3.],
+             [ 3.,  3.,  3.],
+             [-4., -5., -6.]]])
+    
+    >>> u = torch.tensor([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=torch.float32) # 4D
+    >>> dx_backward(u)
+    tensor([[[[ 1.,  2.,  3.],
+              [ 3.,  3.,  3.],
+              [-4., -5., -6.]]]])
     """
-    N1, N2 = u.shape
     diff_x = torch.zeros_like(u)
-    diff_x[0, :] = u[0, :]
-    diff_x[1:-1, :] = u[1:-1, :] - u[:-2, :]
-    diff_x[-1, :] = -u[-2, :]
+    # Handle the first row (i == 0)
+    diff_x[..., 0, :] = u[..., 0, :]
+    # Handle the middle rows (1 <= i < N1 - 1)
+    diff_x[..., 1:-1, :] = u[..., 1:-1, :] - u[..., :-2, :]
+    # Handle the last row (i == N1 - 1)
+    diff_x[..., -1, :] = -u[..., -2, :]
     return diff_x
+
 
 def dy_backward(u):
     """
     Computes the backward difference in the y direction.
     
-    >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32)
+    >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32) # 2D
     >>> dy_backward(u)
     tensor([[ 1.,  1., -2.],
             [ 4.,  1., -5.],
             [ 7.,  1., -8.]])
+            
+    >>> u = torch.tensor([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], dtype=torch.float32) # 3D
+    >>> dy_backward(u)
+    tensor([[[ 1.,  1., -2.],
+             [ 4.,  1., -5.],
+             [ 7.,  1., -8.]]])
+    
+    >>> u = torch.tensor([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=torch.float32) # 4D
+    >>> dy_backward(u)
+    tensor([[[[ 1.,  1., -2.],
+              [ 4.,  1., -5.],
+              [ 7.,  1., -8.]]]])
     """
-    N1, N2 = u.shape
     diff_y = torch.zeros_like(u)
-    diff_y[:, 0] = u[:, 0]
-    diff_y[:, 1:-1] = u[:, 1:-1] - u[:, :-2]
-    diff_y[:, -1] = -u[:, -2]
+    # Handle the first column (j == 0)
+    diff_y[..., :, 0] = u[..., :, 0]
+    # Handle the middle columns (1 <= j < N2 - 1)
+    diff_y[..., :, 1:] = u[..., :, 1:] - u[..., :, :-1]
+    # Handle the last column (j == N2 - 1)
+    diff_y[..., :, -1] = -u[..., :, -2]
     return diff_y
+
+
+
+
+
+
+################################## TESTS ##################################
 
 def test_adjoint_property():
     """
@@ -85,6 +155,10 @@ def test_adjoint_property():
     adjoint_y = torch.sum(fwd_y_u * v) + torch.sum(u * bwd_y_v)
     
     return adjoint_x.item(), adjoint_y.item()
+
+import doctest
+doctest.testmod()
+test_adjoint_property()
 
 if __name__ == "__main__":
     import doctest

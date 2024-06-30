@@ -3,7 +3,8 @@ import os
 import datetime
 import json
 import yaml
-from tqdm import tqdm
+# from tqdm import tqdm
+from tqdm.notebook import tqdm
 import wandb
 
 from data.get_data_loaders import get_data_loaders
@@ -74,8 +75,8 @@ def perform_epoch(data_loader, model, loss_func, optimizer, perform_iter):
     running_psnr = 0.
     running_ssim = 0.
     num_batches = len(data_loader)
-    # for sample in tqdm(data_loader): # tqdm helps show a nice progress bar
-    for sample in data_loader:
+    for sample in tqdm(data_loader, leave=False): # tqdm helps show a nice progress bar
+    # for sample in data_loader:
         loss_value, psnr, ssim = perform_iter(
             sample=sample, model=model, loss_func=loss_func, optimizer=optimizer
         )
@@ -109,55 +110,21 @@ def init_wandb(config):
     )
 
 
-def start_training(config, get_datasets, pretrained_model_path=None, is_state_dict=False, start_epoch=0):
-    if pretrained_model_path is None or is_state_dict:
-        # Define CNN block
-        unet = UNet3d(
-            in_channels=config["in_channels"],
-            out_channels=config["out_channels"],
-            init_filters=config["init_filters"],
-            n_blocks=config["n_blocks"],
-            activation=config["activation"],
-            downsampling_kernel=config["downsampling_kernel"],
-            downsampling_mode=config["downsampling_mode"],
-            upsampling_kernel=config["upsampling_kernel"],
-            upsampling_mode=config["upsampling_mode"],
-        ).to(config["device"])
-
-        # Construct primal-dual operator with nn
-        pdhg = StaticImagePrimalDualNN(
-            cnn_block=unet, 
-            T=config["T"],
-            phase="training",
-            up_bound=config["up_bound"],
-        ).to(config["device"])
-        if is_state_dict:
-            pdhg.load_state_dict(torch.load(f"{model_states_dir}/{pretrained_model_path}.pt"))
-    else:
-        pdhg = torch.load(f"{model_states_dir}/{pretrained_model_path}.pt")
-
-    pdhg.train(True)
+def start_training(
+    pdhg_net, config, 
+    data_loader_train,
+    data_loader_valid, 
+    model_states_dir:str, start_epoch=0):
 
     # TODO: Sometimes, creating the optimizer gives this error:
     #   AttributeError: partially initialized module 'torch._dynamo' has no attribute 'trace_rules' (most likely due to a circular import)
-    optimizer = torch.optim.Adam(pdhg.parameters(), lr=config["learning_rate"])
+    optimizer = torch.optim.Adam(pdhg_net.parameters(), lr=config["learning_rate"])
     loss_function = torch.nn.MSELoss()
-    
-    data_loader_train, data_loader_valid, data_loader_test = get_data_loaders(config, get_datasets(config))
-
-    del data_loader_test # Not used for now
 
     num_epochs = config["epochs"]
 
     save_epoch_local = config["save_epoch_local"]
     save_epoch_wandb = config["save_epoch_wandb"]
-
-    # Prepare to save the model
-    save_dir = config["save_dir"]
-    model_name = config["model_name"]
-    model_states_dir = f"{save_dir}/{model_name}"
-
-    os.makedirs(model_states_dir, exist_ok=True)
 
     def log_to_files():
         with open(f"{model_states_dir}/config.json", "w") as f:
@@ -167,9 +134,12 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
         with open(f"{model_states_dir}/config.txt", "w") as f:
             f.write(str(config))
         with open(f"{model_states_dir}/unet.txt", "w") as f:
+            n_trainable_params = sum(p.numel() for p in pdhg_net.parameters())
+            f.write(f"Trainable parameters: {n_trainable_params}\n\n")
+            unet = pdhg_net.cnn
             f.write(str(unet))
         with open(f"{model_states_dir}/pdhg_net.txt", "w") as f:
-            f.write(str(pdhg))
+            f.write(str(pdhg_net))
 
         def log_data(data_loader, stage):
             dataset = data_loader.dataset
@@ -192,22 +162,22 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
     for epoch in tqdm(range(start_epoch, num_epochs)):
         wandb.log({"epoch": epoch+1})
         # Model training
-        pdhg.train(True)
+        pdhg_net.train(True)
         train_loss, train_psnr, train_ssim = perform_epoch(
-            data_loader_train, pdhg, loss_function, optimizer, train_iter
+            data_loader_train, pdhg_net, loss_function, optimizer, train_iter
         )
         # Optional: Use wandb to log training progress
         wandb.log({"train_loss": train_loss, "train_PSNR": train_psnr, "train_SSIM": train_ssim})
 
         del train_loss, train_psnr, train_ssim
 
-        pdhg.train(False)
+        pdhg_net.train(False)
         with torch.no_grad():
             torch.cuda.empty_cache()
 
             # Model validation
             val_loss, val_psnr, val_ssim = perform_epoch(
-                data_loader_valid, pdhg, loss_function, optimizer, validate_iter
+                data_loader_valid, pdhg_net, loss_function, optimizer, validate_iter
             )
             # Optional: Use wandb to log training progress
             wandb.log({"val_loss": val_loss, "val_PSNR": val_psnr, "val_SSIM": val_ssim})
@@ -217,7 +187,7 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
 
         if (epoch+1) % save_epoch_local == 0:
             current_model_name = f"model_epoch_{epoch+1}"
-            torch.save(pdhg, f"{model_states_dir}/{current_model_name}.pt")
+            torch.save(pdhg_net, f"{model_states_dir}/{current_model_name}.pt")
             
             print(f"Epoch {epoch+1} - VALIDATION LOSS: {val_loss} - VALIDATION PSNR: {val_psnr} - VALIDATION SSIM: {val_ssim}")
 
@@ -230,7 +200,7 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
 
 
     # Save the entire model
-    torch.save(pdhg, f"{model_states_dir}/final_model.pt")
+    torch.save(pdhg_net, f"{model_states_dir}/final_model.pt")
     
     wandb.log_model(f"{model_states_dir}/final_model.pt", name=f"final_model")
     wandb.finish()
@@ -238,4 +208,4 @@ def start_training(config, get_datasets, pretrained_model_path=None, is_state_di
     with torch.no_grad():
         torch.cuda.empty_cache()
 
-    return pdhg
+    return pdhg_net

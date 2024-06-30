@@ -45,7 +45,7 @@ class TgvPdhgNet(nn.Module):
         # the CNN-block to estimate the lambda regularization map
         # must be a CNN yielding a two-channeld output, i.e.
         # one map for lambda_cnn_xy and one map for lambda_cnn_t
-        self.cnn = cnn.to(device)    # NOTE: This is actually the UNET!!! (At least in this project)
+        self.cnn = cnn.to(device) # This is the U-Net
         
         # distinguish between training and test phase;
         # during training, the input is padded using "reflect" padding, because
@@ -64,7 +64,7 @@ class TgvPdhgNet(nn.Module):
         elif constraint_activation == "sigmoid":
             self.constraint_activation = torch.sigmoid
         else:
-            raise ValueError(f"Unknown constraint activation function: {constraint}")
+            raise ValueError(f"Unknown constraint activation function: {constraint_activation}")
         self.upper_bound = torch.tensor(upper_bound, requires_grad=False, device=self.device)
 
         self.pdhg = TgvPdhgTorch(device=self.device)
@@ -80,33 +80,29 @@ class TgvPdhgNet(nn.Module):
         # This can be achieved either by accordingly initializing the weights of the network, or in a simpler way, as we do here by scaling the output of the CNN. 
         # constrain map to be striclty positive and bounded above
         regularisation_param_maps = self.upper_bound * self.constraint_activation(regularisation_param_maps)
+        
+        # TODO: Remove this
+        regularisation_param_maps = torch.tensor([0.1, 0.1], device=self.device)
 
         return regularisation_param_maps
 
 
     def forward(
-            self, u_4d, regularisation_params=None,
+            self, u, regularisation_params=None,
             T=128,  # number of iterations for the PDHG algorithm
-            # lambda_reg_container=None,
     ):
-        assert len(u_4d.shape) == 4, f"Input tensor should be 4D with shape (batch_size, channels, height, width), not {u_4d.shape}" # 4D for cnn input
-        
+        u = u.to(self.device)
         if regularisation_params is None:
             # estimate lambda reg from the image
-            regularisation_params = self.get_regularisation_param_maps(u_4d)
+            regularisation_params = self.get_regularisation_param_maps(u)
         assert len(regularisation_params.shape) == 2, f"Should have 2 regularisation parameters or 2 parameter maps, not {regularisation_params.shape}"
-
-        u = u_4d.squeeze(0).squeeze(0) # Remove batch and channel dimensions to make u 2D
-        u = u.to(self.device)
 
         alpha0 = regularisation_params[0]
         alpha1 = regularisation_params[1]
         assert alpha0.shape == alpha1.shape, f"alpha0 and alpha1 should have the same shape, not {alpha0.shape} and {alpha1.shape}"
-        assert alpha0.shape == u.shape, f"Shape {alpha0} of alpha0 and alpha1 are not matching shape {u.shape} of input"
-
-        # if lambda_reg_container is not None:
-        #     assert type(lambda_reg_container) == list, f"lambda_reg_container should be a list, not {type(lambda_reg_container)}"
-        #     lambda_reg_container.append(lambda_reg) # For comparison
+        
+        # # TODO: Do we need to impose the same shape for u and alpha0?
+        # assert alpha0.shape == u.shape, f"Shape {alpha0} of alpha0 and alpha1 are not matching shape {u.shape} of input"
 
         p = torch.zeros((u.shape[0], u.shape[1], 2), device=self.device) # Assume u is 2D now
         u_T = self.pdhg.solve(u=u, p=p, alpha1=alpha1, alpha0=alpha0, num_iters=T)

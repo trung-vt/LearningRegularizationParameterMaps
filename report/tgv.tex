@@ -245,6 +245,34 @@ It is taken from the paper \cite{recovering_piecewise_smooth_multichannel_images
 \subsection{Why Projection is dividing by matrix instead of a scalar}
 
 
+Given matrix $a$, we need to find matrix $u$ such that
+
+\begin{equation}
+    u = \arg \min_{|| v ||_\infty \leq 1} || v - a ||_V
+\end{equation}
+
+Solution:
+
+\begin{equation}
+    ||v||_V = \sum_{i,j} \left( \left(v_{ij}^{(1)}\right)^2 + \left(v_{ij}^{(2)}\right)^2 \right)^{1/2}
+\end{equation}
+
+Constraints:
+
+\begin{equation}
+    ||v||_\infty \leq 1
+\end{equation}
+
+or equivalently
+
+\begin{equation}
+    \max_{i,j} \left( \left(v_{ij}^{(1)}\right)^2 + \left(v_{ij}^{(2)}\right)^2 \right)^{1/2} \leq 1  \quad  \quad  \forall i, j
+\end{equation}
+
+\begin{equation}
+    u = \frac{a}{\max(1, ||a||_\infty)}
+\end{equation}
+
 \begin{equation}
 ((v_{ij}^{(1)})^2 + (v_{ij}^{(2)})^2)^{1/2} \leq 1 \quad \forall i, j
 \end{equation}

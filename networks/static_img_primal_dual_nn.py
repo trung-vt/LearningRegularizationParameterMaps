@@ -71,35 +71,35 @@ class StaticImagePrimalDualNN(nn.Module):
         self.phase = phase
 
     def get_lambda_cnn(self, x):
-        # padding
-        # arbitrarily chosen, maybe better to choose it depending on the
-        # receptive field of the CNN or so;
-        # seems to be important in order not to create "holes" in the
-        # lambda_maps in t-direction
-        # npad_xy = 4
-        npad_xy = 0
-        # npad_t = 8
-        npad_t = 0 # TODO: Time dimension should not be necessary for single image input.
-        # I changed the npad_t to 0 so that I can run on single image input without change the 3D type config. It seems that the number of frames must be greater than npad_t?
+        # # padding
+        # # arbitrarily chosen, maybe better to choose it depending on the
+        # # receptive field of the CNN or so;
+        # # seems to be important in order not to create "holes" in the
+        # # lambda_maps in t-direction
+        # # npad_xy = 4
+        # npad_xy = 0
+        # # npad_t = 8
+        # npad_t = 0 # TODO: Time dimension should not be necessary for single image input.
+        # # I changed the npad_t to 0 so that I can run on single image input without change the 3D type config. It seems that the number of frames must be greater than npad_t?
 
-        pad = (npad_t, npad_t, npad_xy, npad_xy, npad_xy, npad_xy)
+        # pad = (npad_t, npad_t, npad_xy, npad_xy, npad_xy, npad_xy)
 
-        if self.phase == "training":
-            x = F.pad(x, pad, mode="reflect")
+        # if self.phase == "training":
+        #     x = F.pad(x, pad, mode="reflect")
 
-        elif self.phase == "testing":
-            pad_refl = (0, 0, npad_xy, npad_xy, npad_xy, npad_xy)
-            pad_circ = (npad_t, npad_t, 0, 0, 0, 0)
+        # elif self.phase == "testing":
+        #     pad_refl = (0, 0, npad_xy, npad_xy, npad_xy, npad_xy)
+        #     pad_circ = (npad_t, npad_t, 0, 0, 0, 0)
 
-            x = F.pad(x, pad_refl, mode="reflect")
-            x = F.pad(x, pad_circ, mode="circular")
+        #     x = F.pad(x, pad_refl, mode="reflect")
+        #     x = F.pad(x, pad_circ, mode="circular")
 
         # estimate parameter map
         lambda_cnn = self.cnn(x) # NOTE: The cnn is actually the UNET block!!! (At least in this project)
 
-        # crop
-        neg_pad = tuple([-pad[k] for k in range(len(pad))])
-        lambda_cnn = F.pad(lambda_cnn, neg_pad)
+        # # crop
+        # neg_pad = tuple([-pad[k] for k in range(len(pad))])
+        # lambda_cnn = F.pad(lambda_cnn, neg_pad)
 
         # double spatial map and stack
         lambda_cnn = torch.cat((lambda_cnn[:, 0, ...].unsqueeze(1), lambda_cnn), dim=1)
@@ -120,7 +120,7 @@ class StaticImagePrimalDualNN(nn.Module):
         else:
             lambda_cnn = t_out * self.op_norm_AHA * F.softplus(lambda_cnn)
 
-        del x, npad_xy, npad_t, pad, neg_pad # Explicitly free up (GPU) memory to be safe
+        # del x, npad_xy, npad_t, pad, neg_pad # Explicitly free up (GPU) memory to be safe
 
         return lambda_cnn
 

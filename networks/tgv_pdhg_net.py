@@ -10,7 +10,7 @@ class TgvPdhgNet(nn.Module):
         cnn=None,
         device="cpu",
         constraint_activation="softplus",
-        upper_bound=0.1,
+        scale_factor=0.1,
     ):
         """
         TgvPdhgNet
@@ -28,9 +28,9 @@ class TgvPdhgNet(nn.Module):
             Activation function to constrain the regularization parameter-maps to be strictly positive. Either "softplus" or "sigmoid".
             Default is "softplus".
             
-        upper_bound : int
-            Upper bound of the values of lambda regularization map.
-            Default is ...
+        scale_factor : int
+            Scale the output of the activation to control the values in the lambda regularization map. If using sigmoid then this is the upper bound.
+            Default is 0.1.
         """
 
         super(TgvPdhgNet, self).__init__()
@@ -55,13 +55,14 @@ class TgvPdhgNet(nn.Module):
             self.constraint_activation = torch.sigmoid
         else:
             raise ValueError(f"Unknown constraint activation function: {constraint_activation}")
-        self.upper_bound = torch.tensor(upper_bound, requires_grad=False, device=self.device)
+        self.scale_factor = torch.tensor(scale_factor, requires_grad=False, device=self.device)
 
         self.pdhg = TgvPdhgTorch(device=self.device)
         
 
     def get_regularisation_param_maps(self, u):
         regularisation_param_maps = self.cnn(u)
+        regularisation_param_maps = regularisation_param_maps.squeeze(0) # Remove batch dimension
 
         # See page 10 in paper "Learning Regularization Parameter-Maps for Variational Image Reconstruction using Deep Neural Networks and Algorithm Unrolling"
         # constrain the regularization parameter-maps to be strictly positive
@@ -69,10 +70,7 @@ class TgvPdhgNet(nn.Module):
         # Empirically, we have experienced that the network’s training beneﬁts in terms of faster convergence if the order of the scale of the output is properly set depending on the application. 
         # This can be achieved either by accordingly initializing the weights of the network, or in a simpler way, as we do here by scaling the output of the CNN. 
         # constrain map to be striclty positive and bounded above
-        regularisation_param_maps = self.upper_bound * self.constraint_activation(regularisation_param_maps)
-        
-        # TODO: Remove this
-        regularisation_param_maps = torch.tensor([0.1, 0.1], device=self.device)
+        regularisation_param_maps = self.scale_factor * self.constraint_activation(regularisation_param_maps)
 
         return regularisation_param_maps
 
@@ -111,8 +109,14 @@ class TgvPdhgNet(nn.Module):
             regularisation_params = self.get_regularisation_param_maps(u)
         assert len(regularisation_params) == 2, f"Should have 2 regularisation parameters or 2 parameter maps, not {len(regularisation_params)}"
 
-        alpha0 = torch.tensor(regularisation_params[0], device=self.device)
-        alpha1 = torch.tensor(regularisation_params[1], device=self.device)
+        alpha0 = regularisation_params[0]
+        alpha1 = regularisation_params[1]
+        if type(alpha0) != torch.Tensor:
+            alpha0 = torch.tensor(alpha0, requires_grad=False)
+        if type(alpha1) != torch.Tensor:
+            alpha1 = torch.tensor(alpha1, requires_grad=False)
+        alpha0 = alpha0.to(self.device)
+        alpha1 = alpha1.to(self.device)
         
         p = torch.zeros((*u.shape, 2), device=self.device) # Assume u is 2D now
         u_T = self.pdhg.solve(u=u, p=p, alpha1=alpha1, alpha0=alpha0, num_iters=T)

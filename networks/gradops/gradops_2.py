@@ -7,18 +7,24 @@ def dx_forward(u):
     Computes the forward difference in the x direction.
     
     >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32) # 2D
+    >>> print(u.shape)
+    torch.Size([3, 3])
     >>> dx_forward(u)
     tensor([[3., 3., 3.],
             [3., 3., 3.],
             [0., 0., 0.]])
     
     >>> u = torch.tensor([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], dtype=torch.float32) # 3D
+    >>> print(u.shape)
+    torch.Size([1, 3, 3])
     >>> dx_forward(u)
     tensor([[[3., 3., 3.],
              [3., 3., 3.],
              [0., 0., 0.]]])
     
     >>> u = torch.tensor([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=torch.float32) # 4D
+    >>> print(u.shape)
+    torch.Size([1, 1, 3, 3])
     >>> dx_forward(u)
     tensor([[[[3., 3., 3.],
               [3., 3., 3.],
@@ -35,18 +41,24 @@ def dy_forward(u):
     Computes the forward difference in the y direction.
     
     >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32)
+    >>> print(u.shape)
+    torch.Size([3, 3])
     >>> dy_forward(u)
     tensor([[1., 1., 0.],
             [1., 1., 0.],
             [1., 1., 0.]])
             
     >>> u = torch.tensor([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], dtype=torch.float32)
+    >>> print(u.shape)
+    torch.Size([1, 3, 3])
     >>> dy_forward(u)
     tensor([[[1., 1., 0.],
              [1., 1., 0.],
              [1., 1., 0.]]])
     
     >>> u = torch.tensor([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=torch.float32)
+    >>> print(u.shape)
+    torch.Size([1, 1, 3, 3])
     >>> dy_forward(u)
     tensor([[[[1., 1., 0.],
               [1., 1., 0.],
@@ -92,7 +104,6 @@ def dx_backward(u):
               [ 3.,  3.,  3.],
               [-4., -5., -6.]]]])
     """
-    print(f"u.shape: {u.shape}")
     diff_x = torch.zeros_like(u)
     # Handle the first row (i == 0)
     diff_x[..., 0, :] = u[..., 0, :]
@@ -108,18 +119,24 @@ def dy_backward(u):
     Computes the backward difference in the y direction.
     
     >>> u = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=torch.float32) # 2D
+    >>> print(u.shape)
+    torch.Size([3, 3])
     >>> dy_backward(u)
     tensor([[ 1.,  1., -2.],
             [ 4.,  1., -5.],
             [ 7.,  1., -8.]])
             
     >>> u = torch.tensor([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], dtype=torch.float32) # 3D
+    >>> print(u.shape)
+    torch.Size([1, 3, 3])
     >>> dy_backward(u)
     tensor([[[ 1.,  1., -2.],
              [ 4.,  1., -5.],
              [ 7.,  1., -8.]]])
     
     >>> u = torch.tensor([[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]], dtype=torch.float32) # 4D
+    >>> print(u.shape)
+    torch.Size([1, 1, 3, 3])
     >>> dy_backward(u)
     tensor([[[[ 1.,  1., -2.],
               [ 4.,  1., -5.],

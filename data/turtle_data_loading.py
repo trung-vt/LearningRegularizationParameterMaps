@@ -54,7 +54,7 @@ def get_file_paths(base_path:str, type:str, num_samples:int, sigmas:list, size=i
 
 
 
-def get_datasets(config, generating_data:bool=False, device="cuda"):
+def get_datasets(config, generating_data:bool=False, device="cuda", n_dim_data=3):
     base_path = config["dataset"]
     size = config["resize_square"]
     sigmas = get_sigmas(config["sigmas"])
@@ -71,25 +71,29 @@ def get_datasets(config, generating_data:bool=False, device="cuda"):
     def get_dataset(type):
         num_samples = config[f"{type}_num_samples"]
         file_paths = get_file_paths(base_path, type, num_samples, sigmas, size)
-        return TurtleDataset(base_path, file_paths, device=device)
+        return TurtleDataset(base_path, file_paths, device=device, n_dim_data=n_dim_data)
         
     return get_dataset("train"), get_dataset("val"), get_dataset("test")
         
 
 class TurtleDataset(torch.utils.data.Dataset):
-    def get_img_4d(self, img_path):
+    def get_img_torch(self, img_path, n_dim_data=3):
         img = Image.open(img_path)
         img_np = np.array(img)
-        img_4d = convert_to_tensor_4D(img_np)
-        return img_4d
+        img_torch = torch.tensor(img_np, dtype=torch.float32, device=self.device)
+        img_torch = img_torch.unsqueeze(0) # Add channels dimension
+        if n_dim_data == 3:
+            img_torch = img_torch.unsqueeze(-1) # Add time dimension
+        return img_torch
     
-    def load(self, base_path, file_paths, img_list):
+    def load(self, base_path, file_paths, img_list, n_dim_data=3):
         for i in tqdm(range(len(file_paths))):
             file_path = base_path + "/" + file_paths[i]
-            img_4d = self.get_img_4d(file_path).to(self.device)
-            img_list.append(img_4d)
+            img_torch = self.get_img_torch(file_path, n_dim_data=n_dim_data)
+            img_list.append(img_torch)
     
-    def __init__(self, base_path, file_paths, device="cuda"):
+    def __init__(self, base_path, file_paths, device="cuda", n_dim_data=3):
+        assert n_dim_data in [2, 3], f"n_dim_data must be 2 or 3. Got {n_dim_data}."
         self.device = device
         sigmas = list(file_paths.keys())
         assert len(sigmas) > 1, "At least original and one noisy image group is required."
@@ -98,14 +102,14 @@ class TurtleDataset(torch.utils.data.Dataset):
         self.originals = []
         original_file_paths = file_paths[0]
         print(f"Loading original images ", end="")
-        self.load(base_path, original_file_paths, self.originals)
+        self.load(base_path, original_file_paths, self.originals, n_dim_data=n_dim_data)
         self.originals = torch.stack(self.originals, dim=0)
 
         self.noisies = []
         for j in range(1, len(sigmas)):
             noisy_file_paths = file_paths[sigmas[j]]
             print(f"Loading noisy images sigma={sigmas[j]} ", end="")
-            self.load(base_path, noisy_file_paths, self.noisies)
+            self.load(base_path, noisy_file_paths, self.noisies, n_dim_data=n_dim_data)
         self.noisies = torch.stack(self.noisies, dim=0)
 
 

@@ -234,6 +234,60 @@ This algorithm is used to solve the minimisation problem \ref{eq:tgv_minimisatio
 It is taken from the paper \cite{recovering_piecewise_smooth_multichannel_images}, page ....
 
 
+\subsection{Why Projection is dividing by matrix instead of a scalar}
+
+
+\begin{equation}
+((v_{ij}^{(1)})^2 + (v_{ij}^{(2)})^2)^{1/2} \leq 1 \quad \forall i, j
+\end{equation}
+
+Tức là ta có $n \times n$ constraints,
+các constraints này chỉ áp dụng cho 1 vị trí $v_{ij}$,
+independent với các vị trí khác.
+Do đó: bài toán optimisation lớn có thể chia thành $n^2$ bài toán nhỏ:
+
+\begin{equation}
+u_{ij} = \arg \min_{t_{ij} \leq 1} || v_{ij} - a_{ij} ||  \quad \forall i, j
+\end{equation}
+
+Denote $v_{ij} = x$, $a_{ij} = y$, $u_{ij} = z$:
+
+\begin{equation}
+    z = \arg \min_{|| x ||_2 \leq 1} ||x - y|| \quad \quad \quad x, y, z \in \mathbb{R}^2
+\end{equation}
+
+Thus
+
+\begin{equation}
+    z = \frac{y}{|| y ||_2}
+\end{equation}
+
+
+Áp dụng ngược lại cho $u$ và $a$:
+
+\begin{equation}
+    u = \left( \frac{a_{ij}}{|| a_{ij} ||_2} \right)  \text{if} ||y||_2 > 1
+\end{equation}
+
+
+\begin{equation}
+    u = \left( \frac{a_{ij}}{|| a_{ij} ||_2} \right)  \text{if} ||y||_2 > 1
+\end{equation}
+
+
+...
+
+\begin{equation}
+    = \frac{y}{\max(1, ||y||_2)}
+\end{equation}
+
+Ap dung cho $u$ va $a$, ta co:
+
+\begin{equation}
+    u_{ij} = \frac{a_{ij}}{\max(1, ||a_{ij}||_2)}
+\end{equation}
+
+
 % Page 19:
 % \begin{equation}
 %     (\text{id} + \tau \partial F_h)^{-1}(\bar{u}) =

@@ -54,7 +54,7 @@ def get_file_paths(base_path:str, type:str, num_samples:int, sigmas:list, size=i
 
 
 
-def get_datasets(config, generating_data:bool=False, device="cuda", n_dim_data=3):
+def get_datasets(config, generating_data:bool=False, device="cuda"):
     base_path = config["dataset"]
     size = config["resize_square"]
     sigmas = get_sigmas(config["sigmas"])
@@ -67,7 +67,7 @@ def get_datasets(config, generating_data:bool=False, device="cuda", n_dim_data=3
             sigmas=sigmas,
         )
         data_generator.generate_cropped_and_resized_images()
-    
+    n_dim_data = config["n_dim_data"]
     def get_dataset(type):
         num_samples = config[f"{type}_num_samples"]
         file_paths = get_file_paths(base_path, type, num_samples, sigmas, size)
@@ -80,7 +80,7 @@ class TurtleDataset(torch.utils.data.Dataset):
     def get_img_torch(self, img_path, n_dim_data=3):
         img = Image.open(img_path)
         img_np = np.array(img)
-        img_torch = torch.tensor(img_np, dtype=torch.float32, device=self.device)
+        img_torch = torch.tensor(img_np, dtype=torch.float32, device=self.device) / self.max_pixel
         img_torch = img_torch.unsqueeze(0) # Add channels dimension
         if n_dim_data == 3:
             img_torch = img_torch.unsqueeze(-1) # Add time dimension
@@ -95,6 +95,7 @@ class TurtleDataset(torch.utils.data.Dataset):
     def __init__(self, base_path, file_paths, device="cuda", n_dim_data=3):
         assert n_dim_data in [2, 3], f"n_dim_data must be 2 or 3. Got {n_dim_data}."
         self.device = device
+        self.max_pixel = torch.tensor(255, dtype=torch.float32, device=device)
         sigmas = list(file_paths.keys())
         assert len(sigmas) > 1, "At least original and one noisy image group is required."
         assert sigmas[0] == 0, "First sigma must be 0 for original images."

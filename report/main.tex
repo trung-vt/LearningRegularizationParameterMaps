@@ -1,7 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{csquotes}
-\usepackage{amssymb,tikz,pdftexcmds,xparse}
+\usepackage{amssymb,pdftexcmds,xparse}
 \usepackage{url}
 
 \usepackage{bm} % bold math
@@ -20,9 +20,9 @@ style=apa,
 \usepackage{xcolor}
 \usepackage{algorithm}
 \usepackage{algorithmic}
-\usepackage{graphicx}   % for trimming images
-\usepackage{tikz}
+\usepackage{graphicx}   % for including images
 \usepackage{subcaption} % for subfigures
+\usepackage{tikz}   % for making diagrams
 \usetikzlibrary{shapes, arrows.meta, positioning}
 
 
@@ -1753,22 +1753,12 @@ The total training time was 9 hours, and the GPU memory footprint was around 10 
 
 \section{TGV}
 
+\subsection{Results}
 
-\begin{equation}
-    (\partial_x^+ u)_{i,j} =
-    \begin{cases}
-    u_{i+1,j} - u_{i,j} & \text{for } 1 \leq i < N_1, \\
-    0 & \text{for } i = N_1,
-    \end{cases}
-\end{equation}
-    
-\begin{equation}
-    (\partial_y^+ u)_{i,j} =
-    \begin{cases}
-    u_{i,j+1} - u_{i,j} & \text{for } 1 \leq j < N_2, \\
-    0 & \text{for } j = N_2,
-    \end{cases}
-\end{equation}
+The TGV method is better than the TV method using a scalar $\lambda$.
+It is even better then the TV method using the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$.
+
+We improved it even further using U-Net to learn two regularisation parameter maps $\mathbf{\Lambda}_1$ and $\mathbf{\Lambda}_0$.
 
 
 \section{Conclusion}

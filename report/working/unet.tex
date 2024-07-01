@@ -1,0 +1,364 @@
+\section{Neural Network Architecture}
+
+
+% Let us first delve into the foundational concept of a convolutional neural network, which underpins the U-Net architecture.
+
+
+
+\subsection{
+Convolutional Neural Network (CNN)
+}
+
+\begin{figure}[H]
+    \includegraphics[width=1\linewidth]{../Le-Net 5.png}
+    
+    \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks (\cite{726791})} 
+    \label{fig:lenet}
+\end{figure}
+
+
+
+Convolutional Neural Networks (CNNs) are a specific type of artificial neural network particularly well-suited for analysing image data and other grid-like patterns. 
+Here we assume a 2D CNN architecture, where each layer is represented as one or more 2-dimensional matrices, rather than a vector as in a normal "vanilla" network.
+% They excel at tasks like image classification, object detection, and image segmentation. 
+
+% Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analysing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
+
+% Here's a breakdown of the key concepts:
+
+% Core Idea:
+
+% CNNs are inspired by the structure and function of the visual cortex in the human brain. The visual cortex processes visual information hierarchically, extracting features from simple edges and shapes to complex objects.
+
+% CNNs achieve similar functionality through convolutional layers and pooling layers. These layers work together to progressively extract and refine features from the input data.
+
+\subsubsection*{Inspiration and Function}
+
+
+
+CNNs are inspired by 
+% the structure and function of 
+the visual cortex in the human brain. 
+The visual cortex processes visual information, 
+% hierarchically, 
+extracting features one-by-one, from simple edges and shapes to complex objects.
+CNNs try to mimic this 
+% achieve similar functionality 
+through convolutional layers and pooling layers. 
+% These layers work together to progressively extract and refine features from the input data.
+
+% The design of CNNs draws inspiration from the human visual cortex, which processes visual stimuli by sequentially extracting features, ranging from simple edges and shapes to complex objects. CNNs replicate this hierarchical feature extraction using convolutional layers and pooling layers. 
+
+% Key Components:
+
+    % Convolutional Layers: These layers apply a filter (also called a kernel) to the input data (often an image). The filter slides across the input, computing the dot product between its weights and the corresponding elements in the data. This creates a feature map that highlights specific features the filter is designed to detect.
+
+    % Pooling Layers: These layers downsample the data, reducing its dimensionality while preserving essential features.Pooling techniques like average pooling or max pooling select the most significant value from a local region of the feature map.
+
+    % Activation Functions: CNNs often use activation functions like ReLU (Rectified Linear Unit) after convolutional layers. These functions introduce non-linearity into the network, allowing it to learn complex relationships between features.
+
+    % Fully-Connected Layers: In the later stages of a CNN, fully-connected layers are typically used, similar to regular neural networks. These layers perform classifications or predictions based on the extracted features.
+
+
+\subsubsection*{Convolutional Layers}
+
+Similar to a normal "vanilla" neural network layer, each element in a convolutional layer's output comes from a linear combination 
+% of ...
+followed by an activation function.
+The difference is the use of filters (also called kernels) instead of a single weight matrix.
+Each filter slides across the input, computing the dot product between its weights and the corresponding elements, then passes the output through an activation function.
+This is a convolution operation.
+For each input matrix, one filter produces one output matrix.
+We can have multiple filters in one layer.
+Each output matrix is called a feature map, since one filter can be thought of as a feature-extractor that is designed to highlight a specific feature. The number of feature maps is also called the number of channels.
+Implementation-wise, using filters instead of weight matrices reduces the ratio between the number of weights and the number of output values, hence cutting down on the number of trainable parameters for 
+a image task.
+% I have described an example here: [].
+% the same amount of output. 
+
+
+% In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilisation of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
+% A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasises specific characteristics of the input. 
+% When multiple filters are employed in a layer, they produce multiple feature maps, with each map corresponding to a different channel. 
+% This design significantly reduces the proportion of trainable parameters relative to the number of output values, enhancing efficiency for image-related tasks.
+
+\subsubsection*{Pooling Layers}
+
+
+
+
+An additional type of layer is a pooling layer. Usually we use a max-pooling layer which outputs the maximum instead. This project also utilises max-pooling. The goal is to keep only the most significant values.
+
+These convolutional and pooling layers will form the building block for the U-Net architecture.
+
+
+% An essential component of CNNs is the pooling layer, typically implemented as a max-pooling layer. This layer simplifies the output by retaining only the maximum values from the defined regions in the feature map. The objective is to preserve the most significant features while reducing data dimensionality. In this project, max-pooling is a crucial technique used to enhance model performance.
+
+% The convolutional and pooling layers constitute the foundational blocks of the U-Net architecture.
+
+
+
+
+
+
+\subsection{U-Net Architecture}
+
+The U-Net is a type of neural network that is commonly used for image segmentation (\cite{ronneberger2015unet}).
+The U-Net is an encoder-decoder network that is designed to take an image as input and produce a segmentation mask as output.
+The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
+The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
+
+
+In our case, we will optimise a U-Net model to find the regularisation parameter map 
+% $\Lambda_{\Theta}$ 
+$\Lambda$ 
+that produces the best denoised image for any particular noisy image.
+
+
+% As previously mentioned, the specific architecture for $\text{NET}_{\Theta}$ is the U-Net, a special type of convolutional neural network architecture.
+
+% An Unrolled Neural Network (U-Net) \cite{ronneberger2015unet} is an extension of a CNN in that we add some so-called skip connections,
+% which is similar to the addition connection in a residual network.
+% Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
+
+
+% A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, 
+% akin to those in a residual network.
+% similar to the addition connection in a residual network. 
+% These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
+% Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
+
+% , in addition to normal pooling layers which condenses the input, we have  which expand the input.
+
+% It has a contracting path (encoder) and an expanding path (decoder) with skip connections in between. 
+% This structure is specifically designed for image segmentation, where the network needs to not only extract features but also localise them precisely within the image.
+
+% U-Net are used often in many segmentation tasks, and in recent years have made their ways onto image generation tasks as well.
+
+% \url{https://en.wikipedia.org/wiki/U-Net}: The U-Net architecture stems from the so-called “fully convolutional network” proposed by Long, Shelhamer, and Darrell in 2014. \url{https://arxiv.org/abs/1411.4038}
+
+
+
+% The network is based on a fully convolutional neural network[2] whose architecture was modified and extended to work with fewer training images and to yield more precise segmentation.
+
+% The architecture of an unrolled neural network (UNET) is similar to that of an auto-encoder in that it can be viewed as having two parts that are almost opposite-symmetrical.
+
+% Whereas an auto-encoder uses a encoding part and a decoding part, the UNET consists of a contracting path (left side) and an expansive path (right side). 
+
+
+% The contracting path follows the typical architecture of a convolutional network. 
+
+% It consists of the repeated application of two 3x3 convolutions (unpadded convolutions), each followed by a rectified linear unit (ReLU) and a 2x2 max pooling operation with stride 2 for downsampling. 
+
+
+
+% An U-Net can be divided into two main parts, an Encoder and a Decoder. 
+% Each part is basically a normal convolution network. The Encoder and Decoder are almost reversely symmetrical. 
+The U-Net architecture is divided into two principal components: an Encoder and a Decoder. 
+
+\subsubsection*{Encoder}
+
+
+The Encoder functions similarly to a standard CNN, utilising a combination of convolutional layers and max-pooling layers organised into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while 
+% concurrently 
+reducing the feature map size due to the pooling.
+
+
+% The Encoder is a typical CNN with a combination of convolutional layers and max-pooling layers. The layers are grouped into "blocks". Each encoding block has a few (usually two) convolutional layers followed by one max-pooling layer. In this project we also use blocks of two convolutional layers followed by one max-pooling layer.
+
+% Each successive Encoder block doubles the number of channels (feature maps) while decreasing the size of the feature map due to the pooling operation.
+
+\subsubsection*{Decoder}
+
+% Conversely, the Decoder is structured around a series of blocks that progressively halve the number of channels while enlarging the feature map size, effectively "unrolling" the data. 
+% Unlike the Encoder blocks, each Decoder block concludes with an up-convolutional layer followed by a skip connection.
+% This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
+
+The Decoder is also a CNN with a series of blocks. Opposite to an encoding block which doubles the number of channels, each successive decoding block cuts the number of channels (feature maps) in half while increasing the size of the output feature map (hence the "unrolling").
+Instead of a max-pooling layer, each decoding block ends with a so-called up-convolutional layer and a skip connection. 
+% This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
+The up-convolutional layer is just a normal convolutional layer whose output is concatenated with the output of another convolutional layer in an Encoder block. 
+% This concatenation, which increases the size of feature maps instead of decreasing them like a normal CNN would, is where the "unrolling" in the U-Net's name comes from. 
+
+
+
+
+% A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
+
+
+
+\subsection{Full Architecture}
+
+
+
+
+For this project, our model comprises two primary components:
+\begin{enumerate}
+    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image 
+    % $\mathbf{x}_0$
+    $\mathbf{x}_{\text{noisy}}$
+    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver 
+    % (refer to Appendix), 
+    % which utilises both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}
+    % $. 
+    % This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. 
+    % The symbol $\Theta$ represents the set of trainable parameters within the network.
+\end{enumerate}
+
+We refer to the set of trainable parameters in the U-Net as $\Theta$, and the output of the U-Net as $\mathbf{\Lambda}_{\Theta}$.
+
+The general architecture is depicted in shown in Figure 1,
+
+\begin{figure}[ht]
+  \centering
+\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
+
+  % Define styles for the different layers
+  \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
+  \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
+  \tikzstyle{inference} = [->, ultra thick, red]
+  \tikzstyle{normal} = [->, ultra thick, black]
+
+  \node (input) [output] {$\mathbf{x}_{\text{noisy}}$};
+  \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
+  \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
+  \node (pdhg) [function, below=of lambda] {PDHG Solver};
+  \node (final_output) [output, right=of pdhg] {$\mathbf{x}_{\text{denoised}}$};   
+  \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
+  \node (ground_truth) [output, above=of noise_generator] {$\mathbf{x_{\text{true}}}$};
+  \node (loss_function) [function, right=of final_output] {$\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x}_{\text{denoised}})$};
+
+  \draw[inference] (input) -- (unet);
+  \draw[inference] (unet) -- (lambda);
+  \draw[inference] (lambda) -- (pdhg);
+  \draw[inference] (pdhg) -- (final_output);
+  \draw[inference] (input) -- ++(0, -1.4) -- (pdhg);
+  
+  \draw[->] (final_output) -- (loss_function);
+  \draw[->] (ground_truth) -| (loss_function);
+  \draw[->] (ground_truth) -- (noise_generator);
+  \draw[->] (noise_generator) -- (input);
+%   \draw[->] (loss_function) -- ++(0, -1) -| (unet);
+
+\end{tikzpicture}
+
+\caption{The general architecture 
+% \caption{Training 
+% of PDHG Net 
+% \cite{kofler2023learning}
+}
+
+\label{fig:training}
+\end{figure}
+
+where
+\begin{itemize}
+    \item $\mathbf{x_{\text{true}}}$ represents the clean image, serving as the ground truth.
+    \item $\mathbf{x_{\text{noisy}}}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
+    \item $\mathbf{\Lambda}_{\Theta}$ is the regularisation parameters map which is the final output from the U-Net. 
+    % Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
+\end{itemize}
+
+We can treat the PDHG solver as the final hidden layer in our network. 
+The result of the loss function $\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x_{\text{denoised}}})$ 
+is then used for backpropagation to train the parameters $\Theta$.
+
+
+
+% \begin{figure}[ht]
+% \hspace*{-0.5cm} % Adjust the value as needed
+% \begin{tikzpicture}[node distance=0.3cm, auto, ultra thick, transform shape, shift={(-10cm,0)}]
+%     % Define styles
+%     \tikzstyle{rec16_1} = [draw, rectangle, minimum width=0.1cm, minimum height=2cm, fill=blue!30]
+%     \tikzstyle{rec16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=blue!30]
+%     \tikzstyle{rec32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=blue!30]
+%     \tikzstyle{rec64} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
+%     \tikzstyle{rec64_2} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
+%     \tikzstyle{rec2} = [draw, rectangle, minimum width=0.4cm, minimum height=2cm, fill=blue!30]
+%     \tikzstyle{rec_white32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=white]
+%     \tikzstyle{rec_white16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=white]
+%     \tikzstyle{normalconv} = [->, ultra thick, blue]
+%     \tikzstyle{maxpool} = [->, ultra thick, red]
+%     \tikzstyle{upconv} = [->, ultra thick, green]
+%     \tikzstyle{finalconv} = [->, ultra thick, black]
+
+%     % ENCODER
+%     \node (en1_input) [rec16_1] {};
+%     \node (en1con1_output) [rec16, right=of en1_input] {};
+%     \node (en1con2_output) [rec16, right=of en1con1_output] {};
+
+%     \node (en2_input) [rec32, below=of en1con2_output] {};
+%     \node (en2con1_output) [rec32, right=of en2_input] {};
+%     \node (en2con2_output) [rec32, right=of en2con1_output] {};
+
+%     \node (en3_input) [rec64, below=of en2con2_output] {};
+%     \node (en3con1_output) [rec64, right=of en3_input] {};
+%     \node (en3con2_output) [rec64, right=of en3con1_output] {};
+%     \node (upcon1_input) [rec64_2, right=of en3con2_output] {};
+
+%     % DECODER
+%     \node (de1_input) [rec32, above=of upcon1_input] {};
+%     \node (skip1_output) [rec_white32, left=0cm of de1_input] {};
+%     \node (de1con1_output) [rec32, right=of de1_input] {};
+%     \node (de1con2_output) [rec32, right=of de1con1_output] {};
+
+%     \node (de2_input) [rec16, above=of de1con2_output] {};
+%     \node (skip2_output) [rec_white16, left=0cm of de2_input] {};
+%     \node (de2con1_output) [rec16, right=of de2_input] {};
+%     \node (de2con2_output) [rec16, right=of de2con1_output] {};
+
+%     % Final output layer
+%     \node (final_output) [rec2, right=of de2con2_output] {};
+
+%     % CONNECTIONS
+%     \draw[normalconv] (en1_input) -- (en1con1_output);
+%     \draw[normalconv] (en1con1_output) -- (en1con2_output);
+%     % \draw[maxpool] (en1con2_output) -- ++(0,-0.5) -| (en2_input);
+%     \draw[maxpool] (en1con2_output) -- (en2_input);
+    
+%     \draw[normalconv] (en2_input) -- (en2con1_output);
+%     \draw[normalconv] (en2con1_output) -- (en2con2_output);
+%     % \draw[maxpool] (en2con2_output) -- ++(0,-0.5) -| (en3_input);
+%     \draw[maxpool] (en2con2_output) -- (en3_input);
+    
+%     \draw[normalconv] (en3_input) -- (en3con1_output);
+%     \draw[normalconv] (en3con1_output) -- (en3con2_output);
+%     \draw[maxpool] (en3con2_output) -- (upcon1_input);
+    
+%     % \draw[upconv] (en3con2_output) -- ++(0,0.5) -| (de1_input);
+%     \draw[upconv] (upcon1_input) -- (de1_input);
+%     \draw[normalconv] (de1_input) -- (de1con1_output);
+%     \draw[normalconv] (de1con1_output) -- (de1con2_output);
+    
+%     % \draw[upconv] (de1con2_output) -- ++(0,0.5) -| (de2_input);
+%     \draw[upconv] (de1con2_output) -- (de2_input);
+%     \draw[normalconv] (de2_input) -- (de2con1_output);
+%     \draw[normalconv] (de2con1_output) -- (de2con2_output);
+    
+%     \draw[finalconv] (de2con2_output) -- (final_output);
+
+%     % Skip connections
+%     \draw[->, dashed, ultra thick] (en2con2_output.east) -- ++(0.5,0) |- (skip1_output.west);
+%     \draw[->, dashed, ultra thick] (en1con2_output.east) -- ++(0.5,0) |- (skip2_output.west);
+
+% \end{tikzpicture}
+% \caption{Our $\text{NET}_{\Theta}$ Architecture}
+% \label{fig:my_unet}
+% \end{figure}
+
+
+\begin{figure}[ht]
+  \includegraphics[width=1\linewidth]{../../../PlotNeuralNet/unet-true-voice-32/unet-visualisation-true-voice-32.pdf}
+  % \includegraphics[width=1\linewidth]{images/unet-visualisation-true-voice-32.pdf}
+\caption{Our $\text{NET}_{\Theta}$ Architecture}
+\label{fig:my_unet}
+\end{figure}
+
+
+% Conversely, the Decoder incorporates two decoding blocks, one fewer than the Encoder. This configuration deviates from some common implementations where the number of encoding and decoding blocks are equal, and a "bottle-neck" comprising two additional convolutional layers is placed between them. In our model, we treat the final block of the Encoder as this bottle-neck. The first decoding block in the Decoder reduces the number of channels back to 32, and the second further reduces them to 16.
+
+% Similarly we have three decoding blocks.
+% Each decoding block in our model concludes with an up-convolutional layer, which serves the same function as a typical convolutional layer, followed by a skip connection. The first skip connection takes the 32-channel output from the second encoding block and merges it with the 32-channel output from the first up-convolutional layer. This combination produces a 64-channel output, which is then processed by the first decoding block. The second skip connection similarly merges the 16-channel output from the first encoding block with the 16-channel output from the second up-convolutional layer, resulting in a 32-channel input for the second decoding block.
+
+% The final stage in our architecture employs a convolutional layer to convert the 16-channel output from the last decoding block into a 2-channel output, thus producing two matrices as the ultimate output of our model.
+

@@ -3,7 +3,8 @@
 \usepackage{amssymb} % for \mathbb
 
 \usepackage{algorithm}
-\usepackage{algpseudocode} % For algorithmic environment
+% \usepackage{algpseudocode} % For algorithmic environment
+\usepackage{algorithmic}
 \usepackage{hyperref} % For hyperlinks
 
 \usepackage[%
@@ -36,32 +37,45 @@ $f \in \mathbb{R}^{N_1 \times N_2}$ the observed image. \newline
 
 The spaces of scalar, vector, and symmetric matrix valued functions are defined as (page 13)
 \begin{equation}
-    U = \{u : \Omega_h \rightarrow \mathbb{R}\}, \
-    V = \{u : \Omega_h \rightarrow \mathbb{R}^2\}, \
-    W = \{u : \Omega_h \rightarrow \mathrm{Sym}^2(\mathbb{R}^2)\}.
+    \begin{aligned}
+    U &= \{u : \Omega_h \rightarrow \mathbb{R}\} \\
+    V &= \{u : \Omega_h \rightarrow \mathbb{R}^2\} \\
+    W &= \{u : \Omega_h \rightarrow \mathrm{Sym}^2(\mathbb{R}^2)\}
+    \end{aligned}
 \end{equation}
 
 where $\mathrm{Sym}^2(\mathbb{R}^2)$ is the space of symmetric $2 \times 2$ matrices. \newline
 
+We use the notations $v$ and $w$ where
 
 \begin{equation}
     \begin{aligned}
-    & $v \in V$ has components $\left(v\right)^{(1)}$ and $\left(v\right)^{(2)}$ \\
-    & $w \in W$ has components $\left(w\right)^{(11)}$, $\left(w\right)^{(12)}$, $\left(w\right)^{(21)}$, $\left(w\right)^{(22)} \\
-    & \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \text{where} \left(w\right)^{(12)} = \left(w\right)^{(21)}$. 
+    $v &\in V$ has components $\left(v\right)^{(1)}$ and $\left(v\right)^{(2)}$ \\
+    $w &\in W$ has components $\left(w\right)^{(1,1)}$, $\left(w\right)^{(1,2)}$, $\left(w\right)^{(2,1)}$, $\left(w\right)^{(2,2)} \\
+    % & \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad \text{where} \left(w\right)^{(1,2)} = \left(w\right)^{(2,1)}$. 
 \end{aligned}
 \end{equation}
+
+with \left(w\right)^{(1,2)} = \left(w\right)^{(2,1)}$. \newline
 
 % \begin{equation}
 %     a, b : \Omega_h \rightarrow \mathbb{R}, \quad \langle a, b \rangle = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} a_{i,j} b_{i,j}
 % \end{equation}
 
+Use the scalar product notation
+
+\begin{equation}
+    a, b : \Omega_h \rightarrow \mathbb{R} : \quad \langle a, b \rangle = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} a_{i,j} b_{i,j}
+\end{equation}
+
+the scalar products in the spaces $V$ and $W$ are
+
 \begin{equation}
 \begin{aligned}
     % & u, r \in U:\langle u, r\rangle_U=\left\langle u, r\right\rangle \\
-    & u, r \in U:\langle u, r\rangle_U = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} u_{i,j} r_{i,j} \\
-    & v, p \in V:\langle v, p\rangle_V=\left\langle\left(v\right)^{(1)},\left(p\right)^{(1)}\right\rangle+\left\langle\left(v\right)^{(2)},\left(p\right)^{(2)}\right\rangle \\
-    & w, q \in W:\langle w, q\rangle_W=\left\langle\left(w\right)^{(11)},\left(q\right)^{(11)}\right\rangle+\left\langle\left(w\right)^{(22)},\left(q\right)^{(22)}\right\rangle+2\left\langle\left(w\right)^{(12)},\left(q\right)^{(12)}\right\rangle
+    % u, r \in U &: \langle u, r\rangle_U = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} u_{i,j} r_{i,j} \\
+    v, p \in V &: \langle v, p\rangle_V = \left\langle\left(v\right)^{(1)},\left(p\right)^{(1)}\right\rangle+\left\langle\left(v\right)^{(2)},\left(p\right)^{(2)}\right\rangle \\
+    w, q \in W &: \langle w, q\rangle_W = \left\langle\left(w\right)^{(1,1)},\left(q\right)^{(1,1)}\right\rangle+\left\langle\left(w\right)^{(2,2)},\left(q\right)^{(2,2)}\right\rangle+2\left\langle\left(w\right)^{(1,2)},\left(q\right)^{(1,2)}\right\rangle
 \end{aligned}
 \end{equation}
 
@@ -73,16 +87,16 @@ The $x$ and $y$ forward finite difference operators are (page 13)
 \begin{equation}
 (\partial_x^+ u)_{i,j} =
 \begin{cases}
-u_{i+1,j} - u_{i,j} & \text{for } 1 \leq i < N_1, \\
-0 & \text{for } i = N_1,
+u_{i+1,j} - u_{i,j} & \text{for } 1 \leq i < N_1 \\
+0 & \text{for } i = N_1
 \end{cases}
 \end{equation}
 
 \begin{equation}
 (\partial_y^+ u)_{i,j} =
 \begin{cases}
-u_{i,j+1} - u_{i,j} & \text{for } 1 \leq j < N_2, \\
-0 & \text{for } j = N_2,
+u_{i,j+1} - u_{i,j} & \text{for } 1 \leq j < N_2 \\
+0 & \text{for } j = N_2
 \end{cases}
 \end{equation}
 
@@ -90,18 +104,18 @@ and the backward finite difference operators are (page 13)
 \begin{equation}
     (\partial_x^- u)_{i,j} = 
     \begin{cases}
-    u_{1,j} & \text{if } i = 1, \\
-    u_{i,j} - u_{i-1,j} & \text{for } 1 < i < N_1, \\
-    -u_{N_1-1,j} & \text{for } i = N_1,
+    u_{1,j} & \text{if } i = 1 \\
+    u_{i,j} - u_{i-1,j} & \text{for } 1 < i < N_1 \\
+    -u_{N_1-1,j} & \text{for } i = N_1
     \end{cases}
 \end{equation}
     
 \begin{equation}
     (\partial_y^- u)_{i,j} = 
     \begin{cases}
-    u_{i,1} & \text{if } j = 1, \\
-    u_{i,j} - u_{i,j-1} & \text{for } 1 < j < N_2, \\
-    -u_{i,N_2-1} & \text{for } j = N_2,
+    u_{i,1} & \text{if } j = 1 \\
+    u_{i,j} - u_{i,j-1} & \text{for } 1 < j < N_2 \\
+    -u_{i,N_2-1} & \text{for } j = N_2
     \end{cases}
 \end{equation}
 
@@ -110,46 +124,46 @@ and the backward finite difference operators are (page 13)
 
 
 
-The gradient operator is defined as (page 13)
+The gradient operator $\nabla_h$ and the symmetrised gradient operator $\mathcal{E}_h$ are defined as (pages 13, 14)
+
 \begin{equation}
-    \nabla_h : U \rightarrow V, \quad \nabla_h u = 
+    \begin{aligned}
+    \nabla_h : U \rightarrow V &, \quad \nabla_h u = 
     \begin{pmatrix}
     \partial_x^+ u \\
     \partial_y^+ u
-    \end{pmatrix},
-\end{equation}
-
-and the symmetrised gradient operator is defined as (page 14)
-\begin{equation}
-    \mathcal{E}_h : V \rightarrow W, \quad \mathcal{E}_h (v) = 
+    \end{pmatrix} \\
+    \mathcal{E}_h : V \rightarrow W &, \quad \mathcal{E}_h (v) = 
     \begin{pmatrix}
     \partial_x^- (v)^{(1)} &
     \frac{1}{2} \left( \partial_y^- (v)^{(1)} + \partial_x^- (v)^{(2)} \right) \\
     \frac{1}{2} \left( \partial_y^- (v)^{(1)} + \partial_x^- (v)^{(2)} \right) &
     \partial_y^- (v)^{(2)}
-    \end{pmatrix},
+    \end{pmatrix}
+    \end{aligned}
 \end{equation}
 
-and
+and the divergence operators $\mathrm{div}_h$ are
 
 
 \begin{equation}
-\mathrm{div}_h : V \rightarrow U, \quad \mathrm{div}_h v = \partial_x^- (v)^{(1)} + \partial_y^- (v)^{(2)},
-\end{equation}
-
-\begin{equation}
-\mathrm{div}_h : W \rightarrow V, \quad \mathrm{div}_h w = 
+\begin{aligned}
+\mathrm{div}_h : V \rightarrow U &, \quad \mathrm{div}_h v = \partial_x^- (v)^{(1)} + \partial_y^- (v)^{(2)} \\
+% \end{equation}
+% \begin{equation}
+\mathrm{div}_h : W \rightarrow V &, \quad \mathrm{div}_h w = 
 \begin{pmatrix}
 \partial_x^+ (w)^{(11)} + \partial_y^+ (w)^{(12)} \\
 \partial_x^+ (w)^{(12)} + \partial_y^+ (w)^{(22)}
-\end{pmatrix}.
+\end{pmatrix}
+\end{aligned}
 \end{equation}
 
 The discrete $\infty\text{-norms}$ are
 \begin{equation}
     \begin{aligned}
-    & v \in V : \quad \|v\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (v)_{i,j}^{(1)} \right)^{2} + \left( (v)_{i,j}^{(2)} \right)^{2} \right)^{1/2}, \\
-    & w \in W : \quad \|w\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (w)_{i,j}^{(11)} \right)^{2} + \left( (w)_{i,j}^{(22)} \right)^{2} + 2 \left( (w)_{i,j}^{(12)} \right)^{2} \right)^{1/2}.
+    v \in V &: \quad \|v\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (v)_{i,j}^{(1)} \right)^{2} + \left( (v)_{i,j}^{(2)} \right)^{2} \right)^{1/2} \\
+    w \in W &: \quad \|w\|_\infty = \max_{(i,j) \in \Omega_h} \left( \left( (w)_{i,j}^{(1,1)} \right)^{2} + \left( (w)_{i,j}^{(2,2)} \right)^{2} + 2 \left( (w)_{i,j}^{(1,2)} \right)^{2} \right)^{1/2}
 \end{aligned}
 \end{equation}
 
@@ -165,7 +179,10 @@ is defined as (page ...)
 where
 the data fidelity/discrepancy function is (page ...)
 \begin{equation}
-    F(u) = \frac{1}{2} || u - f ||^2_2 = \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} (u_{i,j} - f_{i,j})^2
+    F(u) = \frac{1}{2} || u - f ||^2_2 = 
+    \frac{1}{2}
+    % \frac{1}{2 N_1 N_2} 
+    \sum_{i=1}^{N_1} \sum_{j=1}^{N_2} (u_{i,j} - f_{i,j})^2
 \end{equation}
 
 and
@@ -197,34 +214,73 @@ algorithm for TGV minimisation problem
 
 % This minimisation problem is equivalent to the saddle-point problem (page ...).
 
+
+\begin{algorithm}[H]
+    \caption{PDHG algorithm for image denoising with fixed regularisation parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning} using the implementation by \cite{dyn_img_pdhg_code})}
+    \begin{algorithmic}[1]
+    
+    \STATE \textbf{Input:} 
+    $L = \| [\mathbf{I}, \nabla]^\text{T} \|_2$, 
+    % $L = \sqrt{13}$, 
+    % $\tau \lesssim 1/L$, 
+    % $\sigma \lesssim 1/L$, 
+    % $\theta \lesssim 1$, 
+    $\tau = \text{sigmoid}(10) / L$, 
+    $\sigma = \text{sigmoid}(10) / L$, 
+    $\theta = \text{sigmoid}(10)$, 
+    noisy image $\mathbf{x}_0$
+    
+    \STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
+    % \STATE $\mathbf{y} = \mathbf{x}_0$
+    \STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
+    % \STATE $\mathbf{p}_0 = \mathbf{0}$
+    \STATE $\mathbf{p}_0 = \mathbf{x}_0$
+    \STATE $\mathbf{q}_0 = \mathbf{0}$
+    \FOR{$k < T$}
+        % \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+        \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{x}_0)\right) / (1 + \sigma)$
+        \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
+        \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
+        \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
+    \ENDFOR
+    \STATE $\hat{\mathbf{x}} = \mathbf{x}_T$
+    \end{algorithmic}
+    \end{algorithm}
+
+
 \begin{algorithm}[H]
     \caption{Solve $\min_{u \in U} F_h(u) + \mathrm{TGV}^2_{\alpha}(u)$}
+
     \begin{algorithmic}[1]
-    \State Choose $\sigma > 0$, $\tau > 0$ such that $\sigma \tau \frac{1}{2} (17 + \sqrt{33}) \leq 1$.
-    \State Choose $(u^{[0]}, p^{[0]}) \in U \times V$, $(v^{[0]}, w^{[0]}) \in V \times W$ and set $\bar{u}^{[0]} = u^{[0]}$, $\bar{p}^{[0]} = p^{[0]}$.
-    \For {$n = 0, 1, 2, \ldots$}
-        \State \begin{equation*}
-        \begin{cases}
-        v^{[n+1]} = \mathcal{P}_{\alpha_1} \left( v^{[n]} + \sigma (\nabla_h \bar{u}^{[n]} - \bar{p}^{[n]}) \right), \\
-        w^{[n+1]} = \mathcal{P}_{\alpha_0} \left( w^{[n]} + \sigma \mathcal{E}_h (\bar{p}^{[n]}) \right), \\
-        u^{[n+1]} = \left( u^{[n]} + \tau (\text{div}_h v^{[n+1]} + f) \right) / ( 1 + \tau ), \\
-        p^{[n+1]} = p^{[n]} + \tau (v^{[n+1]} + \text{div}_h w^{[n+1]}), \\
-        \bar{u}^{[n+1]} = 2u^{[n+1]} - u^{[n]}, \\
-        \bar{p}^{[n+1]} = 2p^{[n+1]} - p^{[n]}.
-        \end{cases}
-        \end{equation*}
-    \EndFor
-    \State Return $u^{[N]}$ for some large $N$.
+    \STATE \textbf{Input:} $f \in U$, $\alpha_0, \alpha_1 > 0$
+    \STATE Choose $\sigma > 0$, $\tau > 0$ such that $\sigma \tau \frac{1}{2} (17 + \sqrt{33}) \leq 1$. Here we choose $\sigma = \tau = 0.29$
+    \STATE $u^{[0]} = f$
+    \STATE $p^{[0]} = \mathbf{0}_V$
+    \STATE $v^{[0]} = \mathbf{0}_V$
+    \STATE $w^{[0]} = \mathbf{0}_W$
+    \STATE $\bar{u}^{[0]} = u^{[0]}$
+    \STATE $\bar{p}^{[0]} = p^{[0]}$
+
+    \FOR {$n = 0, 1, 2, \ldots$}
+            \STATE $v^{[n+1]} = \mathcal{P}_{\alpha_1} \left( v^{[n]} + \sigma (\nabla_h \bar{u}^{[n]} - \bar{p}^{[n]}) \right)$
+            \STATE $w^{[n+1]} = \mathcal{P}_{\alpha_0} \left( w^{[n]} + \sigma \mathcal{E}_h (\bar{p}^{[n]}) \right)$
+            \STATE $u^{[n+1]} = \left( u^{[n]} + \tau (\text{div}_h v^{[n+1]} + f) \right) / ( 1 + \tau )$
+            \STATE $p^{[n+1]} = p^{[n]} + \tau (v^{[n+1]} + \text{div}_h w^{[n+1]})$
+            \STATE $\bar{u}^{[n+1]} = 2u^{[n+1]} - u^{[n]}$
+            \STATE $\bar{p}^{[n+1]} = 2p^{[n+1]} - p^{[n]}$
+    \ENDFOR
+    \STATE Return $u^{[N]}$ for some large $N$.
+
     \end{algorithmic}
     \label{alg:pdhg}
 \end{algorithm}
 
-where 
+where $\mathbf{0}_V \in V$ and $\mathbf{0}_W \in W$ are the zeros matrices in $V$ and $W$ respectively, and $\mathcal{P}_{\alpha_1}$ and $\mathcal{P}_{\alpha_0}$ are the projection operators defined as
 
 \begin{equation}
     \begin{aligned}
-    & \mathcal{P}_{\alpha_1}(v) = \frac{v}{\max \left(1, \frac{|v|}{\alpha_1}\right)}, \quad v \in V \\
-    & \mathcal{P}_{\alpha_0}(w) = \frac{w}{\max \left(1, \frac{|w|}{\alpha_0}\right)}, \quad w \in W,
+    & \mathcal{P}_{\alpha_1}(v) = \frac{v}{\max \left(\mathbf{1}, \frac{1}{\alpha_1}|v|\right)}, \quad v \in V \\
+    & \mathcal{P}_{\alpha_0}(w) = \frac{w}{\max \left(\mathbf{1}, \frac{1}{\alpha_0}|w|\right)}, \quad w \in W
     \end{aligned}
 \end{equation}
 
@@ -232,15 +288,25 @@ where
 
 \begin{equation}
     \begin{aligned}
-    v \in V : \quad &|v|_{i,j} = \left( \left( (v)_{i,j}^{(1)} \right)^{2} + \left( (v)_{i,j}^{(2)} \right)^{2} \right)^{1/2}, \\
-    w \in W : \quad &|w|_{i,j} = \left( \left( (w)_{i,j}^{(11)} \right)^{2} + \left( (w)_{i,j}^{(22)} \right)^{2} + 2 \left( (w)_{i,j}^{(12)} \right)^{2} \right)^{1/2}.
+   \quad &|v|_{i,j} = \left( \left( (v)_{i,j}^{(1)} \right)^{2} + \left( (v)_{i,j}^{(2)} \right)^{2} \right)^{1/2} \\
+    \quad &|w|_{i,j} = \left( \left( (w)_{i,j}^{(11)} \right)^{2} + \left( (w)_{i,j}^{(22)} \right)^{2} + 2 \left( (w)_{i,j}^{(12)} \right)^{2} \right)^{1/2}
     \end{aligned}
 \end{equation}
+
+Here $\mathbf{1}$ is a matrix of ones. 
+Note that the division is element-wise.
+Denote the matrix underneath as $a$.
+The matrix under the division is 2D whereas the matrix above the division is 3D and 4D.
+Therefore each element $v_{i,j}^{(k)}$ and $w_{i,j}^{(k,h)}$ of the matrices $v$ and $w$ is divided by the corresponding element $a_{i,j}$ of the matrix under the division.
+
+\newline
 
 
 This algorithm is used to solve the minimisation problem \ref{eq:tgv_minimisation_problem}.
 It is taken from the paper \cite{recovering_piecewise_smooth_multichannel_images}, page ....
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Why Projection is dividing by matrix instead of a scalar}
 
@@ -253,40 +319,43 @@ Given matrix $a$, we need to find matrix $u$ such that
 
 Solution:
 
+Recall that the $L_{1, 2}$-norm is defined as
+
 \begin{equation}
-    ||v||_V = \sum_{i,j} \left( \left(v_{ij}^{(1)}\right)^2 + \left(v_{ij}^{(2)}\right)^2 \right)^{1/2}
+    ||v||_V = \sum_{i,j} \left( \left(v_{i,j}^{(1)}\right)^2 + \left(v_{i,j}^{(2)}\right)^2 \right)^{1/2}
 \end{equation}
 
 Constraints:
 
 \begin{equation}
-    ||v||_\infty \leq 1
+    ||v||_\infty = \max_{(i,j) \in \Omega_h} \left( \left(v_{i,j}^{(1)}\right)^2 + \left(v_{i,j}^{(2)}\right)^2 \right)^{1/2} \leq 1  \quad  \quad  \forall i, j
 \end{equation}
 
 or equivalently
 
 \begin{equation}
-    \max_{i,j} \left( \left(v_{ij}^{(1)}\right)^2 + \left(v_{ij}^{(2)}\right)^2 \right)^{1/2} \leq 1  \quad  \quad  \forall i, j
+    \left( \left(v_{i,j}^{(1)}\right)^2 + \left(v_{i,j}^{(2)}\right)^2 \right)^{1/2} \leq 1  \quad  \quad  \forall i, j
 \end{equation}
+
+
+Let $t_{i,j} = \sqrt{(v_{i,j}^{(1)})^2 + (v_{i,j}^{(2)})^2}$.
+Then the constraints can be written as
 
 \begin{equation}
-    u = \frac{a}{\max(1, ||a||_\infty)}
+    t_{i,j} \leq 1  \quad  \quad  \forall i, j
 \end{equation}
+
+
+
+We have $n^2$ constraints.
+Each constraint is applied to a specific element $v_{i,j}$ and is independent of the others.
+Therefore, the solution can be found by solving $n^2$ independent problems:
 
 \begin{equation}
-((v_{ij}^{(1)})^2 + (v_{ij}^{(2)})^2)^{1/2} \leq 1 \quad \forall i, j
+u_{i,j} = \arg \min_{t_{i,j} \leq 1} || v_{i,j} - a_{i,j} ||  \quad \forall i, j
 \end{equation}
 
-Tức là ta có $n \times n$ constraints,
-các constraints này chỉ áp dụng cho 1 vị trí $v_{ij}$,
-independent với các vị trí khác.
-Do đó: bài toán optimisation lớn có thể chia thành $n^2$ bài toán nhỏ:
-
-\begin{equation}
-u_{ij} = \arg \min_{t_{ij} \leq 1} || v_{ij} - a_{ij} ||  \quad \forall i, j
-\end{equation}
-
-Denote $v_{ij} = x$, $a_{ij} = y$, $u_{ij} = z$:
+Denote $v_{i,j} = x$, $a_{i,j} = y$, $u_{i,j} = z$:
 
 \begin{equation}
     z = \arg \min_{|| x ||_2 \leq 1} ||x - y|| \quad \quad \quad x, y, z \in \mathbb{R}^2
@@ -294,35 +363,36 @@ Denote $v_{ij} = x$, $a_{ij} = y$, $u_{ij} = z$:
 
 Thus
 
+
 \begin{equation}
-    z = \frac{y}{|| y ||_2}
+    \begin{aligned}
+    z & =
+    \begin{cases}
+        \frac{y}{||y||_2} & \text{if } ||y||_2 > 1 \\
+        % y / ||y||_2 & \text{if } ||y||_2 > 1 \\
+        y & \text{if } ||y||_2 < 1 \\
+    \end{cases} \\
+    & = \frac{y}{\max(\mathbf{1}, ||y||_2)}
+    \end{aligned}
 \end{equation}
 
 
-Áp dụng ngược lại cho $u$ và $a$:
+
+Applying to $u$ and $a$, we have
 
 \begin{equation}
-    u = \left( \frac{a_{ij}}{|| a_{ij} ||_2} \right)  \text{if} ||y||_2 > 1
+    u_{i,j} = \frac{a_{i,j}}{\max(1, ||a_{i,j}||_2)}
 \end{equation}
 
+or in matrix notation,
 
 \begin{equation}
-    u = \left( \frac{a_{ij}}{|| a_{ij} ||_2} \right)  \text{if} ||y||_2 > 1
+    u = \frac{a}{\max(\mathbf{1}, ||a||_\infty)}
 \end{equation}
 
+where $\mathbf{1}$ is a matrix of ones.
 
-...
-
-\begin{equation}
-    = \frac{y}{\max(1, ||y||_2)}
-\end{equation}
-
-Ap dung cho $u$ va $a$, ta co:
-
-\begin{equation}
-    u_{ij} = \frac{a_{ij}}{\max(1, ||a_{ij}||_2)}
-\end{equation}
-
+TODO: $||a||_\infty$ is a scalar, but we need a matriasdasdx?
 
 % Page 19:
 % \begin{equation}

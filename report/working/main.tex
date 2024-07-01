@@ -1,124 +1,26 @@
 % Original template by Sebastian Del Bano Rollin, last updated by Oscar Bandtlow February 2024
-\documentclass[12pt, oneside]{book}
-\usepackage{graphicx}  % this is for includegraphics
 
-\usepackage{setspace}
-\onehalfspacing % this sets spacing to 1.5 
-
-
-\usepackage{amsmath}
-\usepackage{amsthm} % for theorems, lemmas etc
-\usepackage{amsfonts}
-\usepackage{lipsum} % to generate the lipsum random text in the sample
-
-
-\usepackage{biblatex}
-% \usepackage[%
-% backend=biber,
-% natbib=true,
-% style=apa,
-% ]{biblatex}
-\addbibresource{references.bib}
-
-
-\usepackage[colorlinks=true, urlcolor=blue, pdfborder={0 0 0}]{hyperref}
-\hypersetup{
-     colorlinks   = true,
-     citecolor    = blue
+\includeonly{
+    preamble,
+    tgv,
+    unet,
+    tgv_experiment,
 }
 
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{fact}[theorem]{Fact}
-
-\theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{remark}[theorem]{Remark}
-\newtheorem{remarks}[theorem]{Remarks}
-
-\newcommand{\Cov}{\mathrm{Cov}}
-\newcommand{\Var}{\mathrm{Var}}
+\include{preamble}
 
 \begin{document}
 
-\begin{titlepage}
-\begin{center}
-        \vspace{-2cm}
-Data Analytics MSc Dissertation MTHM038, 2023/24
-%Financial Mathematics MSc Dissertation MTHM038, 2022/23
-%Financial Computing MSc Dissertation MTHM038, 2022/23
-%Mathematics MSc Dissertation MMTHM038, 2022/23
-		\\
-        \Huge
-        \textbf{Constructibility of polygons}
-        \\        
-        \vspace{0.4cm}
-        \LARGE
-        With special emphasis on examples
-        \\        
-        \vspace{0.4cm}        
-        \textbf{Carl Friedrich Gauss, ID 036782976}% student name and number        
-        \\
-        \large Supervisor: Prof.\ Johann Friedrich Pfaff
-        \\
-        \vspace{0.9cm}
-        \includegraphics[scale=0.3]{QMCrest.jpg}
-        \\
-        \vspace{0.9cm}        
-        \LARGE 
-        A thesis presented for the degree of\\
-        Master of Science in \emph{name of programme}\\
-        \vspace{0.7cm}        
-        \Large
-        School of Mathematical Sciences\\ 
-        and \emph{possible joint school}\\
-        Queen Mary University of London \\
-    \end{center}
-\end{titlepage}
+\include{title_page}
 
-
-\chapter*{Declaration of original work}
-\begin{flushright}
-This declaration is made on \today.
-\end{flushright}
-
-
-{\bf Student's Declaration:}
-I Student Name hereby declare that the work in this thesis 
-is my original work. I have not copied from any other students' work, 
-work of mine submitted elsewhere,  or from any other sources except where due 
-reference or acknowledgement is made explicitly in the text. 
-Furthermore, no part of this dissertation has been written for me by another person,
-by generative artificial intelligence (AI), or by AI-assisted technologies.  
- 
-
-
-
-Referenced text has been flagged by:
-\begin{enumerate}
-\item Using italic fonts, {\bf and} % LaTeX: {\it text}  
-\item using quotation marks ``\ldots '', {\bf and}
-\item explicitly mentioning the source in the text.
-\end{enumerate}
-
-%This excludes any definitions known from your modules or that can be found in an undergraduate text book.
+\include{declaration}
 
 \newpage
 
-\thispagestyle{empty}
-        \begin{flushright}
-                This work is dedicated to my dog Charles Frederick.
-        \end{flushright}
-\vspace{\stretch{2}}\null
+\include{dedication}
 
+\include{acknowledgements}
 
-
-\chapter*{Acknowledgements}
-\lipsum[100] % replace this by your text
 
 \chapter*{Abstract}
 \lipsum[100]% replace this by your text
@@ -126,6 +28,8 @@ Referenced text has been flagged by:
 \tableofcontents
 
 \chapter{Introduction}
+This thesis 
+
 This note presents a conjecture stemming from our investigations in the generation of sigmoid tensor categories of Picard numbers of tori in Banach algebras.
 \lipsum[20]
  
@@ -152,6 +56,7 @@ $$
 \lipsum[23]
 \subsection{The approach of Junderstein}
 \lipsum[23]
+\cite{chambolle_pock_2011}
 
 \chapter{Eulerian topological string motives}
 \lipsum[23]
@@ -174,6 +79,12 @@ $$
 
 \chapter{Conclusions}
 \lipsum[100]
+
+\include{tgv}
+
+\include{unet}
+
+\include{tgv_experiment}
 
 \appendix
 \chapter{Implementation of the {\tt BarrierOptionCVA} class}
@@ -207,7 +118,7 @@ $$
 % 	{The Pricing of Options and Corporate Liabilities}},
 % 	Journal of Political Economy 81 {\bf 3}, 637--654,  (1973)
 	
-\end{thebibliography}
+% \end{thebibliography}
 
 
 

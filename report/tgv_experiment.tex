@@ -1,0 +1,1885 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{csquotes}
+\usepackage{amssymb,tikz,pdftexcmds,xparse}
+\usepackage{url}
+
+\usepackage{bm} % bold math
+
+\usepackage[%
+backend=biber,
+natbib=true,
+style=apa,
+]{biblatex}
+\addbibresource{references.bib}
+
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{graphicx}   % for trimming images
+\usepackage{tikz}
+\usepackage{subcaption} % for subfigures
+\usetikzlibrary{shapes, arrows.meta, positioning}
+
+
+% https://tex.stackexchange.com/questions/336673/appendix-is-not-showing
+\usepackage[titletoc]{appendix}
+
+\tikzset{box/.style={
+    minimum size=0.225cm,
+    inner sep=0pt,
+    draw,
+  },  
+  insert mark/.style={
+    append after command={%
+         node[inner sep=0pt,#1]
+           at (\tikzlastnode.center){$\checkmark$}
+     }     
+  },
+  insert bad mark/.style={
+    append after command={%
+         [shorten <=\pgflinewidth,shorten >=\pgflinewidth]
+         (\tikzlastnode.north west)edge[#1](\tikzlastnode.south east)
+         (\tikzlastnode.south west)edge[#1](\tikzlastnode.north east)
+     }     
+  },
+}
+
+\makeatletter
+\NewDocumentCommand{\tikzcheckmark}{O{} m}{%
+  \ifnum\pdf@strcmp{#2}{mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,insert mark={#1},#1]{};%
+  \fi%
+  \ifnum\pdf@strcmp{#2}{bad mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,insert bad mark={#1},#1]{};%
+  \fi%
+  \ifnum\pdf@strcmp{#2}{no mark}=\z@%
+    \tikz[baseline=-0.5ex]\node[box,#1]{};%
+  \fi%
+}
+\makeatother
+
+
+% Redefining maketitle
+\makeatletter
+\renewcommand{\maketitle}{
+  \begin{center}
+    % {\LARGE \@title \par}      % Title in large font
+    {\Large \@title \par}      % Title in large font
+    % \vspace{2mm}               % Space between title and author
+    % {\large \@subtitle \par}      % Subtitle in large (but smaller than title) font
+    % \vspace{2mm}               % Space between title and author
+    {\large \@author \par}     % Author in large (but smaller than title) font
+    % Date is removed, so no command for date here
+  \end{center}
+  % \vspace{5mm}                 % Space after the title block
+}
+\makeatother
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[
+  letterpaper,
+  % top=2cm,
+  % bottom=2cm,
+  % left=2cm,
+  % right=2cm,
+  top=3cm,
+  bottom=3cm,
+  left=3cm,
+  right=3cm,
+  marginparwidth=1.75cm
+]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{color}
+% \usepackage{minted}
+
+% https://www.overleaf.com/learn/latex/Positioning_images_and_tables#Basic_positioning
+% To position the image to the centre
+\usepackage[export]{adjustbox}  
+
+\usepackage{xcolor}
+\usepackage{xparse}
+\usepackage{blindtext}
+\usepackage{hyperref}   % For hyperlinks
+
+% \usemintedstyle{manni}
+
+\NewDocumentCommand{\codeword}{v}{%
+% \texttt{\textcolor{blue}{#1}}%
+\texttt{\textcolor{black}{#1}}%
+% \mint{html}|v|%
+}
+
+% \lstset{language=C,keywordstyle={\bfseries \color{blue}}}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  % language=Java,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2
+}
+
+% \begin{center}
+
+\title{Deep-Learning Regularisation Parameter-Map with U-Net for Total Variation Image Denoising on Chest X-ray Images}
+
+\author{Thanh Trung Vu - 230849442}
+
+\begin{document}
+
+
+\maketitle
+
+\setlength\parskip{0.5em plus 0.1em minus 0.2em}
+
+\tableofcontents
+
+
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.3\linewidth]{images/QMUL logo.png}
+%     % \caption{Enter Caption}
+%     % \label{fig:enter-label}
+% \end{figure}
+
+% \vspace{-30pt}
+
+% {\large \textbf{Graduation Project}
+% {\large \textbf{Total Variation Image Denoising with U-Net}}
+% {\large \textbf{Deep-Learning Regularisation Parameter-Map with U-Net for Total Variation Image Denoising on Chest X-ray Images}}
+
+
+
+% \vspace{-12pt}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.34\linewidth]{100-clean.png}
+%     \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
+%     \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
+%     \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
+%     \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\Theta$ with PSNR = 34.29}
+%     \label{fig:SIDD-chest-example-1}
+% \end{figure}
+
+% \section{Acknowledgements}
+
+
+
+\section{Introduction}
+
+This project is largely based on existing research 
+on the learning of 
+regularisation parameter maps for variational image reconstruction using deep neural networks and algorithm unrolling (\cite{kofler2023learning}).
+In this dissertation, we 
+focus on the problem of image denoising.
+We define solving the denoising problem as solving the total variation (TV) problem and give a mathematical formulation of variational image denoising. 
+We then discuss the primal dual algorithm for solving the TV denoising problem, and the importance of choosing the regularisation parameter.
+This led to the idea of using a deep learning method called U-Net to help us find a regularisation parameter map which can improve the denoising performance of the primal dual algorithm.
+We combine a U-Net architecture with the primal dual algorithm to create an end-to-end unsupervised model for image denoising that can achieve said improvement while staying completely interpretable. 
+We implement the proposed combined model and evaluate it on the Chest X-ray dataset (\cite{kermany2018large}) and the SeaTurtleID2022 (\cite{Adam_2024_WACV}).
+The results show that the combined model consistently outperforms the traditional method of using a single regularisation parameter.
+
+\subsection{Motivation for this work}
+
+
+\subsection{Related Work}
+
+
+\subsection{Contribution}
+
+- Adapt the existing code of the dynamic image denoising project in \cite{kofler2023learning} to static image denoising. Train and evaluate the model using new datasets.
+
+- Experiment with a larger neural network on the SeaTurtleID2022 dataset.
+
+- Present the theory of the total variation denoising method and the experimental set-up in detail so that a fellow student can understand the method and implement it themselves.
+
+
+\section{Mathematical Formulation}
+
+
+\subsection{Total Variation Denoising}
+
+
+Given an object to be imaged $\mathbf{x}_{\text{true}} \in \mathbb{R}^{m \times n}$, we can represent a noisy image $\mathbf{z} \in \mathbb{R}^{m \times n}$ as:
+
+
+\begin{equation}
+  \mathbf{z} = \mathbf{x}_{\text{true}} + \mathbf{e}
+\end{equation}
+  
+where 
+$\mathbf{e} \in \mathbb{R}^{m \times n}$ denotes some random noise component.
+Our goal is to find $\mathbf{x}_{\text{denoised}} \in \mathbb{R}^{m \times n}$ which represents a good reconstruction of the true image.
+
+A common approach is to formulate the reconstruction as a minimisation problem:
+
+
+\begin{equation}
+  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} d(\mathbf{x}, \mathbf{z}) + \mathcal{R}_{\lambda}(\mathbf{x})
+\end{equation}
+
+where $d(\cdot, \cdot)$ is a data discrepancy term 
+which represents the closeness between the given noisy image and the reconstruction, 
+and $\mathcal{R}_{\lambda}(\cdot)$ is a regularisation term.
+The idea is that a small discrepancy value indicates that important details of the image are preserved, while a small regularisation value indicates that the impact of noise on smooth regions of the image is removed.
+
+Here we will model the noise as Gaussian noise, for which a good discrepancy measure is the $\ell_2$ norm
+
+\begin{equation}
+  d(\mathbf{x}, \mathbf{z}) = \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2
+\end{equation}
+
+For our variational denoising problem, the regularisation term $\mathcal{R}_{\lambda}(\cdot)$ is the total variation of the image, which can be expressed as a scaled $\ell_1$ norm
+
+\begin{equation}
+  \mathcal{R}_{\lambda}(\mathbf{x}) = \lambda \| \nabla \mathbf{x} \|_1
+\end{equation}
+
+where $\nabla \mathbf{x}$ is the gradient of the image $\mathbf{x}$ and $\lambda \in \mathbb{R}^{+}$ is a regularisation parameter.
+
+The discrepancy term and the regularisation term are often in conflict with each other. Sorely minimising the discrepancy term will keep all the noise intact, producing no denoising effect. On the other hand, minimising the regularisation term alone often results in a blurry image and loss of all important details. The regularisation parameter $\lambda$ controls the trade-off between the two. Therefore, choosing the right value of the regularisation parameter is crucial for the success of the denoising process.
+
+We will soon look at an alternative regularisation term formulation $\mathcal{R}_{\mathbf{\Lambda}}(\mathbf{x})$ which uses a set of regularisation parameters instead of a single scalar value $\lambda$, providing more flexibility in the denoising process. Before that, we first define the image gradient operator $\nabla$, also known as the finite-difference operator.
+% \cite{finite_difference_op}.
+Finite difference operators include forward difference operator,
+backward difference operator, shift operator, central difference operator and mean operator.
+% (\url{https://en.wikipedia.org/wiki/Total_variation_denoising#2D_signal_images})
+Let us focus on the forward difference operator. In particular, in the discrete case, given a matrix $\mathbf{x}$, $\nabla \mathbf{x}$ consists of two matrices, one for the vertical gradient $\nabla_{x} \mathbf{x}$ and one for the horizontal gradient $\nabla_{y} \mathbf{x}$.
+
+
+\begin{equation}
+  \nabla \mathbf{x} = \begin{bmatrix}
+    \nabla_{x} \mathbf{x} \\
+    \nabla_{y} \mathbf{x}
+  \end{bmatrix}
+\end{equation}
+
+
+
+For the forward gradient, the vertical gradient is calculated as
+
+\begin{equation}
+  \begin{aligned}
+  \nabla_{x} \mathbf{x} &= \begin{bmatrix}
+    \mathbf{x}_{2,1} - \mathbf{x}_{1,1} & \mathbf{x}_{2, 2} - \mathbf{x}_{1, 2} & \ldots & \mathbf{x}_{2, n-1} - \mathbf{x}_{1, n-1} & \mathbf{x}_{2, n} - \mathbf{x}_{1, n} \\
+    \mathbf{x}_{3,1} - \mathbf{x}_{2,1} & \mathbf{x}_{3, 2} - \mathbf{x}_{2, 2} & \ldots & \mathbf{x}_{3, n-1} - \mathbf{x}_{2, n-1} & \mathbf{x}_{3, n} - \mathbf{x}_{2, n}  \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    \mathbf{x}_{m,1} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m, 2} - \mathbf{x}_{m-1, 2} & \ldots & \mathbf{x}_{m, n-1} - \mathbf{x}_{m-1, n-1} & \mathbf{x}_{m, n} - \mathbf{x}_{m-1, n} \\
+    % \mathbf{x}_{1, 1} - \mathbf{x}_{m, 1} & \mathbf{x}_{1, 2} - \mathbf{x}_{m, 2} & \ldots & \mathbf{x}_{1, n-1} - \mathbf{x}_{m, n-1} & \mathbf{x}_{1, n} - \mathbf{x}_{m, n} \\
+    - \mathbf{x}_{m, 1} & - \mathbf{x}_{m, 2} & \ldots & - \mathbf{x}_{m, n-1} & - \mathbf{x}_{m, n} \\
+  \end{bmatrix} \\
+  &= \begin{bmatrix}
+    -1 & 1 & \ldots & 0 & 0 \\
+    0 & -1 & \ldots & 0 & 0 \\
+     \vdots & \vdots & \ddots & \vdots & \vdots \\
+    0 & 0 & \ldots & -1 & 1 \\
+    % 1 & 0 & \ldots & 0 & -1
+    0 & 0 & \ldots & 0 & -1
+    \end{bmatrix} \mathbf{x}
+  \end{aligned}
+\end{equation}
+
+and the horizontal gradient is calculated as
+
+\begin{equation}
+  \begin{aligned}
+  \nabla_{y} \mathbf{x} &= \begin{bmatrix}
+    % \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} & \mathbf{x}_{1,1} - \mathbf{x}_{1,n} \\
+    % \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} & \mathbf{x}_{2,1} - \mathbf{x}_{2,n}  \\
+    % \vdots & \vdots & \ddots & \vdots & \vdots \\
+    % \mathbf{x}_{m-1,2} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m-1,3} - \mathbf{x}_{m-1,2} & \ldots & \mathbf{x}_{m-1,n} - \mathbf{x}_{m-1,n-1} & \mathbf{x}_{m-1,1} - \mathbf{x}_{m-1,n} \\
+    % \mathbf{x}_{m,2} - \mathbf{x}_{m,1} & \mathbf{x}_{m,3} - \mathbf{x}_{m,2} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m,n-1} & \mathbf{x}_{m,1} - \mathbf{x}_{m,n} \\
+
+    \mathbf{x}_{1,2} - \mathbf{x}_{1,1} & \mathbf{x}_{1,3} - \mathbf{x}_{1,2} & \ldots & \mathbf{x}_{1,n} - \mathbf{x}_{1,n-1} & \mathbf- \mathbf{x}_{1,n} \\
+    \mathbf{x}_{2,2} - \mathbf{x}_{2,1} & \mathbf{x}_{2,3} - \mathbf{x}_{2,2} & \ldots & \mathbf{x}_{2,n} - \mathbf{x}_{2,n-1} & \mathbf- \mathbf{x}_{2,n}  \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    \mathbf{x}_{m-1,2} - \mathbf{x}_{m-1,1} & \mathbf{x}_{m-1,3} - \mathbf{x}_{m-1,2} & \ldots & \mathbf{x}_{m-1,n} - \mathbf{x}_{m-1,n-1} & - \mathbf{x}_{m-1,n} \\
+    \mathbf{x}_{m,2} - \mathbf{x}_{m,1} & \mathbf{x}_{m,3} - \mathbf{x}_{m,2} & \ldots & \mathbf{x}_{m,n} - \mathbf{x}_{m,n-1} & \mathbf- \mathbf{x}_{m,n} \\
+  \end{bmatrix} \\
+  &=  \mathbf{x} \begin{bmatrix}
+    % -1 & 0 & \ldots & 0 & 1 \\
+    -1 & 0 & \ldots & 0 & 0 \\
+    1 & -1 & \ldots & 0 & 0 \\
+    \vdots & \vdots & \ddots & \vdots & \vdots \\
+    0 & 0 & \ldots & -1 & 0 \\
+    0 & 0 & \ldots & 1 & -1
+    \end{bmatrix}
+  \end{aligned}
+\end{equation}
+
+
+
+
+The $\ell_1$ norm of the image gradient $\nabla \mathbf{x}$ is the sum of the $\ell_1$ norms of the two gradient components
+
+\begin{equation}
+  \| \nabla \mathbf{x} \|_1 = \| \nabla_x \mathbf{x} \|_1 + \| \nabla_y \mathbf{x} \|_1
+\end{equation}
+
+where
+
+\begin{equation}
+%   \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |\mathbf{x}_{1, j} - \mathbf{x}_{m,j}|
+  \| \nabla_x \mathbf{x} \|_1 = \left( \sum_{i=1}^{m-1} \sum_{j=1}^{n} |\mathbf{x}_{i+1,j} - \mathbf{x}_{i,j}| \right) + \sum_{j=1}^{n} |- \mathbf{x}_{m,j}|
+\end{equation}
+
+and
+
+\begin{equation}
+%   \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |\mathbf{x}_{i, 1} - \mathbf{x}_{i,n}|
+  \| \nabla_y \mathbf{x} \|_1 = \left( \sum_{i=1}^{m} \sum_{j=1}^{n-1} |\mathbf{x}_{i,j+1} - \mathbf{x}_{i,j}| \right) + \sum_{i=1}^{m} |- \mathbf{x}_{i,n}|
+\end{equation}
+
+
+where $\mathbf{x}_{i,j}$ is the intensity value of pixel $(i,j)$ in the image $\mathbf{x}$. 
+
+Returning to our current formulation of the regularisation term $\mathcal{R}_{\lambda}(\mathbf{x})$, we can rearrange the regularisation parameter $\lambda$ as follows
+
+\begin{equation}
+    \mathcal{R}_{\lambda}(\mathbf{x}) 
+    = \lambda \| \nabla \mathbf{x} \|_1 \\
+    = \| \lambda \nabla \mathbf{x} \|_1 \\
+    = \| \lambda \nabla_x \mathbf{x} \|_1 + \| \lambda \nabla_y \mathbf{x} \|_1
+\end{equation}
+
+Since the gradient is multiplied by the regularisation parameter, high $\lambda$ values lead to reconstructions that lower the discrepancy value, which may lead to over-smoothing areas where there are important details. Conversely, low values of $\lambda$ 
+may lead to reconstructions that preserve important details but do not remove noise effectively in smooth areas.
+Using a single $\lambda$ value affects all regions of the image equally.
+A more flexible approach is to
+apply stronger regularisation to smooth regions and weak regularisation to detailed regions to preserve image details.
+We can do this by swapping the scalar $\lambda$ with a regularisation parameter map $\mathbf{\Lambda}$,
+
+\begin{equation}
+  \mathbf{\Lambda} = \begin{bmatrix}
+    \mathbf{\Lambda}^{(x)} \\
+    \mathbf{\Lambda}^{(y)}
+  \end{bmatrix}
+\end{equation}
+
+where $\mathbf{\Lambda}^{(x)}, \mathbf{\Lambda}^{(y)} \in \mathbb{R}^{m \times n}$ are matrices that contain the regularisation parameters for the vertical and horizontal gradients respectively.
+Here we will assume $\mathbf{\Lambda}^{(x)} = \mathbf{\Lambda}^{(y)}$ and denote them as $\mathbf{\Lambda}^{(xy)}$, i.e.
+\begin{equation}
+  \mathbf{\Lambda} = \begin{bmatrix}
+    \mathbf{\Lambda}^{(xy)} \\
+    \mathbf{\Lambda}^{(xy)}
+  \end{bmatrix}
+\end{equation}
+
+This gives us a new regularisation term that can be written as
+
+\begin{equation}
+  \mathcal{R}_{\mathbf{\Lambda}}(\mathbf{x}) = \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
+  = \| \mathbf{\Lambda}^{(xy)} \circ \nabla_x \mathbf{x} \|_1 + \| \mathbf{\Lambda}^{(xy)} \circ \nabla_y \mathbf{x} \|_1
+\end{equation}
+
+where $\circ$ denotes the Hadamard or element-wise product.
+
+
+
+Putting it all together,
+the solution to the total variational denoising problem
+can be 
+% calculated
+defined
+using the following formula:
+
+\begin{equation}
+  % \mathbf{x}_{\text{denoised}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
+  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \lambda \| \nabla \mathbf{x} \|_1
+\end{equation}
+
+if we use a scalar $\lambda$ regularisation parameter, or
+
+\begin{equation} \label{eq:minimisation_problem_lambda_map}
+  \hat{\mathbf{x}} = \arg \min_{\mathbf{x}} \frac{1}{2} \|\mathbf{x} - \mathbf{z}\|_2^2 + \| \mathbf{\Lambda} \circ \nabla \mathbf{x} \|_1
+\end{equation}
+
+if we use a regularisation parameter map $\mathbf{\Lambda}$ of regularisation parameters.
+
+
+
+
+\subsection{Primal Dual Method}
+
+To solve equation \ref{eq:minimisation_problem_lambda_map},
+% \ref{eq:1}, 
+we can use an iterative method called the Primal Dual Hybrid Gradient (PDHG) algorithm: 
+
+\begin{algorithm}[H]
+\caption{PDHG algorithm for image denoising with fixed regularisation parameter-map $\boldsymbol{\Lambda}$ (adapted from \cite{kofler2023learning} using the implementation by \cite{dyn_img_pdhg_code})}
+\begin{algorithmic}[1]
+
+\STATE \textbf{Input:} 
+$L = \| [\mathbf{I}, \nabla]^\text{T} \|_2$, 
+% $L = \sqrt{13}$, 
+% $\tau \lesssim 1/L$, 
+% $\sigma \lesssim 1/L$, 
+% $\theta \lesssim 1$, 
+$\tau = \text{sigmoid}(10) / L$, 
+$\sigma = \text{sigmoid}(10) / L$, 
+$\theta = \text{sigmoid}(10)$, 
+noisy image $\mathbf{x}_0$
+
+\STATE \textbf{Output:} reconstructed image $\hat{\mathbf{x}}$
+% \STATE $\mathbf{y} = \mathbf{x}_0$
+\STATE $\bar{\mathbf{x}}_0 = \mathbf{x}_0$
+% \STATE $\mathbf{p}_0 = \mathbf{0}$
+\STATE $\mathbf{p}_0 = \mathbf{x}_0$
+\STATE $\mathbf{q}_0 = \mathbf{0}$
+\FOR{$k < T$}
+    % \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+    \STATE $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma ( \bar{\mathbf{x}}_k - \mathbf{x}_0)\right) / (1 + \sigma)$
+    \STATE $\mathbf{q}_{k+1} = \text{clip}_{\boldsymbol{\Lambda}} \left(\mathbf{q}_k + \sigma \nabla \bar{\mathbf{x}}_k \right)$
+    \STATE $\mathbf{x}_{k+1} = \mathbf{x}_k - \tau \mathbf{p}_{k+1} - \tau \nabla^\text{T} \mathbf{q}_{k+1}$
+    \STATE $\bar{\mathbf{x}}_{k+1} = \mathbf{x}_{k+1} + \theta (\mathbf{x}_{k+1} - \mathbf{x}_k)$
+\ENDFOR
+\STATE $\hat{\mathbf{x}} = \mathbf{x}_T$
+\end{algorithmic}
+\end{algorithm}
+
+where 
+
+\begin{equation}
+    \left( \operatorname{clip}_{\bm{\Lambda}}(\bm{y}) \right)_i =
+    \begin{cases}
+    -(\bm{\Lambda})_i, & \bm{y}_i \in (-\infty, -(\bm{\Lambda})_i) \\
+    \bm{y}_i, & \bm{y}_i \in \left[ -(\bm{\Lambda})_i, (\bm{\Lambda})_i \right] \\
+    (\bm{\Lambda})_i, & \bm{y}_i \in ((\bm{\Lambda})_i, \infty)
+    \end{cases}
+\end{equation}
+
+% $\text{clip}_{\boldsymbol{\Lambda}}$ 
+% is a function that clips the values of $\bm{y}$ to the range $[\mathbf{0}, \boldsymbol{\Lambda}]$.
+is the proximal operator of choice,
+% $\lesssim$ means
+% "slightly less than",
+% less than but almost equal to 
+$\text{sigmoid}(y) = 1 / (1 + \exp(-y))$ is the sigmoid function, and
+$\mathbf{I}$ is the identity matrix.
+
+It has been proven that, if $L^2 \sigma \tau < 1$ then the PDHG algorithm converges to the solution of the primal dual problem (\cite{chambolle_pock_2011}).
+However, in practice, the algorithm always converges even if $L^2 \sigma \tau = 1$ (\cite{sidky_2012}).
+Nevertheless, here $\text{sigmoid}(10) = 0.9999546$ is used to scale the parameters to satisfy the condition $L^2 \sigma \tau < 1$ as well as $\theta < 1$, ensuring convergence.
+Since $\sigma$ and $\tau$ are the step sizes, choosing them to be as large as possible will help speed up the convergence of the algorithm.
+
+We can calculate the value $L = \| [\mathbf{I}, \nabla]^\text{T} \|_2 = 3$ using the formula
+
+\begin{equation*}
+    \| \mathbf{M} \|_2 = \sigma_{\text{max}}(\mathbf{M})
+\end{equation*}
+
+where  $\sigma_{\text{max}}(\mathbf{M})$ is the largest singular value of matrix $\mathbf{M}$.
+For a square 2D matrix with each side of length $2n$, the largest singular value is $3$.
+% It is proven that if $L \geq \| [\mathbf{I}, \nabla]^\text{T} \|_2$ then the algorithm converges.
+However, the code uses a safe value of $\sqrt{13}$ for $L$ as chosen in the original implementation (\cite{dyn_img_pdhg_code}).
+
+
+
+This algorithm can also be applied to the single scalar $\lambda$ case by simply setting all values of $\mathbf{\Lambda}$ to $\lambda$.
+
+% The choice of $L$ is taken from \cite{Sidky2012}.
+% \url{https://iopscience.iop.org/article/10.1088/0031-9155/57/10/3065/pdf}. 
+The number of iterations $T$ is a hyperparameter that we can choose for the training process.
+% In our case we fix $T_{\text{train}} = 128$ for training.
+As shown in \cite{kofler2023learning}, the higher the number of iterations, the better the denoising performance of the algorithm. 
+However, beyond a certain point, the performance improvement is marginal.
+
+% TODO:
+
+% - The code initialises $p_0 = x_0$ instead of $p_0 = 0$.
+
+% - The code sets $L = \sqrt{13}$.
+% To be precise, $L = \sqrt{A^2 + \nabla^2}$, and $A = \sqrt{1}$ and $\nabla = \sqrt{12}$.
+
+% - The paper \cite{kofler2023learning} page ... mentions that the values of $\sigma$ and $\tau$ were trained.
+% The code does not show any training of $\sigma$ and $\tau$, although there is still a sigmoid function applied to them only once with a fixed value of 10.
+
+
+% (For comparison with the original version in \cite{kofler2023learning}:
+
+% \includegraphics[width=1\linewidth]{images/references/PDHG original.png}
+
+% For denoising, $\mathbf{A}$ is the identity matrix. If $\mathbf{A}^{\text{H}}$ is the conjugate transpose, then it is also an identity matrix.)
+
+% NOTE: $\mathbf{y}$ is the noisy image $\mathbf{x}_0$ ???
+
+% HOWEVER, note that in the code, $\mathbf{p}_{k+1} = \left(\mathbf{p}_k + \sigma  \times (\bar{\mathbf{x}}_k - \mathbf{y})\right) / (1 + \sigma)$
+
+
+
+
+The challenge lies in finding the regularisation parameter map $\mathbf{\Lambda}$.  
+Narrowing down the search space is challenging, as we potentially have $d^{m n}$ different maps to consider, where $d$ is the number of $\lambda$ values (typically around 100, ranging from 0.01 to 1) and $n$ is the image dimension. This is computationally infeasible. The U-Net can be used to find the 
+regularisation parameter map $\mathbf{\Lambda}$
+more efficiently.
+The search can be done more efficiently by employing neural network models that are designed for image processing. 
+In this dissertation we will use the U-Net model, which is a specific design of a convolutional neural network.
+
+% U-Net assists in learning these regularisation parameters due to its proficiency in image segmentation. 
+
+% Question: Idealy, if we pass in a clean image to U-Net then all the regularisation parameters should be zero, right?
+
+
+\section{Neural Network Architecture}
+
+
+% Let us first delve into the foundational concept of a convolutional neural network, which underpins the U-Net architecture.
+
+
+
+\subsection{
+Convolutional Neural Network (CNN)
+}
+
+\begin{figure}[ht]
+    \includegraphics[width=1\linewidth]{Le-Net 5.png}
+    
+    \caption{Architecture of LeNet-5, one of the earliest Convolutional Neural Networks (\cite{726791})} 
+    \label{fig:lenet}
+\end{figure}
+
+
+
+Convolutional Neural Networks (CNNs) are a specific type of artificial neural network particularly well-suited for analysing image data and other grid-like patterns. 
+Here we assume a 2D CNN architecture, where each layer is represented as one or more 2-dimensional matrices, rather than a vector as in a normal "vanilla" network.
+% They excel at tasks like image classification, object detection, and image segmentation. 
+
+% Convolutional Neural Networks (CNNs) are specialised types of artificial neural networks optimised for analysing image data and other grid-like structures. We base our understanding on a two-dimensional (2D) CNN architecture, where each layer is comprised of one or more 2D matrices, in contrast to the vectors used in standard "vanilla" neural networks.
+
+% Here's a breakdown of the key concepts:
+
+% Core Idea:
+
+% CNNs are inspired by the structure and function of the visual cortex in the human brain. The visual cortex processes visual information hierarchically, extracting features from simple edges and shapes to complex objects.
+
+% CNNs achieve similar functionality through convolutional layers and pooling layers. These layers work together to progressively extract and refine features from the input data.
+
+\subsubsection*{Inspiration and Function}
+
+
+
+CNNs are inspired by 
+% the structure and function of 
+the visual cortex in the human brain. 
+The visual cortex processes visual information, 
+% hierarchically, 
+extracting features one-by-one, from simple edges and shapes to complex objects.
+CNNs try to mimic this 
+% achieve similar functionality 
+through convolutional layers and pooling layers. 
+% These layers work together to progressively extract and refine features from the input data.
+
+% The design of CNNs draws inspiration from the human visual cortex, which processes visual stimuli by sequentially extracting features, ranging from simple edges and shapes to complex objects. CNNs replicate this hierarchical feature extraction using convolutional layers and pooling layers. 
+
+% Key Components:
+
+    % Convolutional Layers: These layers apply a filter (also called a kernel) to the input data (often an image). The filter slides across the input, computing the dot product between its weights and the corresponding elements in the data. This creates a feature map that highlights specific features the filter is designed to detect.
+
+    % Pooling Layers: These layers downsample the data, reducing its dimensionality while preserving essential features.Pooling techniques like average pooling or max pooling select the most significant value from a local region of the feature map.
+
+    % Activation Functions: CNNs often use activation functions like ReLU (Rectified Linear Unit) after convolutional layers. These functions introduce non-linearity into the network, allowing it to learn complex relationships between features.
+
+    % Fully-Connected Layers: In the later stages of a CNN, fully-connected layers are typically used, similar to regular neural networks. These layers perform classifications or predictions based on the extracted features.
+
+
+\subsubsection*{Convolutional Layers}
+
+Similar to a normal "vanilla" neural network layer, each element in a convolutional layer's output comes from a linear combination 
+% of ...
+followed by an activation function.
+The difference is the use of filters (also called kernels) instead of a single weight matrix.
+Each filter slides across the input, computing the dot product between its weights and the corresponding elements, then passes the output through an activation function.
+This is a convolution operation.
+For each input matrix, one filter produces one output matrix.
+We can have multiple filters in one layer.
+Each output matrix is called a feature map, since one filter can be thought of as a feature-extractor that is designed to highlight a specific feature. The number of feature maps is also called the number of channels.
+Implementation-wise, using filters instead of weight matrices reduces the ratio between the number of weights and the number of output values, hence cutting down on the number of trainable parameters for 
+a image task.
+% I have described an example here: [].
+% the same amount of output. 
+
+
+% In a convolutional layer, each output element results from a linear combination of inputs, processed through an activation function—akin to "vanilla" neural networks. However, the critical difference lies in the utilisation of filters (or kernels). Each filter traverses the input matrix, computes the dot product with the corresponding input elements, and channels the result through an activation function. 
+% A single filter generates one output matrix, termed a feature map, acting as a feature extractor that emphasises specific characteristics of the input. 
+% When multiple filters are employed in a layer, they produce multiple feature maps, with each map corresponding to a different channel. 
+% This design significantly reduces the proportion of trainable parameters relative to the number of output values, enhancing efficiency for image-related tasks.
+
+\subsubsection*{Pooling Layers}
+
+
+
+
+An additional type of layer is a pooling layer. Usually we use a max-pooling layer which outputs the maximum instead. This project also utilises max-pooling. The goal is to keep only the most significant values.
+
+These convolutional and pooling layers will form the building block for the U-Net architecture.
+
+
+% An essential component of CNNs is the pooling layer, typically implemented as a max-pooling layer. This layer simplifies the output by retaining only the maximum values from the defined regions in the feature map. The objective is to preserve the most significant features while reducing data dimensionality. In this project, max-pooling is a crucial technique used to enhance model performance.
+
+% The convolutional and pooling layers constitute the foundational blocks of the U-Net architecture.
+
+
+
+
+
+
+\subsection{U-Net Architecture}
+
+The U-Net is a type of neural network that is commonly used for image segmentation (\cite{ronneberger2015unet}).
+The U-Net is an encoder-decoder network that is designed to take an image as input and produce a segmentation mask as output.
+The U-Net is made up of a series of convolutional layers that downsample the image and a series of transposed convolutional layers that upsample the image.
+The U-Net is able to learn to segment images by training on a large dataset of images and their corresponding segmentation masks.
+
+
+In our case, we will optimise a U-Net model to find the regularisation parameter map 
+% $\Lambda_{\Theta}$ 
+$\Lambda$ 
+that produces the best denoised image for any particular noisy image.
+
+
+% As previously mentioned, the specific architecture for $\text{NET}_{\Theta}$ is the U-Net, a special type of convolutional neural network architecture.
+
+% An Unrolled Neural Network (U-Net) \cite{ronneberger2015unet} is an extension of a CNN in that we add some so-called skip connections,
+% which is similar to the addition connection in a residual network.
+% Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
+
+
+% A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, 
+% akin to those in a residual network.
+% similar to the addition connection in a residual network. 
+% These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
+% Each skip connection basically concatenates the outputs of two different convolution layers into a bigger output.
+
+% , in addition to normal pooling layers which condenses the input, we have  which expand the input.
+
+% It has a contracting path (encoder) and an expanding path (decoder) with skip connections in between. 
+% This structure is specifically designed for image segmentation, where the network needs to not only extract features but also localise them precisely within the image.
+
+% U-Net are used often in many segmentation tasks, and in recent years have made their ways onto image generation tasks as well.
+
+% \url{https://en.wikipedia.org/wiki/U-Net}: The U-Net architecture stems from the so-called “fully convolutional network” proposed by Long, Shelhamer, and Darrell in 2014. \url{https://arxiv.org/abs/1411.4038}
+
+
+
+% The network is based on a fully convolutional neural network[2] whose architecture was modified and extended to work with fewer training images and to yield more precise segmentation.
+
+% The architecture of an unrolled neural network (UNET) is similar to that of an auto-encoder in that it can be viewed as having two parts that are almost opposite-symmetrical.
+
+% Whereas an auto-encoder uses a encoding part and a decoding part, the UNET consists of a contracting path (left side) and an expansive path (right side). 
+
+
+% The contracting path follows the typical architecture of a convolutional network. 
+
+% It consists of the repeated application of two 3x3 convolutions (unpadded convolutions), each followed by a rectified linear unit (ReLU) and a 2x2 max pooling operation with stride 2 for downsampling. 
+
+
+
+% An U-Net can be divided into two main parts, an Encoder and a Decoder. 
+% Each part is basically a normal convolution network. The Encoder and Decoder are almost reversely symmetrical. 
+The U-Net architecture is divided into two principal components: an Encoder and a Decoder. 
+
+\subsubsection*{Encoder}
+
+
+The Encoder functions similarly to a standard CNN, utilising a combination of convolutional layers and max-pooling layers organised into distinct "blocks." In this project, each Encoder block comprises a pair of convolutional layers followed by a max-pooling layer, designed to successively double the number of channels (or feature maps) while 
+% concurrently 
+reducing the feature map size due to the pooling.
+
+
+% The Encoder is a typical CNN with a combination of convolutional layers and max-pooling layers. The layers are grouped into "blocks". Each encoding block has a few (usually two) convolutional layers followed by one max-pooling layer. In this project we also use blocks of two convolutional layers followed by one max-pooling layer.
+
+% Each successive Encoder block doubles the number of channels (feature maps) while decreasing the size of the feature map due to the pooling operation.
+
+\subsubsection*{Decoder}
+
+% Conversely, the Decoder is structured around a series of blocks that progressively halve the number of channels while enlarging the feature map size, effectively "unrolling" the data. 
+% Unlike the Encoder blocks, each Decoder block concludes with an up-convolutional layer followed by a skip connection.
+% This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
+
+The Decoder is also a CNN with a series of blocks. Opposite to an encoding block which doubles the number of channels, each successive decoding block cuts the number of channels (feature maps) in half while increasing the size of the output feature map (hence the "unrolling").
+Instead of a max-pooling layer, each decoding block ends with a so-called up-convolutional layer and a skip connection. 
+% This up-convolutional layer, essentially a regular convolutional layer, outputs data that is then concatenated with the output from a corresponding Encoder block, facilitating the feature integration across different layers of the network.
+The up-convolutional layer is just a normal convolutional layer whose output is concatenated with the output of another convolutional layer in an Encoder block. 
+% This concatenation, which increases the size of feature maps instead of decreasing them like a normal CNN would, is where the "unrolling" in the U-Net's name comes from. 
+
+
+
+
+% A U-Net, as introduced by Ronneberger et al. \cite{ronneberger2015unet}, extends the conventional CNN architecture by incorporating skip connections, akin to those in a residual network. These skip connections concatenate the outputs of distinct convolutional layers to generate a larger composite output.
+
+
+
+\subsection{Full Architecture}
+
+
+
+
+For this project, our model comprises two primary components:
+\begin{enumerate}
+    \item A U-Net, denoted as $\text{NET}_{\Theta}$, which is responsible for learning the regularisation parameters $\mathbf{\Lambda}_{\Theta}$ from an input image 
+    % $\mathbf{x}_0$
+    $\mathbf{x}_{\text{noisy}}$
+    \item A Primal Dual Hybrid Gradient (PDHG) algorithm solver 
+    % (refer to Appendix), 
+    % which utilises both $\mathbf{z}$ and $\mathbf{\Lambda}_{\Theta}$ to transform $\mathbf{x}_0$ into $\hat{\mathbf{x}}
+    % $. 
+    % This transformation aims to minimise the loss function $L(\mathbf{z}, \mathbf{x})$, thereby facilitating effective reconstruction. 
+    % The symbol $\Theta$ represents the set of trainable parameters within the network.
+\end{enumerate}
+
+We refer to the set of trainable parameters in the U-Net as $\Theta$, and the output of the U-Net as $\mathbf{\Lambda}_{\Theta}$.
+
+The general architecture is depicted in shown in Figure 1,
+
+\begin{figure}[ht]
+  \centering
+\begin{tikzpicture}[node distance=0.3cm, auto, ultra thick]
+
+  % Define styles for the different layers
+  \tikzstyle{output} = [draw, circle, minimum width=1cm, minimum height=1cm]
+  \tikzstyle{function} = [draw, rectangle, minimum width=2cm, minimum height=1cm, fill=blue!20]
+  \tikzstyle{inference} = [->, ultra thick, red]
+  \tikzstyle{normal} = [->, ultra thick, black]
+
+  \node (input) [output] {$\mathbf{x}_{\text{noisy}}$};
+  \node (unet) [function, right=of input] {$\text{NET}_{\Theta}$};
+  \node (lambda) [output, right=of unet] {$\mathbf{\Lambda}_{\Theta}$};
+  \node (pdhg) [function, below=of lambda] {PDHG Solver};
+  \node (final_output) [output, right=of pdhg] {$\mathbf{x}_{\text{denoised}}$};   
+  \node (noise_generator) [function, above=of input] {Gaussian Noise Generator};
+  \node (ground_truth) [output, above=of noise_generator] {$\mathbf{x_{\text{true}}}$};
+  \node (loss_function) [function, right=of final_output] {$\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x}_{\text{denoised}})$};
+
+  \draw[inference] (input) -- (unet);
+  \draw[inference] (unet) -- (lambda);
+  \draw[inference] (lambda) -- (pdhg);
+  \draw[inference] (pdhg) -- (final_output);
+  \draw[inference] (input) -- ++(0, -1.4) -- (pdhg);
+  
+  \draw[->] (final_output) -- (loss_function);
+  \draw[->] (ground_truth) -| (loss_function);
+  \draw[->] (ground_truth) -- (noise_generator);
+  \draw[->] (noise_generator) -- (input);
+%   \draw[->] (loss_function) -- ++(0, -1) -| (unet);
+
+\end{tikzpicture}
+
+\caption{The general architecture 
+% \caption{Training 
+% of PDHG Net 
+% \cite{kofler2023learning}
+}
+
+\label{fig:training}
+\end{figure}
+
+where
+\begin{itemize}
+    \item $\mathbf{x_{\text{true}}}$ represents the clean image, serving as the ground truth.
+    \item $\mathbf{x_{\text{noisy}}}$ denotes the noisy image inputted to $\text{NET}_{\Theta}$.
+    \item $\mathbf{\Lambda}_{\Theta}$ is the regularisation parameters map which is the final output from the U-Net. 
+    % Throughout this project, $\mathbf{\Lambda}$ and $\mathbf{\Lambda}_{\Theta}$ are used interchangeably.
+\end{itemize}
+
+We can treat the PDHG solver as the final hidden layer in our network. 
+The result of the loss function $\text{MSE}(\mathbf{x_{\text{true}}}, \mathbf{x_{\text{denoised}}})$ 
+is then used for backpropagation to train the parameters $\Theta$.
+
+
+
+% \begin{figure}[ht]
+% \hspace*{-0.5cm} % Adjust the value as needed
+% \begin{tikzpicture}[node distance=0.3cm, auto, ultra thick, transform shape, shift={(-10cm,0)}]
+%     % Define styles
+%     \tikzstyle{rec16_1} = [draw, rectangle, minimum width=0.1cm, minimum height=2cm, fill=blue!30]
+%     \tikzstyle{rec16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=blue!30]
+%     \tikzstyle{rec32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=blue!30]
+%     \tikzstyle{rec64} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
+%     \tikzstyle{rec64_2} = [draw, rectangle, minimum width=2.0cm, minimum height=0.5cm, fill=blue!30]
+%     \tikzstyle{rec2} = [draw, rectangle, minimum width=0.4cm, minimum height=2cm, fill=blue!30]
+%     \tikzstyle{rec_white32} = [draw, rectangle, minimum width=1.2cm, minimum height=1cm, fill=white]
+%     \tikzstyle{rec_white16} = [draw, rectangle, minimum width=0.6cm, minimum height=2cm, fill=white]
+%     \tikzstyle{normalconv} = [->, ultra thick, blue]
+%     \tikzstyle{maxpool} = [->, ultra thick, red]
+%     \tikzstyle{upconv} = [->, ultra thick, green]
+%     \tikzstyle{finalconv} = [->, ultra thick, black]
+
+%     % ENCODER
+%     \node (en1_input) [rec16_1] {};
+%     \node (en1con1_output) [rec16, right=of en1_input] {};
+%     \node (en1con2_output) [rec16, right=of en1con1_output] {};
+
+%     \node (en2_input) [rec32, below=of en1con2_output] {};
+%     \node (en2con1_output) [rec32, right=of en2_input] {};
+%     \node (en2con2_output) [rec32, right=of en2con1_output] {};
+
+%     \node (en3_input) [rec64, below=of en2con2_output] {};
+%     \node (en3con1_output) [rec64, right=of en3_input] {};
+%     \node (en3con2_output) [rec64, right=of en3con1_output] {};
+%     \node (upcon1_input) [rec64_2, right=of en3con2_output] {};
+
+%     % DECODER
+%     \node (de1_input) [rec32, above=of upcon1_input] {};
+%     \node (skip1_output) [rec_white32, left=0cm of de1_input] {};
+%     \node (de1con1_output) [rec32, right=of de1_input] {};
+%     \node (de1con2_output) [rec32, right=of de1con1_output] {};
+
+%     \node (de2_input) [rec16, above=of de1con2_output] {};
+%     \node (skip2_output) [rec_white16, left=0cm of de2_input] {};
+%     \node (de2con1_output) [rec16, right=of de2_input] {};
+%     \node (de2con2_output) [rec16, right=of de2con1_output] {};
+
+%     % Final output layer
+%     \node (final_output) [rec2, right=of de2con2_output] {};
+
+%     % CONNECTIONS
+%     \draw[normalconv] (en1_input) -- (en1con1_output);
+%     \draw[normalconv] (en1con1_output) -- (en1con2_output);
+%     % \draw[maxpool] (en1con2_output) -- ++(0,-0.5) -| (en2_input);
+%     \draw[maxpool] (en1con2_output) -- (en2_input);
+    
+%     \draw[normalconv] (en2_input) -- (en2con1_output);
+%     \draw[normalconv] (en2con1_output) -- (en2con2_output);
+%     % \draw[maxpool] (en2con2_output) -- ++(0,-0.5) -| (en3_input);
+%     \draw[maxpool] (en2con2_output) -- (en3_input);
+    
+%     \draw[normalconv] (en3_input) -- (en3con1_output);
+%     \draw[normalconv] (en3con1_output) -- (en3con2_output);
+%     \draw[maxpool] (en3con2_output) -- (upcon1_input);
+    
+%     % \draw[upconv] (en3con2_output) -- ++(0,0.5) -| (de1_input);
+%     \draw[upconv] (upcon1_input) -- (de1_input);
+%     \draw[normalconv] (de1_input) -- (de1con1_output);
+%     \draw[normalconv] (de1con1_output) -- (de1con2_output);
+    
+%     % \draw[upconv] (de1con2_output) -- ++(0,0.5) -| (de2_input);
+%     \draw[upconv] (de1con2_output) -- (de2_input);
+%     \draw[normalconv] (de2_input) -- (de2con1_output);
+%     \draw[normalconv] (de2con1_output) -- (de2con2_output);
+    
+%     \draw[finalconv] (de2con2_output) -- (final_output);
+
+%     % Skip connections
+%     \draw[->, dashed, ultra thick] (en2con2_output.east) -- ++(0.5,0) |- (skip1_output.west);
+%     \draw[->, dashed, ultra thick] (en1con2_output.east) -- ++(0.5,0) |- (skip2_output.west);
+
+% \end{tikzpicture}
+% \caption{Our $\text{NET}_{\Theta}$ Architecture}
+% \label{fig:my_unet}
+% \end{figure}
+
+
+\begin{figure}[ht]
+  \includegraphics[width=1\linewidth]{../../PlotNeuralNet/unet-true-voice-32/unet-visualisation-true-voice-32.pdf}
+  % \includegraphics[width=1\linewidth]{images/unet-visualisation-true-voice-32.pdf}
+\caption{Our $\text{NET}_{\Theta}$ Architecture}
+\label{fig:my_unet}
+\end{figure}
+
+
+% Conversely, the Decoder incorporates two decoding blocks, one fewer than the Encoder. This configuration deviates from some common implementations where the number of encoding and decoding blocks are equal, and a "bottle-neck" comprising two additional convolutional layers is placed between them. In our model, we treat the final block of the Encoder as this bottle-neck. The first decoding block in the Decoder reduces the number of channels back to 32, and the second further reduces them to 16.
+
+% Similarly we have three decoding blocks.
+% Each decoding block in our model concludes with an up-convolutional layer, which serves the same function as a typical convolutional layer, followed by a skip connection. The first skip connection takes the 32-channel output from the second encoding block and merges it with the 32-channel output from the first up-convolutional layer. This combination produces a 64-channel output, which is then processed by the first decoding block. The second skip connection similarly merges the 16-channel output from the first encoding block with the 16-channel output from the second up-convolutional layer, resulting in a 32-channel input for the second decoding block.
+
+% The final stage in our architecture employs a convolutional layer to convert the 16-channel output from the last decoding block into a 2-channel output, thus producing two matrices as the ultimate output of our model.
+
+
+\section{Chest X-ray Dataset}
+
+\subsection{Experimental Set-Up}
+
+% We used two datasets for the experiments: the Chest X-ray dataset and the SIDD dataset.
+
+% \subsection{Chest X-ray Dataset}
+
+\subsubsection{Training Data}
+
+We used the Chest X-Ray Images (Pneumonia) dataset which provided by \cite{kermany2018large}.
+% \url{https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia}. 
+The Chest X-Ray dataset was designed for binary classification of normal and pneumonia chest X-ray images. 
+The dataset consists of 5,863 X-Ray images which are split into two categories (Pneumonia/Normal).
+All images are black-and-white and are in the JPEG format.
+The X-rays images have various resolutions.
+
+
+
+At the time of download, the original Chest X-ray dataset had already been split into a training set, a validation set, and a test set.
+We picked 200 images for the training dataset for training and 100 images from the test set for testing. The validation set consists of only 8 images which were all used for validation.
+We used only images which were classified as normal.
+
+ 
+
+For consistent input, for each dataset, we cropped the images to squares and then resized them to the same resolution.
+For the Chest X-ray dataset, we set the resolution to $256 \times 256$.
+
+All pixel values are originally integers in the range from 0 to 255, so we normalised to the range from 0 to 1 by dividing by 255.
+
+
+During training, for each image in the Chest X-ray dataset, we generated a random value of $\sigma$ uniformly in the range from 0.1 to 0.5, and noised the image with Gaussian noise with mean 0 and the corresponding standard deviation $\sigma$.
+We use a batch size of 1, so each training epoch consists of 200 iterations, one iteration for each image in the training dataset.
+The formula used for this dataset is a data-dependent Gaussian noise addition
+
+\begin{equation}
+    \mathbf{x}_{\text{noisy}} = (\mathbf{x}_{\text{true}} + \sigma \mathbf{n}) \times \sigma_{x_{\text{true}}}
+    \label{eq:data-dependent-noise}
+\end{equation}
+
+where $\sigma_{x_{\text{true}}}$ is the standard deviation of the pixels in the true image $\mathbf{x}_{\text{true}}$.
+For images with low variation (hence low standard deviation), the added noise is milder.
+
+I am noting this because this might be important to make comparison between different experiments.
+I have seen that some implementations use custom functions to add noise to the images, 
+which might produce different results.
+For the same $\sigma$ value, the noise might be different.
+The SeaTurtleID2022 dataset below uses a different and more traditional data-independent method of adding Gaussian noise.
+
+  
+
+% \subsection{SIDD Dataset}
+
+% The original SIDD dataset consists of 320 images of various resolutions taken from the SIDD dataset \cite{sidd}.
+% All images are sRGB and are in the PNG format.
+% For each image, we randomly chose 32 patches of size 256x256 pixels.
+% For each patch, we generated a random value of $\sigma$ ranging from 0.1 to 0.5 and noised the patch with Gaussian noise with that $\sigma$.
+% We randomly picked 800 patches for the training dataset, 100 patches for the validation dataset, and 100 patches for the test dataset.
+
+% \section{Experiments}
+
+% We performed various experiments on the Chest X-ray dataset and the SIDD dataset with various configurations of the total variational denoising method and the U-Net.
+
+\subsubsection{U-Net Set-Up}
+
+For learning the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$, we used a U-Net structure with 1 initial double convolutional block, followed by 3 encoding blocks, 3 decoding blocks, and 1 final fully connected layer.
+The number of initial filters, or output channels of the first convolution layer, is set to 32.
+As commonly done, each encoding/decoding block contains a(n) downsampling/upsampling step, followed by 2 (fully) convolutional layers, in which the first convolutional layer doubles/halves the number channels which the second maintains the number of channels.
+In other words, the number of output channels of each subsequent encoding block is doubled, while the number of output channels of each subsequent decoding block is halved.
+The U-Net has 1 input channel and 2 final output channels.
+This leads to a 1-32-64-128-256-128-64-32-2 structure.
+
+All convolutional layers have a kernel size of $3 \times 3$ and a stride of 1.
+Each side of a feature map has zero-padding of size 1 to maintain the size of the feature map after the convolution.
+Keeping the number of size of the feature map constant after each convolution has the advantage of making the implementation of the skip connections simpler by not having to crop the output of the encoding blocks to match the size of the input of the decoding blocks.
+
+Each encoding block begins with a max pooling layer with $2 \times 2$ kernels and a step size of 2.
+Prior to the max pooling, a zero-padding of size 1 is added in order to exactly halve the length of each side of the output.
+On the other hand, all upsampling steps are done with linear interpolation with a scale factor of 2 which doubles the length of each side of the feature map.
+In the end, the total number of trainable parameters of the set $\Theta$ is 1,796,034.
+
+For the activation function, we used the Leaky ReLU with a negative slope of 0.01.
+
+
+It is worth noting that, for the implementation of the U-Net, 
+we used the 3D implementations of the convolutional layers as well as the downsampling and upsampling steps from the PyTorch library (\cite{PyTorch}).
+The main reasons we went with 3D instead of the 2D implementations are convenience and generality.
+The 3D U-Net implementation is adapted from the dynamic image denoising application in \cite{kofler2023learning}, and can therefore be extended to 3D dynamic imaging applications in the future.
+
+This might, however, increase the GPU memory usage and prevent us from using a larger model or a larger batch size.
+
+% Perhaps it is still worth trying to use the 2D implementation.
+
+
+
+\subsubsection{PDHG Solver}
+
+After the unet produces the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$,
+it will be transformed before being used in the PDHG solver.
+% The default is
+
+\begin{equation}
+    \mathbf{\Lambda}_{\Theta} = t \times \text{softplus}(\mathbf{\Lambda}_{\Theta})
+    \label{eq:default-softplus}
+\end{equation}
+
+where $t = 0.1$.
+% which is what I used.
+In \cite{kofler2023learning}, it was mentioned that this helps make convergence faster.
+
+% In the code, if we specify a $t$ value then the following transformation is used:
+
+% \begin{equation}
+%     \mathbf{\Lambda}_{\Theta} = \text{up-bound} \times \text{sigmoid}(\mathbf{\Lambda}_{\Theta})
+% \end{equation}
+
+
+
+
+% \begin{textit}
+% One purpose of these transformations is to ensure that the regularisation parameter map is strictly positive.
+
+% Another purpose is to ensure that the regularisation parameters are not too large.
+
+% We can control the limit of the regularisation.
+
+% A large up-bound value will allow more regularisation power.
+
+% However, we might want to limit the regularisation power
+% so that the model does not overfit the training data.
+
+% These transformations can reduce the parameters values to 0 after some iterations if the up-bound is set too small.
+% I tried with values up to 0.01 and quickly there was no more improvement. (This is due to the parameter map becoming 0?)
+
+% I also tried 0.2 and a similar thing happened.
+
+% This is due to the vanishing gradient problem when using sigmoid?
+
+% I might experiment changing the code to use only softplus.
+
+% Question: What if we simply clip the values to a sensible range like 0 to 0.4?
+
+% What if we use only sigmoid or only softplus?
+% \end{textit}
+
+For the primal dual solver, we set 
+% the \codeword{up-bound} parameter to 0 and 
+$T_{\text{train}}$ to 256.
+During testing we also set $T_{\text{test}}$ to 256.
+
+% # constrain map to be striclty positive; further, bound it from below
+% if self.up_bound > 0:
+%     # constrain map to be striclty positive; further, bound it from below
+%     lambda_cnn = self.up_bound * self.op_norm_AHA * torch.sigmoid(lambda_cnn)
+% else:
+%     lambda_cnn = 0.1 * self.op_norm_AHA * F.softplus(lambda_cnn)
+
+
+\subsubsection{Training Options}
+
+We use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function. 
+
+We trained for a total of 500 epochs. The total training time was 30 hours, and the GPU memory footprint was around 3 GB.
+
+
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=1\linewidth]{images//chest_xray/results.png}
+        
+%     \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
+%     \label{fig:chest_xray}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.6\linewidth]{images//chest_xray/Lambda vs PSNR.png}
+        
+%     \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
+%     \label{fig:chest_xray}
+% \end{figure}
+
+
+
+
+% \subsubsection{Part 5.5 CT experiment}
+
+% Original dataset: 35820 images training, 3522 validation, 3553 testing
+
+% Actually uses: 300 images training, 10 validation, no test
+
+% 362 x 362, 300 images --> 39,313,200 pixels per epoch
+
+% UNet 32, 64, 128 --> 610,673 trainable parameters
+
+% 39,313,200  \times  610,673  =  2.400751e+13
+
+% Adam optimizer with a learning rate of 10−4
+
+% a batch size of 1
+
+% train for 50 epochs
+
+% Then we used the model configuration for which the MSE on the validation set was lowest. ???
+
+% T = 512
+
+% 39,313,200  \times  610,673  \times  512  =  1.2291845e+16 
+
+% 24 hours
+
+% single NVIDIA GeForce RTX 2080 super GPU with 8 GB GPU
+
+% 1 epoch = 300 iterations, took 5 hours = 300 minutes
+
+
+% --------
+
+% Mine: 
+
+
+% 32, 64, 128, 256 --> 1,796,034 trainable parameters, check using code
+
+% 1000 training images, 256 * 256 --> total 65,536,000 pixels per epoch
+
+
+% 65,536,000  \times  1,796,034  =  1.1770488e+14
+
+% T = 256
+
+% 65,536,000  \times  1,796,034  \times  256  =  3.013245e+16
+
+
+% Adam optimizer with a learning rate of 10−4, a batch size of 1
+
+% 1 epoch took 20 minutes
+
+
+% 2.5 times more work  but  2/30  amount of time
+
+
+
+
+
+
+
+
+% The inference time for our model was about 1 second per 512$\times$512 patch. For a full HD (1920$\times$1080) image, denoising required processing 12 patches, taking less than half a minute in total. This demonstrates that while our method is slower than traditional single-parameter denoising methods, it offers a systematic approach to optimising regularisation without prior knowledge of the best $\lambda$.
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.6\linewidth, trim={0 0 0 10cm}, clip]{images/W&B Chart 5_27_2024, 5 09 06 PM.png}
+%     \caption{Validation loss. Logged using wandb} 
+%     \label{fig:training_progress}
+% \end{figure}
+
+% \begin{figure}[ht]
+% % \begin{center}
+% \centering
+% \begin{tabular}{ c c c c c c c c c }
+%  \includegraphics[width=0.4\linewidth]{images/cur/image_clean.png}  & \includegraphics[width=0.4\linewidth]{images/cur/image_noisy.png} \\
+%  Clean image & Noisy image. PSNR 24.13 dB \\
+%    &  \\
+%  \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_single_lambda.png} & \includegraphics[width=0.4\linewidth]{images/cur/image_denoised_lambda_map.png}   \\
+%  Denoised with $\lambda = 0.05$. PSNR 35.64 dB & Denoised with $\mathbf{\Lambda}$ map. PSNR 
+%  \textcolor{blue}{37.84 dB}  \\
+
+ 
+% \end{tabular}
+
+%     \caption{Comparison of output using single $\lambda$ and $\mathbf{\Lambda}$ map}
+
+
+% \end{center}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=1.0\linewidth]{images/cur/patch_2.png}
+%     \vspace{-8pt}
+    
+%     \caption{Comparison of patches. From left to right: (1) Original image. (2) Noisy image with synthetic Gaussian noise added with $\sigma = 0.3$. (3) Reconstruction with single $\lambda = 0.03$. (4) Reconstruction with $\mathbf{\Lambda}$ map. (5) Output of the U-Net: $\mathbf{\Lambda}$ map.}
+%     \label{fig:compare_patches}
+% \end{figure}
+
+
+
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=0.34\linewidth]{100-clean.png}
+%   \includegraphics[width=0.34\linewidth]{100-noisy-mse.png}
+%   \includegraphics[width=0.34\linewidth]{100-psnr_34.02-lambda_0.04.png}
+%   \includegraphics[width=0.34\linewidth]{100-denoised-mse_24.42-psnr_34.29-ssim_0.96.png}
+%   \caption{SIDD example: Clean, Noisy, $\lambda = 0.04$ with PSNR = 34.02, $\mathbf{\Lambda}_\Theta$ with PSNR = 34.29}
+%   \label{fig:SIDD-chest-example-1}
+% \end{figure}
+
+
+% \section{Test cases}
+
+% \subsection{Tutle}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.25\linewidth]{images/tests/turtle clean.png}
+%     \includegraphics[width=0.25\linewidth]{images/tests/turtle noisy.png}
+%     \includegraphics[width=0.25\linewidth]{images/tests/turtle single lambda.png}
+%     \includegraphics[width=0.25\linewidth]{images//tests/turtle_denoised_overfit.png}
+%     \includegraphics[width=0.25\linewidth]{images/tests/turtle lambda map.png}
+%     \includegraphics[width=0.25\linewidth]{images/tests/turtle lambda map graph.png}
+%     \caption{turtle: clean; noisy; single $\lambda = 0.07$; lambda map $\mathbf{\Lambda}$}
+%     \label{fig:enter-label}
+% \end{figure}
+
+
+% \subsection{Square}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.19\linewidth]{images/tests/square clean.png}
+%     \includegraphics[width=0.19\linewidth]{images/tests/square noisy.png}
+%     \includegraphics[width=0.19\linewidth]{images/tests/square tikhonov.png}
+%     \includegraphics[width=0.19\linewidth]{images/tests/square TV single lambda.png}
+%     \includegraphics[width=0.19\linewidth]{images/tests/square TGV single lambdas.png}
+%     \caption{square: clean; noisy; Tikhonov; TV single $\lambda$; TGV single $\lambda_1$ and $\lambda_2$}
+%     \label{fig:square_clean}
+% \end{figure}
+
+
+
+
+% \section{Data}
+
+
+% \url{https://openaccess.thecvf.com/content_CVPRW_2019/papers/NTIRE/Abdelhamed_NTIRE_2019_Challenge_on_Real_Image_Denoising_Methods_and_Results_CVPRW_2019_paper.pdf}
+
+% Gaussian $\sigma$, the estimated range is [0.242, 11.507]
+% in the space of [0, 255].
+
+% The validation data consisted of 1280 noisy image blocks
+% (i.e., croppings) form both raw-RGB and sRGB images,
+% each block is 256×256 pixels. The blocks are taken from 40
+% images, 32 blocks from each image (40 × 32 = 1280). All
+% image blocks are combined in a single 4D array of shape
+% [40, 32, 256, 256] where the four dimensions represent the
+% image index, the index of the block within the image, the
+% block height, and the block width, respectively. The blocks
+% have the same number format as the training data. 
+
+% The testing data consisted of 1280 noisy image blocks different from the validation block but following the same format
+% as the validation data. Image metadata files were also provided for the 40 images from which the validation/testing
+% data was extracted.
+
+
+
+% \subsection{MRI}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.25\linewidth]{images//tests/MRI.png}
+%     \caption{Enter Caption}
+%     \label{fig:enter-label}
+% \end{figure}
+
+
+% \newpage
+
+\subsection{Results}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/clean.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/noisy.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/psnr_29.945-lambda_0.07.png}
+  \includegraphics[width=0.34\linewidth]{images//chest_xray/ex_2/denoised-mse_49.17-psnr_31.248-ssim_0.831.png}
+  \caption{Chest X-ray example. The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.5$. The bottom row shows the denoised images using the TV method; the left image with PSNR = 29.945 was produced using the best scalar regularisation parameter $\lambda = 0.07$ , while the right image with PSNR = \textbf{31.248} was denoised using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
+  \label{fig:compare}
+\end{figure}
+
+
+
+
+
+% \begin{wrapfigure}{l}{1\textwidth}
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram.png}\
+  \caption{$\mathbf{\Lambda}_{\Theta}$ map and histogram of the values}
+  \end{subfigure}
+  \begin{subfigure}{0.48\textwidth}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_log.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/ex_2/lambda_map_values_histogram_log.png}
+  \caption{$\log{(\mathbf{\Lambda}_{\Theta} + 0.05)}$ and histogram of the log values}
+  \end{subfigure}
+  \caption{The produced $\mathbf{\Lambda}_{\Theta}$ map for the chest x-ray dataset example, shown as an image on a different colour map, followed by the histogram showing the distribution of the values in the map. The pixel colour represents the magnitude of the regularisation parameter at a particular point. On the left, we show the colours that correspond to the actual values of lambda. As we can see from the histogram, most values stick closely to one another in the lower spectrum, making the image very dark. An additional visualisation is shown on the right, with the colours corresponding to the logarithm of the values with an offset of 0.05 to avoid taking the log of zero. This spread the values out to show more colours for visualisation purposes.}
+  \label{fig:lambda-map}
+\end{figure}
+% \end{wrapfigure}{l}
+
+As previously mentioned, we used 100 images with label "normal" from the test set provided in the Chest X-ray dataset for testing.
+Each test image was noised with a Gaussian noise of mean 0 and standard deviation $\sigma = 0.5$ (generated using equation \ref{eq:data-dependent-noise}).
+For each test image, we also did a grid search with 81 equally spaced values between 0 and 0.8 in order to find the best scalar $\lambda$ for the total variational denoising method, which we used as a baseline to show the effectiveness of our method.
+
+As an example, we present the results for one of the test images.
+The results of the grid search is shown in the line plots in figure 
+% 6.
+\ref{fig:line-plots}.
+For this particular test image, the highest value of PSNR of 29.945 dB was achieved by $\lambda = 0.07$.
+The regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ resulted in a PSNR of 31.248 dB.
+The clean and original versions as well as the resulting denoised images are shown in figure 
+\ref{fig:compare}.
+% 4.
+% Qualitatively, we can see that there is a good reduction in the staircase effect in the denoised image using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ compared to the denoised image using the scalar $\lambda$.
+Qualitatively, we observe a significant reduction in the staircase effect in the denoised image when using the regularisation parameter map $\mathbf{\Lambda}_\Theta$, compared to using the scalar $\lambda$.
+
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.6\linewidth]{images//chest_xray/chest_xray-line_plots.png}
+  \includegraphics[width=0.6\linewidth]{images//chest_xray/ex_2/pyplot_multiple_y-axis.PNG}
+  
+      \caption{Grid search for the best scalar regularisation parameter $\lambda$ for the example test image. The highest PSNR of 29.945 dB was achieved by $\lambda = 0.07$.}
+  \label{fig:line-plots}
+\end{figure}
+
+
+Figure
+\ref{fig:lambda-map}
+% 5
+shows the resulting regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_{\Theta}$ for this example test image.
+We can see that the map is made up of a range of values, many of which are less than 0.07, the best scalar regularisation parameter found using the grid search.
+This shows that at many parts, such as the borders of the body, the details are better preserved and the lines are sharper.
+On the other hand, there are also many values larger than 0.07, which shows that there are parts that are denoised more heavily.
+Ideally, these would be parts that were originally smooth.
+This would help to reduce the staircase effect in the denoised image, which we can see more prevalent in the denoised image using the scalar $\lambda$.
+
+% While most values are in the low end of the spectrum, the histogram of the values shows that there are some higher values as well.
+
+
+
+
+% \begin{figure}[ht]
+%   \includegraphics[width=1\linewidth]{images//chest_xray/chest_xray-denoised_compare.png}
+%   \caption{Chest X-ray example - denoised images}
+%   \label{fig:chest_xray}
+% \end{figure}
+
+
+
+% \begin{figure}[ht]
+%   \centering
+  
+%   \includegraphics[width=0.25\linewidth]{images//chest_xray/clean.png}
+%   \includegraphics[width=0.25\linewidth]{images//chest_xray/noisy.png}
+%   \includegraphics[width=0.25\linewidth]{images//chest_xray/single_lambda_best_0_08.png}
+%   \includegraphics[width=0.25\linewidth]{images/chest_xray/lambda_map_best_using_function.png}
+%   \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_1.png}
+%   \includegraphics[width=0.25\linewidth]{images//chest_xray/lambda_map_3.png}
+      
+%   % \caption{$512 \times 512$, $\text{T}=128$, $\sigma=0.5$, $\lambda=0.08$}
+%   \caption{Chest X-ray example: clean, noisy, denoised using scalar $\lambda = 0.02$ with PSNR = 35.99, denoised using $\mathbf{\Lambda}_\Theta$ with PSNR = 37.26, $\mathbf{\Lambda}_\Theta$}
+%   \label{fig:chest_xray}
+% \end{figure}
+
+
+
+% \begin{figure}[ht]
+%   \centering
+%   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-clean.png}
+%   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-noisy.png}
+%   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-psnr_35.99-lambda_0.02.png}
+%   \includegraphics[width=0.34\linewidth]{images//chest_xray/100-lambda_map-psnr_37.26-ssim_0.95.png}
+%   \caption{Chest X-ray example: clean, noisy, $\lambda = 0.02$ with PSNR = 35.99, $\mathbf{\Lambda}_\Theta$ with PSNR = 37.62}
+%   \label{fig:enter-label}
+% \end{figure}
+
+% \begin{figure}[ht]
+%   \centering
+%       \includegraphics[width=1\linewidth]{images//chest_xray/outputa.png}
+%       \caption{Chest X-ray box plots}
+%   \label{fig:enter-label}
+% \end{figure}
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=1\linewidth]{images//chest_xray/output3.png}
+  \includegraphics[width=0.5\linewidth]{images//chest_xray/box_plots1.png}
+  \caption{Test results summary}
+  \label{fig:box_plots}
+\end{figure}
+
+\begin{table}[H]
+\centering
+
+\begin{tabular}{c|c c}
+% \hline
+ & \textbf{PDHG -} $\lambda$ & \textbf{PDHG -} $\mathbf{\Lambda}_{\Theta}$ \\
+\hline
+\textbf{SSIM} & $0.82 \pm 0.03$ & $\mathbf{0.86} \pm 0.02$ \\
+\textbf{PSNR} & $31.28 \pm 1.39$ & $\mathbf{32.79} \pm 1.34$ \\
+% \hline
+\end{tabular}
+
+% \begin{tabular}{lcc}
+% \toprule
+% & Scalar $\lambda$ & $\Lambda$ map \\
+% \midrule
+% PSNR & 31.28 $\pm$ 1.39 & 32.79 $\pm$ 1.34 \\
+% SSIM & 0.82 $\pm$ 0.03 & 0.86 $\pm$ 0.02 \\
+% \bottomrule
+% \end{tabular}
+% \caption{Performance comparison between Scalar $\lambda$ and $\Lambda$ map.}
+
+
+\caption{Mean and standard deviation of the measures SSIM and PSNR obtained over the test set for the chest x-ray dataset example. 
+The TV-reconstruction using the parameter-map $\mathbf{\Lambda}_{\Theta}$ improves both measures.
+}
+
+\label{table:summary}
+
+\end{table}
+
+
+
+\begin{figure}[H]
+  \centering
+  % \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_psnr_diff.png}
+  % \includegraphics[width=0.48\linewidth]{images//chest_xray/hist_ssim_diff.png}
+  \includegraphics[width=1\linewidth]{images//chest_xray/histograms.png}
+  \caption{Histograms of the PSNR and SSIM differences between using $\lambda$ scalar and using $\mathbf{\Lambda}_{\Theta}$ map for
+  reconstructions of noisy versions of the test images. 
+  The $\mathbf{\Lambda}_{\Theta}$ map method consistently outperforms the scalar $\lambda$ method.
+  % In all bilevel algorithms the
+  % ground truth-free statistics-based upper level objective was used.
+  }
+  \label{fig:hist_diff}
+\end{figure}
+
+Plotting the results for all the test images, we can see that the regularisation parameter map consistently outperforms the scalar $\lambda$.
+The box plots in Figure 
+\ref{fig:box_plots} 
+% 7
+show the distribution of PSNR and SSIM (\cite{ssim}) values for the test images
+using the two methods.
+Figure 
+\ref{fig:hist_diff}
+% 8 
+shows the histograms of the differences in PSNR and SSIM values between the two methods.
+We can see that the differences are positive in all cases, which shows that the regularisation parameter map consistently produces higher PSNR and SSIM values than the scalar $\lambda$.
+
+% More visualisations:
+
+% - Histograms of the PSNR and SSIM differences (see Figure 9 of Dualisation paper)
+
+% - Show Lambda map: use a different colormap with legend showing the range of the values (0.00 to 0.05) (page 29 of the paper)
+
+% - Table of PSNR and SSIM values for each image: Table 4 in paper
+
+% - Scale the box plots like figure 13 in paper
+
+% - (More experiments) Test with the sigma 0.1 and 0.3 for test images and add: box plots, table rows, and difference histograms.
+
+
+
+
+% The total variational denoising method was able to produce denoised images that were closer to the ground truth images.
+
+
+
+
+
+\section{SeaTurtleID2022 Dataset}
+
+
+\subsection{Experimental Set-Up}
+
+\subsubsection{Training Data}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t570/UaEGrKBOme.jpeg}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t101/AiEMbgYfIX.jpg}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t200/AXJrcNfeds.jpg}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t300/cEGpnPZeDI.jpeg}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t400/EAjUlXyTPZ.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t500/dnoPzYiZii.jpeg}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t600/crnsyTUIyS.jpeg}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t070/AHmeYdbiKe.JPG}
+
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t080/BHfaybcCbL.jpg}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t090/ckWXIjaiUr.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t102/AGbpwnGLVP.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t110/adTmyVFBsx.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t120/pKGKUmGNUu.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t150/dLEPRooqTG.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t160/bIeNjNmPqN.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t170/FzMylIXByx.JPG}
+    \includegraphics[width=0.1\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t190/HCFFrEjYfB.JPG}
+
+    \caption{
+        Examples from the SeaTurtleID2022 dataset (\cite{Adam_2024_WACV}).
+    }
+\end{figure}
+
+% We used the SeaTurtleID2022 data set \cite{Adam_2024_WACV}.
+The SeaTurtleID2022 dataset (\cite{Adam_2024_WACV}) is a dataset of 8729 images which are labeled with the IDs of 438 individual sea-turtles. The dataset is kindly provided by \cite{seaturtleid2022}.
+This dataset is designed for the task of sea-turtle identification as well as other image segmentation tasks.
+All images are color images in JPEG format with a maximum length of 2000 pixels.
+Compared to the Chest X-ray dataset, the images in this dataset contain a lot more variations.
+
+First we split the dataset into training, validation, and test sub-datasets with ratio 0.8 : 0.1 : 0.1.
+For resources reasons, we used only a small subset of each of the sub-dataset.
+Specifically, we pick 100 images to generate training set, 10 images to generate the validation set, and another 100 images to generate the testing set.
+
+For consistency, we also crop the images to squares. Then we rescale the resolution to $512 \times 512$.
+
+The colour images are converted to greyscale using the common formula $Y = 0.299 \times R + 0.587 \times G + 0.114 \times B$ where $R$, $G$, and $B$ are the red, green, and blue channels respectively (\cite{RGB-to-greyscale-formula-ITU-R_BT601}).
+
+For this dataset, we set up using a different method of adding Gaussian noise. Specifically, we use the common data-independent Gaussian noise addition
+\begin{equation}
+    \mathbf{x}_{\text{noisy}} = \mathbf{x}_{\text{true}} + \sigma \mathbf{n}
+\end{equation}
+where the noise $\mathbf{n}$ is drawn from a standard Gaussian distribution with mean 0 and standard deviation 1.
+
+% In my implementation, I used 
+For consistency, we implement noise generation using the
+\codeword{random_noise} function from the well-established \codeword{scikit-image} library, version \codeword{0.24.0}.
+
+Before training, for each image, we generate six different noisy images with six different levels of noise: $\sigma =$ 0.05, 0.1, 0.15, 0.2, 0.25, 0.3.
+This gives us a total of 600 images for training, 60 images for validation, and 600 images for testing.
+We also use a batch size of 1, so each training epoch consists of 600 iterations, one iteration for each image in the training dataset.
+This helps provide reproducibility for future assessment.
+For more randomness, we could generate six images with a random level of noise from 0 to 0.3.
+
+
+Examples of noisy images with different $\sigma$ values generated with my implementation 
+are shown in figure \ref{fig:example_turtle_images}.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale/t008/PaXakrkxqN.JPG}
+    % \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN.JPG}
+    % \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN.JPG}
+    % \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN.JPG}
+    \includegraphics[width=0.3\linewidth]{../data/turtle_id_2022/turtles-data/data/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN.JPG}
+    \caption{
+    An example from the SeaTurtleID2022 dataset and its transformations.
+    % Example of the transformations and noisy versions of one color image.
+    First the image is cropped to a square and rescaled to 512 by 512.
+    Then it is converted to greyscale.
+    Finally, it is noised with Gaussian noise with different $\sigma$ values.
+    The bottom row shows the noisy images with three different levels of noise: 0.1, 0.2 and 0.3.
+    }
+    \label{fig:example_turtle_images}
+
+\end{figure}
+
+
+\subsubsection{U-Net Set-Up}
+
+
+For learning the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$, we used a U-Net structure with 1 initial double convolutional block, followed by 3 encoding blocks, 3 decoding blocks, and 1 final fully connected layer.
+
+The number of initial filters, or output channels of the first convolution layer, is set to 128.
+This leads to a 1-128-256-512-1024-512-256-128-2 structure.
+Everything else is kept the same.
+The total number of trainable parameters of the set $\Theta$ is 28,712,709.
+
+For this dataset, we use a larger network with more filters in the convolutional layers.
+This is because the images are more complex and have more details,  compared to chest x-ray images.
+More filters allow the network to learn more features.
+
+For the activation function, we used the Leaky ReLU with a negative slope of 0.01.
+
+
+For reproducibility, we manually set a seed value to 42 for the random number generator at the beginning of the training process.
+
+I also tested with a 5-block U-Net architecture, but the results were similar to the 3-block architecture.
+% More layers can have a regularisation effect.
+
+
+\subsubsection{PDHG Solver}
+
+
+After the unet produces the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$,
+the map is transformed in the same way as in the chest x-ray experiment, using the default \ref{eq:default-softplus}.
+
+For the number of iterations, we set 
+% the \codeword{up-bound} parameter to 0 and 
+$T_{\text{train}}$ to 128.
+During testing we also set $T_{\text{test}}$ to 128.
+
+
+\subsubsection{Training Options}
+
+We also use the Adam optimiser with an initial learning rate of 1e-4, a batch size of 1, and the Mean Square Error (MSE) loss function.
+
+We trained for a total of 60 epochs, but use the model at the 50-epoch checkpoint. 
+After around 50 epochs, the validation accuracy started to drop.
+The total training time was 9 hours, and the GPU memory footprint was around 10 GB.
+
+\subsection{Results}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/clean.png}
+    \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.34\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
+    \caption{
+        % An example from the SeaTurtleID2022 dataset and its transformations.
+        Comparing the reconstructions of the SeaTurtleID2022 dataset example.
+        The top row shows the original image on the left and the noisy image, generated with Gaussian noise with $\sigma = 0.2$. 
+        The bottom row shows the denoised images using the TV method; 
+        the left image with PSNR = 27.33 was produced 
+        using the best scalar regularisation parameter $\lambda = 0.145$ from our grid search with step size 0.005, 
+        while the right image with PSNR = \textbf{28.19} was denoised 
+        using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ found using $\text{NET}_\Theta$.}
+    \label{fig:compare_turtle_id}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.51\linewidth]{images/turtle_id/reg_map.png}
+    \includegraphics[width=0.51\linewidth]{images/turtle_id/reg_map_clip.png}
+    \includegraphics[width=0.51\linewidth]{images/turtle_id/reg_map_log.png}
+    \caption{
+        The produced $\mathbf{\Lambda}_{\Theta}$ map for the chosen example. 
+        The pixel colour represents the magnitude of the regularisation parameter at a particular point.
+        The top image shows the colours that correspond to the actual values of lambda.
+        The middle image shows the colours that correspond to the actual values of lambda, but the values are clipped to the range [0, 0.6].
+        The bottom image shows the colours that correspond to the logarithm of the values with an offset of 0.05 to avoid taking the log of zero.
+        We can see that the regions with higher values correspond to the smooth parts of the image, like the water, turtle's shadow on the sand, and the black gap between the shell and its head.
+    }
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/noisy.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/denoised.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_05/t008/PaXakrkxqN/reg_map.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/denoised.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_1/t008/PaXakrkxqN/reg_map.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/noisy.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/denoised.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_15/t008/PaXakrkxqN/reg_map.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/denoised.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_2/t008/PaXakrkxqN/reg_map.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/noisy.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/denoised.png}
+    % \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_25/t008/PaXakrkxqN/reg_map.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/noisy.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/scalar/best_PSNR.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/denoised.png}
+    \includegraphics[width=0.24\linewidth]{../turtle_id/test/test_reg_map/06_24_19_56_05-50/test/images_crop_resize_512_greyscale_noisy_0_3/t008/PaXakrkxqN/reg_map.png}
+
+    \caption{
+        Different noise levels for the example and the corresponding denoised images using the two methods.
+        From the top, the noise levels $\sigma$ are 0.1, 0.2, and 0.3.
+        The best scalar regularisation parameters $\lambda$ are 
+        0.07, 
+        0.145, 
+        and 
+        0.21 
+        respectively.
+        The PSNR values for the denoised images using the scalar $\lambda$ are
+        30.4797,
+        27.3257,
+        and
+        24.6757;
+        whereas the PSNR values for the denoised images using the regularisation parameter map $\mathbf{\Lambda}_\Theta$ are
+        31.5126,
+        28.1870
+        and
+        25.3198.
+    }
+
+\end{figure}
+
+
+% \section{Important Implementation Details}
+
+% \subsection{Metrics}
+
+% The SSIM metrics were calculated using the pytorch Ignite library \cite{pytorch-ignite} for speed.
+% As far as I know, it is the fastest implementation of the SSIM metric.
+% The SSIM metric was calculated using the default settings of the library, which uses a window size of 11 and a Gaussian filter of standard deviation 1.5.
+% This is the common setting for other libraries as well, such as the scikit-image library \cite{scikit-image}.
+% However, the results are a little different from the scikit-image.
+% Furthermore, the results were obtained using the GPU which also differs from the CPU.
+% It might be a good idea to use scikit-image instead as it is more widely used and tested.
+% The downside is that it uses the CPU which is slower.
+
+% My comparison: \url{...}
+
+
+\section{TGV}
+
+\subsection{Results}
+
+The TGV method is better than the TV method using a scalar $\lambda$.
+It is even better then the TV method using the regularisation parameter map $\mathbf{\Lambda}_{\Theta}$.
+
+We improved it even further using U-Net to learn two regularisation parameter maps $\mathbf{\Lambda}_1$ and $\mathbf{\Lambda}_0$.
+
+
+\section{Conclusion}
+
+% Through experimentation with the Chest X-ray dataset, we showed that using U-Net produces a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ that improves the denoising of images using the total variational method compared to the traditional scalar $\lambda$.
+
+Through experiments with the Chest X-ray dataset and the SeaTurtleID2022 dataset, we demonstrate that using U-Net to produce a regularisation parameter map $\mathbf{\Lambda}_{\Theta}$ enhances the denoising performance of the total variation method compared to the traditional scalar $\lambda$.
+
+% This project showcases the integration of neural networks with traditional algorithms to enhance image denoising capabilities, marking a significant step forward in computational imaging.
+
+% \subsection{Experimentation and Findings}
+
+% We experimented with the capabilities of the U-Net architecture to learn and apply regularisation parameters dynamically across different image segments using the PDHG algorithm. Traditional denoising techniques typically rely on a single lambda value for regularisation, which often does not cater to the varying needs across an image. Our approach attempts to transcend this limitation by approximating an optimal lambda map through the U-Net, enhancing the PDHG's performance. This methodology, while computationally intensive, illustrates the potential benefits of segment-specific regularisation in image denoising.
+
+% \subsection{Real-World Implications and Limitations}
+
+% Because of the considerable computation time, this limited our ability to extend the experiment across different sets of images. 
+% Moving forward, optimising the computational efficiency of this model will be crucial for broader application and scalability.
+
+% % \subsection{Conclusion}
+% In conclusion, while the experiment demonstrated potential improvements over traditional single-lambda denoising methods, the current computational demands make it impractical for real-world applications. 
+
+\section{Future Work}
+
+% Future research will focus on refining the efficiency of these neural network-enhanced denoising techniques to make them more viable for practical use.
+
+% - Train models with different $T_{\text{train}}$ on the same dataset.
+
+- Train with a different dataset and compare the results.
+
+- Train with a different dataset and test on this dataset, and vice versa.
+
+- Train on colour images.
+
+- Extend to Total Generalised Variation (TGV) method: \cite{tgv-bredies-2010}
+
+
+% \newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% APPENDIX %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \appendix
+% % Check out:
+% % https://stackoverflow.com/questions/717316/how-to-make-appendix-appear-in-toc-in-latex
+
+% % https://latex-tutorial.com/latex-appendix/
+
+% \chapter{Deriving the Dual Problem}
+
+% To derive the corresponding dual problem of the given nonlinear primal problem:
+
+% \begin{equation}
+% \min_{x \in X} F(Kx) + G(x),
+% \end{equation}
+
+% we can use the convex optimization framework, particularly the Fenchel duality approach. Here’s the process to derive the dual problem:
+
+% Primal Problem:
+% \begin{equation}
+% \min_{x \in X} F(Kx) + G(x)
+% \end{equation}
+
+% \section*{Step-by-Step Dual Derivation}
+
+% \begin{enumerate}
+%   \item \textbf{Introduce a new variable} \( y \) to replace \( Kx \):
+%   \begin{equation}
+%   \min_{x \in X, y = Kx} F(y) + G(x)
+%   \end{equation}
+
+%   \item \textbf{Write the Lagrangian}:
+%   \begin{equation}
+%   \mathcal{L}(x, y, \lambda) = F(y) + G(x) + \lambda^T (y - Kx)
+%   \end{equation}
+%   where \( \lambda \) is the Lagrange multiplier (dual variable).
+
+%   \item \textbf{Form the Dual Function} by minimizing the Lagrangian over \( x \) and \( y \):
+%   \begin{equation}
+%   g(\lambda) = \inf_{x \in X, y} \mathcal{L}(x, y, \lambda)
+%   \end{equation}
+
+%   \item \textbf{Separate the minimization} over \( y \) and \( x \):
+%   \begin{equation}
+%   g(\lambda) = \inf_{y} \left[ F(y) + \lambda^T y \right] + \inf_{x \in X} \left[ G(x) - \lambda^T Kx \right]
+%   \end{equation}
+
+%   \item \textbf{Identify the Fenchel conjugates} of \( F \) and \( G \):
+%   \begin{equation}
+%   F^*(\lambda) = \sup_{y} \left[ \lambda^T y - F(y) \right]
+%   \end{equation}
+
+%   \begin{equation}
+%   G^*(\lambda) = \sup_{x \in X} \left[ \lambda^T Kx - G(x) \right]
+%   \end{equation}
+
+%   \item \textbf{Express the dual function} using these conjugates:
+%   \begin{equation}
+%   g(\lambda) = -F^*(-\lambda) - G^*(K^T \lambda)
+%   \end{equation}
+
+%   \item \textbf{Form the Dual Problem}:
+%   \begin{equation}
+%   \max_{\lambda} g(\lambda) = \max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+%   \end{equation}
+% \end{enumerate}
+
+% Dual Problem:
+
+% \begin{equation}
+% \max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+% \end{equation}
+
+% In summary, the corresponding dual problem of the given nonlinear primal problem is:
+
+% \begin{equation}
+% \max_{\lambda} \left[ -F^*(-\lambda) - G^*(K^T \lambda) \right]
+% \end{equation}
+
+% where \( F^*(-\lambda) \) and \( G^*(K^T \lambda) \) are the Fenchel conjugates of \( F \) and \( G \) respectively.
+
+
+
+\newpage
+
+
+
+\Urlmuskip=0mu plus 1mu\relax
+\printbibliography
+
+
+The following list contain the primary Python libraries used in the implementation of this project.
+
+\vspace{-6pt}
+
+\begin{itemize}
+\setlength\itemsep{-0.3em}
+  \item \codeword{NumPy}: Utilised for numerical representations and operations, including vector and matrix multiplication.
+  \item \codeword{PyTorch}: Employed for constructing and training neural network models due to its robust, flexible, and efficient computational dynamics.
+  \item \codeword{matplotlib} and \codeword{seaborn}: Employed for data visualisation tasks, including the creation of histograms, box plots, and other graphical representations.
+  % \item \codeword{pandas}: Used for data analysis and manipulation tasks, such as managing data frames and handling value replacement operations.
+  \item \codeword{scikit-learn}: Used for benchmarking our model against traditional machine learning algorithms, providing tools for data preprocessing, cross-validation, and more.
+  \item \codeword{random}: Critical for generating random numbers, used extensively in stochastic processes like K-fold cross-validation and bootstrap sampling.
+  \item \codeword{wandb}: Integrated for experiment tracking and logging, facilitating the monitoring of model training metrics and performance in real-time.
+\end{itemize}
+
+
+\end{document}

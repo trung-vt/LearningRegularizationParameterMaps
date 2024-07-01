@@ -11,6 +11,7 @@ class TgvPdhgNet(nn.Module):
         device="cpu",
         constraint_activation="softplus",
         scale_factor=0.1,
+        T=128,
     ):
         """
         TgvPdhgNet
@@ -58,6 +59,7 @@ class TgvPdhgNet(nn.Module):
         self.scale_factor = torch.tensor(scale_factor, requires_grad=False, device=self.device)
 
         self.pdhg = TgvPdhgTorch(device=self.device)
+        self.T = T
         
 
     def get_regularisation_param_maps(self, u):
@@ -77,7 +79,7 @@ class TgvPdhgNet(nn.Module):
 
     def forward(
             self, u, regularisation_params=None,
-            T=128,  # number of iterations for the PDHG algorithm
+            T=None,  # number of iterations for the PDHG algorithm
     ):
         """
         
@@ -119,5 +121,7 @@ class TgvPdhgNet(nn.Module):
         alpha1 = alpha1.to(self.device)
         
         p = torch.zeros((*u.shape, 2), device=self.device) # Assume u is 2D now
+        if T is None:
+            T = self.T
         u_T = self.pdhg.solve(u=u, p=p, alpha1=alpha1, alpha0=alpha0, num_iters=T)
         return u_T

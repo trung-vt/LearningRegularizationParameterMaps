@@ -111,10 +111,11 @@ def init_wandb(config):
 
 
 def start_training(
-    pdhg_net, config, 
+    pdhg_net, 
     data_loader_train,
-    data_loader_valid, 
-    model_states_dir:str, start_epoch=0):
+    data_loader_valid,
+    config, 
+):
 
     # TODO: Sometimes, creating the optimizer gives this error:
     #   AttributeError: partially initialized module 'torch._dynamo' has no attribute 'trace_rules' (most likely due to a circular import)
@@ -125,7 +126,7 @@ def start_training(
 
     save_epoch_local = config["save_epoch_local"]
     save_epoch_wandb = config["save_epoch_wandb"]
-
+    model_states_dir = config["model_states_dir"]
     def log_to_files():
         with open(f"{model_states_dir}/config.json", "w") as f:
             json.dump(config, f, indent=4)
@@ -158,6 +159,7 @@ def start_training(
 
     init_wandb(config)
 
+    start_epoch = config["start_epoch"]
     # for epoch in range(start_epoch, num_epochs):
     for epoch in tqdm(range(start_epoch, num_epochs)):
         wandb.log({"epoch": epoch+1})
